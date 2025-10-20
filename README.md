@@ -71,40 +71,7 @@ Comprehensive pass table with AOS/LOS times, duration, and maximum elevation.
 
 ## Installation
 
-### Desktop (Windows, Linux, macOS)
-
-#### Requirements
-- Qt 6.x
-- C++17 compatible compiler
-- OpenSSL libraries (for TLE updates)
-
-#### Building from Source
-```bash
-git clone https://github.com/yourusername/sattrackradio.git
-cd sattrackradio
-mkdir build && cd build
-qmake ../sattrackradio.pro
-make
-```
-
-#### Windows Note
-Ensure OpenSSL DLLs are in the application directory:
-- `libssl-1_1-x64.dll`
-- `libcrypto-1_1-x64.dll`
-
-### Android
-
-#### Requirements
-- Qt 6.x for Android
-- Android SDK (API level 23+)
-- NDK
-
-#### Building
-```bash
-qmake ../sattrackradio.pro -spec android-clang
-make
-make apk
-```
+Install on your android phone. 
 
 #### Permissions Required
 - `BLUETOOTH` - For radio control
