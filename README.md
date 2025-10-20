@@ -2,6 +2,12 @@
 
 A Satellite tracking application with integrated radio control and real-time Doppler correction for amateur radio satellite operations.
 
+## Screenshots
+![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio9.jpg)
+
+![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio8.jpg)
+
+
 ## Features
 
 ### 🛰️ Satellite Tracking
@@ -55,7 +61,6 @@ A Satellite tracking application with integrated radio control and real-time Dop
 - **Status indicators** and countdown timers
 - **Color-coded pass predictions** based on elevation
 
-## Screenshots
 
 ### Main Tracking Interface
 Real-time satellite position, Doppler shift calculations, and countdown to next pass.
@@ -68,40 +73,7 @@ Comprehensive pass table with AOS/LOS times, duration, and maximum elevation.
 
 ## Installation
 
-### Desktop (Windows, Linux, macOS)
-
-#### Requirements
-- Qt 6.x
-- C++17 compatible compiler
-- OpenSSL libraries (for TLE updates)
-
-#### Building from Source
-```bash
-git clone https://github.com/yourusername/sattrackradio.git
-cd sattrackradio
-mkdir build && cd build
-qmake ../sattrackradio.pro
-make
-```
-
-#### Windows Note
-Ensure OpenSSL DLLs are in the application directory:
-- `libssl-1_1-x64.dll`
-- `libcrypto-1_1-x64.dll`
-
-### Android
-
-#### Requirements
-- Qt 6.x for Android
-- Android SDK (API level 23+)
-- NDK
-
-#### Building
-```bash
-qmake ../sattrackradio.pro -spec android-clang
-make
-make apk
-```
+Install on your android phone. 
 
 #### Permissions Required
 - `BLUETOOTH` - For radio control
@@ -132,7 +104,7 @@ make apk
 4. **Connect Radio** (Optional)
    - Go to Radio Control tab
    - Select radio type (FT-818 or TH-D74)
-   - Choose Bluetooth device
+   - Choose Bluetooth device (Previously paired devices)
    - Click "Connect"
 
 5. **Enable Auto-Tracking**
@@ -230,6 +202,7 @@ Includes sample pre-configured TLEs and transponders for:
 
 ### Radio Connection Issues
 - Verify Bluetooth pairing
+- The app only lists devices from bluetooth "paired" in android settings.
 - Check radio is in CAT control mode
 - For FT-818: Ensure correct baud rate (9600 )
   
