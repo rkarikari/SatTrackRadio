@@ -2,6 +2,12 @@
 
 A Satellite tracking application with integrated radio control and real-time Doppler correction for amateur radio satellite operations.
 
+## Screenshots
+![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio9.jpg)
+
+![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio8.jpg)
+
+
 ## Features
 
 ### 🛰️ Satellite Tracking
@@ -55,10 +61,6 @@ A Satellite tracking application with integrated radio control and real-time Dop
 - **Status indicators** and countdown timers
 - **Color-coded pass predictions** based on elevation
 
-## Screenshots
-![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio9.jpg)
-
-![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio8.jpg)
 
 ### Main Tracking Interface
 Real-time satellite position, Doppler shift calculations, and countdown to next pass.
