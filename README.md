@@ -104,7 +104,7 @@ Install on your android phone.
 4. **Connect Radio** (Optional)
    - Go to Radio Control tab
    - Select radio type (FT-818 or TH-D74)
-   - Choose Bluetooth device
+   - Choose Bluetooth device (Previously paired devices)
    - Click "Connect"
 
 5. **Enable Auto-Tracking**
@@ -202,6 +202,7 @@ Includes sample pre-configured TLEs and transponders for:
 
 ### Radio Connection Issues
 - Verify Bluetooth pairing
+- The app only lists devices from bluetooth "paired" in android settings.
 - Check radio is in CAT control mode
 - For FT-818: Ensure correct baud rate (9600 )
   
