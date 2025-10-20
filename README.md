@@ -190,9 +190,7 @@ For maximum accuracy in Doppler calculations:
 - **Greenwich Sidereal Time** calculations for ECI to ECEF conversion
 
 ### Doppler Correction
-```
-Doppler Shift = -f × (v_radial / c)
-```
+
 - Corrects for satellite velocity along line of sight
 - Separate calculations for uplink and downlink
 - Real-time updates based on range rate
@@ -202,23 +200,22 @@ Doppler Shift = -f × (v_radial / c)
 #### FT-818
 - Binary CAT commands
 - BCD frequency encoding
-- Split VFO operation for full duplex
-- Frequency resolution: 10 Hz
+-
+- Frequency resolution: Hardware Specs
 
 #### TH-D74
 - ASCII command protocol
 - Dual-band operation (Band A/B)
-- Split operation support
-- Frequency resolution: 1 Hz
+- 
+- Frequency resolution: Hardware Specs
 - Extended receive coverage on Band B
 
 ## Default Satellites
 
-Includes pre-configured TLEs and transponders for:
-- ISS (ZARYA) - International Space Station
-- SO-50 - SaudiSat-1C
-- AO-91 (FOX-1B) - RadFxSat
+Includes sample pre-configured TLEs and transponders for:
 - AO-92 (FOX-1D) - Fox-1D
+- Always download the Latest
+
 
 ## Data Sources
 
@@ -228,15 +225,14 @@ Includes pre-configured TLEs and transponders for:
 ## Troubleshooting
 
 ### TLE Updates Fail
-- Ensure OpenSSL libraries are installed
 - Check internet connection
 - Verify HTTPS connectivity
 
 ### Radio Connection Issues
 - Verify Bluetooth pairing
 - Check radio is in CAT control mode
-- For FT-818: Ensure correct baud rate (38400 for Bluetooth)
-- For TH-D74: Enable PC control mode
+- For FT-818: Ensure correct baud rate (9600 )
+  
 
 ### GPS Not Working (Android)
 - Grant location permissions
@@ -251,23 +247,7 @@ Includes pre-configured TLEs and transponders for:
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit pull requests or open issues.
-
-### Development Guidelines
-- Follow Qt coding standards
-- Test on both desktop and Android platforms
-- Update documentation for new features
-- Ensure backward compatibility for saved settings
-
-## Roadmap
-
-- [ ] Rotator control (AZ/EL)
-- [ ] Audio Doppler correction (GQRX integration)
-- [ ] Satellite footprint visualization
-- [ ] Multiple observer locations
-- [ ] Pass alarm notifications
-- [ ] Export pass predictions to calendar
-- [ ] Additional radio support (IC-9700, IC-705)
+Contributions are welcome! 
 
 ## License
 
@@ -282,13 +262,14 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Celestrak for TLE data
 - SatNOGS for transponder database
 - Qt framework
-- Amateur radio satellite community
+- Special thanks to Travis Goodspeed (KK4VCZ), LA3QMA, WM8S, M1HOG, AG6IE, and DG6OBE for their pioneering work in reverse-engineering the Kenwood TH-D74 CAT protocol.
+- Amateur radio satellite community : 
 
 ## Support
 
-For issues, questions, or feature requests:
+For issues, questions:
 - Open an issue on GitHub
-- Contact: [Your contact information]
+- Contact: 9G5AR 
 
 ## Disclaimer
 
