@@ -3,7 +3,7 @@
 A Satellite tracking application with integrated radio control and real-time Doppler correction for amateur radio satellite operations.
 
 ## Screenshots
-![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio9.jpg)
+![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio.gif)
 
 ![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio8.jpg)
 
