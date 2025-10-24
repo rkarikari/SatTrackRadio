@@ -7,6 +7,7 @@ A Satellite tracking application with integrated radio control and real-time Dop
 
 ![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio8.jpg)
 
+![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio7.jpg)
 
 ## Features
 
