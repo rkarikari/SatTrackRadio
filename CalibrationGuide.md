@@ -116,18 +116,18 @@ tuning needed on future passes
 
 ## Example Scenario
 
-### AO-92 FM Transponder
+### RS-44 Beacon 
 
-**First Pass (Learning):** - Nominal: 145.880 MHz downlink\
-- You tune to **145.8823 MHz** to center signal\
-- Click **"Sync Radio"** → Saves **145.8823 MHz** as calibrated center
+**First Pass (Learning):** - Nominal: 435.605 MHz downlink\
+- You tune to **435.603 MHz** to center/hear beacon\
+- Click **"Sync Radio"** → Saves **435.603 MHz** as calibrated center
 
-**Second Pass (Automatic):** - App loads **145.8823 MHz** automatically\
-- Applies Doppler: **-2.5 kHz** at AOS\
-- Radio set to **145.8798 MHz**\
+**Second Pass (Automatic):** - App loads **435.603 MHz** automatically\
+- Applies Doppler: **-6.2 kHz** at AOS\
+- Radio set to **435.6092 MHz**\
 - As satellite moves, Doppler changes continuously\
 - Radio tracks perfectly without manual intervention
 
 > The calibration essentially *learns* the satellite's true frequency
-> once, then reuses it forever (or until the satellite's oscillator
+> once, then reuses it ( until the satellite's oscillator
 > drifts significantly, which is tracked in the Analysis tab).
