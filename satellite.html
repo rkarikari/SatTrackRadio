@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Doppler Analysis</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(to bottom right, #0f172a, #1e3a8a, #0f172a);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .card { background: rgba(30, 41, 59, 0.5); border-radius: 8px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; }
+        .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        h3 { font-size: 1.3rem; margin-bottom: 15px; }
+        .label { color: #94a3b8; font-size: 0.875rem; margin-bottom: 5px; }
+        .value { font-size: 1.25rem; font-weight: bold; }
+        .green { color: #10b981; }
+        .yellow { color: #fbbf24; }
+        .blue { color: #60a5fa; }
+        button { 
+            background: rgba(30, 41, 59, 0.5); 
+            color: #cbd5e1; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        button:hover { background: rgba(51, 65, 85, 0.7); }
+        button.active { background: #2563eb; color: white; }
+        input[type="file"] { display: none; }
+        .upload-label { 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px;
+            font-size: 0.875rem;
+        }
+        canvas { max-width: 100%; height: auto; }
+        .chart-container { position: relative; height: 400px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1>📡 Satellite Doppler Analysis</h1>
+            <p style="color: #cbd5e1; margin-bottom: 30px;">Real-time frequency calibration and Doppler shift analysis</p>
+        </div>
+
+        <div class="card">
+            <label class="upload-label" for="fileInput">
+                <span>📤 Upload Calibration JSON</span>
+                <input type="file" id="fileInput" accept=".json">
+                <span id="fileName" style="color: #94a3b8; font-size: 0.75rem;">Default Sample Data</span>
+            </label>
+            <div id="error" style="color: #ef4444; margin-top: 10px; font-size: 0.875rem;"></div>
+        </div>
+
+        <div class="grid3">
+            <div class="card">
+                <div class="label">Satellite</div>
+                <div class="value" id="satName">RS-44 & BREEZE-KM R/B</div>
+                <div class="label" style="margin-top: 5px;">NORAD: <span id="noradId">44909</span></div>
+            </div>
+            <div class="card">
+                <div class="label">Calibrated Downlink</div>
+                <div class="value green" id="calibDownlink">435.602601 MHz</div>
+                <div class="label" style="margin-top: 5px;">Nominal: <span id="nominalDownlink">435.605 MHz</span></div>
+            </div>
+            <div class="card">
+                <div class="label">Doppler Shift</div>
+                <div class="value yellow" id="dopplerShift">-2.399 kHz</div>
+                <div class="label" style="margin-top: 5px;">Sync Points: <span id="syncCount">57</span></div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+            <button id="btn-doppler" class="active" data-view="doppler">Doppler Shift</button>
+            <button id="btn-frequency" data-view="frequency">Frequency History</button>
+            <button id="btn-elevation" data-view="elevation">Elevation Profile</button>
+            <button id="btn-stats" data-view="stats">Statistics</button>
+        </div>
+
+        <div class="card">
+            <div id="viewContainer">
+                <h3 id="chartTitle">Doppler Shift Over Time</h3>
+                <div class="chart-container">
+                    <canvas id="chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid4">
+            <div class="card">
+                <div class="label">Min Frequency</div>
+                <div class="value blue" id="minFreq">435.601289 MHz</div>
+            </div>
+            <div class="card">
+                <div class="label">Max Frequency</div>
+                <div class="value blue" id="maxFreq">435.602601 MHz</div>
+            </div>
+            <div class="card">
+                <div class="label">Max Elevation</div>
+                <div class="value green" id="maxElev">80.39°</div>
+            </div>
+            <div class="card">
+                <div class="label">Min Range</div>
+                <div class="value green" id="minRange">1491.74 km</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        var calibrationData = {
+            calibratedDownlink: 435.60260139341153,
+            nominalDownlink: 435.605,
+            syncCount: 57,
+            noradId: 44909,
+            satelliteName: "RS-44 & BREEZE-KM R/B",
+            downlinkHistory: [435.6020659550729, 435.60209328014315, 435.6021625320799, 435.6022566577124, 435.6022237570946, 435.60230900832045, 435.6018079155023, 435.6024208562514, 435.6017202824042, 435.60166032537785, 435.6018884627434, 435.6020827355767, 435.6021257903262, 435.60218856461364, 435.60158847406336, 435.60163622894487, 435.60151176864235, 435.6014962052982, 435.6014917391792, 435.6016667075275, 435.60153593322724, 435.601686807546, 435.601768180963, 435.6019026357678, 435.6016575385349, 435.60150062063195, 435.60146644602406, 435.60152983062835, 435.6013665714113, 435.60128956484414, 435.6013764157633, 435.601366514754, 435.60135200824277, 435.6013702536433, 435.6014992268247, 435.60144347320175, 435.60143224907006, 435.60142418137065, 435.60142957193904, 435.60143675553394, 435.6015338082504, 435.60164066170086, 435.60165006767187, 435.6025739578369, 435.602494907354, 435.60244963162785, 435.60249056541153, 435.60245583220075, 435.60243161581536, 435.60240490871007, 435.6023939098435, 435.6024018037246, 435.6024181110234, 435.6024506802618, 435.60249977257376, 435.60254747672786, 435.60260139341153],
+            elevationHistory: [11.97, 23.53, 40.11, 53.35, 55.57, 53.98, 52.09, 10.05, 38.52, 37.05, 28.20, 21.54, 12.40, 9.70, 26.83, 29.48, 30.76, 31.28, 31.15, 30.26, 29.77, 20.96, 12.84, 9.22, 10.34, 14.28, 19.32, 17.75, 15.51, 16.66, 16.74, 16.66, 16.42, 15.72, 13.19, 7.51, 8.31, 8.66, 8.87, 9.00, 6.48, 4.05, 4.03, 2.41, 5.68, 13.36, 16.86, 26.57, 44.62, 52.31, 65.39, 72.09, 80.39, 58.21, 34.12, 30.49, 6.54],
+            rangeHistory: [3506.29, 2740.56, 2075.69, 1770.69, 1731.75, 1749.69, 1780.25, 3541.91, 1758.62, 1803.06, 2122.56, 2446.55, 3059.83, 3284.65, 2560.52, 2436.74, 2379.16, 2353.35, 2355.19, 2385.35, 2403.67, 2811.49, 3330.97, 3613.13, 3100.48, 2815.96, 2514.78, 2650.27, 3204.93, 3115.41, 3105.99, 3106.60, 3118.75, 3159.19, 3329.85, 3375.60, 3314.14, 3289.81, 3276.82, 3275.46, 3545.42, 3807.56, 3810.12, 4405.53, 4063.39, 3393.65, 3137.01, 2580.23, 1948.53, 1785.30, 1601.12, 1541.95, 1491.74, 1664.95, 2199.69, 2331.52, 3811.13]
+        };
+
+        var currentChart = null;
+        var currentView = 'doppler';
+
+        function updateDisplay() {
+            document.getElementById('satName').textContent = calibrationData.satelliteName;
+            document.getElementById('noradId').textContent = calibrationData.noradId;
+            document.getElementById('calibDownlink').textContent = calibrationData.calibratedDownlink.toFixed(6) + ' MHz';
+            document.getElementById('nominalDownlink').textContent = calibrationData.nominalDownlink + ' MHz';
+            
+            var doppler = ((calibrationData.calibratedDownlink - calibrationData.nominalDownlink) * 1000).toFixed(3);
+            document.getElementById('dopplerShift').textContent = doppler + ' kHz';
+            document.getElementById('syncCount').textContent = calibrationData.syncCount;
+
+            document.getElementById('minFreq').textContent = Math.min.apply(null, calibrationData.downlinkHistory).toFixed(6) + ' MHz';
+            document.getElementById('maxFreq').textContent = Math.max.apply(null, calibrationData.downlinkHistory).toFixed(6) + ' MHz';
+            document.getElementById('maxElev').textContent = Math.max.apply(null, calibrationData.elevationHistory).toFixed(2) + '°';
+            document.getElementById('minRange').textContent = Math.min.apply(null, calibrationData.rangeHistory).toFixed(2) + ' km';
+
+            showView(currentView);
+        }
+
+        function showView(view) {
+            currentView = view;
+            
+            // Update button states
+            var buttons = document.querySelectorAll('button[data-view]');
+            buttons.forEach(function(btn) { 
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-view') === view) {
+                    btn.classList.add('active');
+                }
+            });
+
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            var ctx = document.getElementById('chart').getContext('2d');
+            var labels = calibrationData.downlinkHistory.map(function(_, i) { return i + 1; });
+
+            var chartTitle = document.getElementById('chartTitle');
+
+            if (view === 'doppler') {
+                chartTitle.textContent = 'Doppler Shift Over Time';
+                var dopplerData = calibrationData.downlinkHistory.map(function(f) {
+                    return parseFloat(((f - calibrationData.nominalDownlink) * 1000).toFixed(3));
+                });
+                currentChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Doppler Shift (kHz)',
+                            data: dopplerData,
+                            borderColor: '#fbbf24',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { labels: { color: '#fff' } } 
+                        }, 
+                        scales: { 
+                            x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, 
+                            y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } 
+                        } 
+                    }
+                });
+            } else if (view === 'frequency') {
+                chartTitle.textContent = 'Downlink Frequency History';
+                currentChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Downlink (MHz)',
+                            data: calibrationData.downlinkHistory,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { labels: { color: '#fff' } } 
+                        }, 
+                        scales: { 
+                            x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, 
+                            y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } 
+                        } 
+                    }
+                });
+            } else if (view === 'elevation') {
+                chartTitle.textContent = 'Elevation & Range Profile';
+                currentChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Elevation (°)',
+                            data: calibrationData.elevationHistory,
+                            borderColor: '#60a5fa',
+                            backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                            yAxisID: 'y',
+                            tension: 0.1
+                        }, {
+                            label: 'Range (km)',
+                            data: calibrationData.rangeHistory,
+                            borderColor: '#f472b6',
+                            backgroundColor: 'rgba(244, 114, 182, 0.1)',
+                            yAxisID: 'y1',
+                            tension: 0.1
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { labels: { color: '#fff' } } 
+                        }, 
+                        scales: { 
+                            x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, 
+                            y: { position: 'left', ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, 
+                            y1: { position: 'right', ticks: { color: '#94a3b8' }, grid: { display: false } } 
+                        } 
+                    }
+                });
+            } else if (view === 'stats') {
+                chartTitle.textContent = 'Elevation vs Doppler Correlation';
+                var dopplerData = calibrationData.downlinkHistory.map(function(f, i) {
+                    return { 
+                        x: calibrationData.elevationHistory[i], 
+                        y: parseFloat(((f - calibrationData.nominalDownlink) * 1000).toFixed(3)) 
+                    };
+                });
+                currentChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Elevation vs Doppler',
+                            data: dopplerData,
+                            backgroundColor: '#8b5cf6'
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { 
+                            legend: { labels: { color: '#fff' } } 
+                        }, 
+                        scales: { 
+                            x: { 
+                                title: { display: true, text: 'Elevation (°)', color: '#fff' }, 
+                                ticks: { color: '#94a3b8' }, 
+                                grid: { color: '#334155' } 
+                            }, 
+                            y: { 
+                                title: { display: true, text: 'Doppler (kHz)', color: '#fff' }, 
+                                ticks: { color: '#94a3b8' }, 
+                                grid: { color: '#334155' } 
+                            } 
+                        } 
+                    }
+                });
+            }
+        }
+
+        // Add event listeners to buttons
+        document.querySelectorAll('button[data-view]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var view = this.getAttribute('data-view');
+                showView(view);
+            });
+        });
+
+        // File upload handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('error').textContent = '';
+
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    var json = JSON.parse(event.target.result);
+                    var dataArray = Array.isArray(json) ? json : [json];
+                    
+                    var cwData = dataArray
+                        .filter(function(item) { return item.syncMode === 'CW' || item.transponderMode === 'CW'; })
+                        .sort(function(a, b) { return (b.syncCount || 0) - (a.syncCount || 0); })[0];
+                    
+                    if (!cwData) {
+                        document.getElementById('error').textContent = 'No CW mode calibration data found';
+                        return;
+                    }
+
+                    calibrationData = {
+                        calibratedDownlink: cwData.calibratedDownlinkMHz,
+                        nominalDownlink: cwData.nominalDownlinkMHz,
+                        syncCount: cwData.syncCount,
+                        noradId: cwData.noradId,
+                        satelliteName: cwData.satelliteName,
+                        downlinkHistory: cwData.downlinkHistory,
+                        elevationHistory: cwData.elevationHistory,
+                        rangeHistory: cwData.rangeHistory
+                    };
+
+                    updateDisplay();
+                } catch (err) {
+                    document.getElementById('error').textContent = 'Invalid JSON: ' + err.message;
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
