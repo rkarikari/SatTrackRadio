@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Satellite Analysis Report</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #root {
+      width: 100%;
+      height: 100vh;
+    }
+    .chart-container {
+      width: 100%;
+      height: 500px;
+      margin-bottom: 20px;
+    }
+    .tab-button {
+      transition: all 0.3s ease;
+    }
+    .tab-button.active {
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease-in;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script>
+    let cwData = null;
+    let stats = null;
+    let activeTab = 'doppler';
+
+    function categorizePass(elevation) {
+      if (elevation >= 60) return 'overhead';
+      if (elevation >= 30) return 'high';
+      if (elevation >= 15) return 'medium';
+      return 'low';
+    }
+
+    function analyzePassQuality(data) {
+      const passes = [];
+      let currentPass = [];
+      let lastTime = null;
+
+      for (let i = 0; i < data.elevationHistory.length; i++) {
+        const time = new Date(data.syncHistory[i]);
+        
+        if (lastTime && (time - lastTime) > 600000) {
+          if (currentPass.length > 0) passes.push(currentPass);
+          currentPass = [];
+        }
+        
+        currentPass.push({
+          elevation: data.elevationHistory[i],
+          frequency: data.downlinkHistory[i],
+          range: data.rangeHistory[i],
+          time: time,
+          index: i
+        });
+        lastTime = time;
+      }
+      if (currentPass.length > 0) passes.push(currentPass);
+
+      return passes.map(pass => {
+        const maxElev = Math.max(...pass.map(p => p.elevation));
+        const minRange = Math.min(...pass.map(p => p.range));
+        const freqRange = Math.max(...pass.map(p => p.frequency)) - Math.min(...pass.map(p => p.frequency));
+        
+        return {
+          type: categorizePass(maxElev),
+          maxElevation: maxElev,
+          minRange: minRange,
+          duration: (pass[pass.length-1].time - pass[0].time) / 1000,
+          points: pass.length,
+          dopplerRange: freqRange * 1000,
+          startTime: pass[0].time,
+          data: pass
+        };
+      });
+    }
+
+    function switchTab(tabName) {
+      activeTab = tabName;
+      
+      document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+      
+      createChart(tabName);
+    }
+
+    function createChart(tabName) {
+      if (!cwData || !stats) return;
+
+      const darkBg = '#0f172a';
+      const plotBg = '#1e293b';
+      const gridColor = '#334155';
+      const textColor = '#e2e8f0';
+
+      const baseLayout = {
+        plot_bgcolor: plotBg,
+        paper_bgcolor: darkBg,
+        font: { color: textColor, size: 13, family: 'Inter, system-ui, sans-serif' },
+        margin: { t: 60, r: 40, b: 60, l: 70 },
+        showlegend: true,
+        legend: { 
+          bgcolor: 'rgba(30, 41, 59, 0.8)',
+          bordercolor: '#475569',
+          borderwidth: 1,
+          font: { size: 12 }
+        },
+        xaxis: { 
+          gridcolor: gridColor, 
+          zerolinecolor: gridColor,
+          titlefont: { size: 14, color: '#94a3b8' }
+        },
+        yaxis: { 
+          gridcolor: gridColor, 
+          zerolinecolor: gridColor,
+          titlefont: { size: 14, color: '#94a3b8' }
+        }
+      };
+
+      const config = {
+        responsive: true,
+        displayModeBar: true,
+        displaylogo: false,
+        modeBarButtonsToRemove: ['lasso2d', 'select2d']
+      };
+
+      if (tabName === 'doppler') {
+        const freqTrace = {
+          x: cwData.syncHistory.map(t => new Date(t)),
+          y: cwData.downlinkHistory,
+          mode: 'lines+markers',
+          name: 'Observed Frequency',
+          line: { color: '#3b82f6', width: 3, shape: 'spline' },
+          marker: { size: 6, color: '#60a5fa', line: { color: '#1e40af', width: 1 } }
+        };
+
+        const calibratedLine = {
+          x: [new Date(cwData.syncHistory[0]), new Date(cwData.syncHistory[cwData.syncHistory.length-1])],
+          y: [cwData.calibratedDownlinkMHz, cwData.calibratedDownlinkMHz],
+          mode: 'lines',
+          name: 'Calibrated Frequency',
+          line: { color: '#10b981', width: 3, dash: 'dash' }
+        };
+
+        const nominalLine = {
+          x: [new Date(cwData.syncHistory[0]), new Date(cwData.syncHistory[cwData.syncHistory.length-1])],
+          y: [cwData.nominalDownlinkMHz, cwData.nominalDownlinkMHz],
+          mode: 'lines',
+          name: 'Nominal Frequency',
+          line: { color: '#ef4444', width: 3, dash: 'dot' }
+        };
+
+        Plotly.newPlot('chart-doppler', [freqTrace, calibratedLine, nominalLine], {
+          ...baseLayout,
+          title: { text: '📡 Doppler Shift Analysis - Frequency vs Time', font: { size: 18, color: '#60a5fa' } },
+          xaxis: { ...baseLayout.xaxis, title: 'Time (UTC)' },
+          yaxis: { ...baseLayout.yaxis, title: 'Frequency (MHz)' }
+        }, config);
+      }
+
+      if (tabName === 'elevation') {
+        const elevTrace = {
+          x: cwData.syncHistory.map(t => new Date(t)),
+          y: cwData.elevationHistory,
+          mode: 'lines+markers',
+          name: 'Elevation Angle',
+          fill: 'tozeroy',
+          fillcolor: 'rgba(16, 185, 129, 0.2)',
+          line: { color: '#10b981', width: 3, shape: 'spline' },
+          marker: { 
+            size: 7, 
+            color: cwData.elevationHistory, 
+            colorscale: [
+              [0, '#ef4444'],
+              [0.3, '#f59e0b'],
+              [0.6, '#10b981'],
+              [1, '#3b82f6']
+            ],
+            showscale: true,
+            colorbar: { 
+              title: 'Elevation (°)',
+              titleside: 'right',
+              bgcolor: 'rgba(30, 41, 59, 0.8)',
+              bordercolor: '#475569',
+              borderwidth: 1
+            }
+          }
+        };
+
+        Plotly.newPlot('chart-elevation', [elevTrace], {
+          ...baseLayout,
+          title: { text: '🛰️ Satellite Elevation Profile', font: { size: 18, color: '#10b981' } },
+          xaxis: { ...baseLayout.xaxis, title: 'Time (UTC)' },
+          yaxis: { ...baseLayout.yaxis, title: 'Elevation (degrees)', range: [-5, Math.max(...cwData.elevationHistory) + 10] }
+        }, config);
+      }
+
+      if (tabName === 'geometry') {
+        const rangeElevTrace = {
+          x: cwData.elevationHistory,
+          y: cwData.rangeHistory,
+          mode: 'markers',
+          name: 'Observations',
+          marker: { 
+            size: 10, 
+            color: cwData.elevationHistory,
+            colorscale: 'Jet',
+            showscale: true,
+            colorbar: { 
+              title: 'Elevation (°)',
+              titleside: 'right',
+              bgcolor: 'rgba(30, 41, 59, 0.8)',
+              bordercolor: '#475569',
+              borderwidth: 1
+            },
+            line: { color: '#1e293b', width: 1 }
+          }
+        };
+
+        Plotly.newPlot('chart-geometry', [rangeElevTrace], {
+          ...baseLayout,
+          title: { text: '🌍 Range vs Elevation (Orbital Geometry)', font: { size: 18, color: '#8b5cf6' } },
+          xaxis: { ...baseLayout.xaxis, title: 'Elevation (degrees)' },
+          yaxis: { ...baseLayout.yaxis, title: 'Range (km)' }
+        }, config);
+      }
+
+      if (tabName === 'histogram') {
+        const freqHist = {
+          x: cwData.downlinkHistory,
+          type: 'histogram',
+          nbinsx: 40,
+          name: 'Frequency Distribution',
+          marker: { 
+            color: '#8b5cf6',
+            line: { color: '#6d28d9', width: 1 }
+          }
+        };
+
+        Plotly.newPlot('chart-histogram', [freqHist], {
+          ...baseLayout,
+          title: { text: '📊 Frequency Distribution Analysis', font: { size: 18, color: '#8b5cf6' } },
+          xaxis: { ...baseLayout.xaxis, title: 'Frequency (MHz)' },
+          yaxis: { ...baseLayout.yaxis, title: 'Count' }
+        }, config);
+      }
+
+      if (tabName === 'passes') {
+        const passes = analyzePassQuality(cwData);
+        const passTypes = ['low', 'medium', 'high', 'overhead'];
+        const passTypeCounts = passTypes.map(type => 
+          passes.filter(p => p.type === type).length
+        );
+        const passTypeColors = ['#ef4444', '#f59e0b', '#10b981', '#3b82f6'];
+
+        const passTypeTrace = {
+          x: passTypes.map(t => t.charAt(0).toUpperCase() + t.slice(1)),
+          y: passTypeCounts,
+          type: 'bar',
+          marker: { 
+            color: passTypeColors,
+            line: { color: '#1e293b', width: 2 }
+          },
+          text: passTypeCounts,
+          textposition: 'outside',
+          textfont: { size: 16, color: textColor }
+        };
+
+        Plotly.newPlot('chart-passes', [passTypeTrace], {
+          ...baseLayout,
+          title: { text: '🎯 Pass Quality Distribution', font: { size: 18, color: '#f59e0b' } },
+          xaxis: { ...baseLayout.xaxis, title: 'Pass Type' },
+          yaxis: { ...baseLayout.yaxis, title: 'Number of Passes' }
+        }, config);
+      }
+
+      if (tabName === 'doppler-rate') {
+        const dopplerRates = [];
+        const timeIntervals = [];
+        for (let i = 1; i < cwData.downlinkHistory.length; i++) {
+          const freqDiff = (cwData.downlinkHistory[i] - cwData.downlinkHistory[i-1]) * 1000;
+          const timeDiff = (new Date(cwData.syncHistory[i]) - new Date(cwData.syncHistory[i-1])) / 1000;
+          if (timeDiff > 0 && timeDiff < 300) {
+            dopplerRates.push(freqDiff / timeDiff);
+            timeIntervals.push(new Date(cwData.syncHistory[i]));
+          }
+        }
+
+        const dopplerRateTrace = {
+          x: timeIntervals,
+          y: dopplerRates,
+          mode: 'lines+markers',
+          name: 'Doppler Rate',
+          line: { color: '#f59e0b', width: 3, shape: 'spline' },
+          marker: { size: 5, color: '#fb923c' },
+          fill: 'tozeroy',
+          fillcolor: 'rgba(245, 158, 11, 0.2)'
+        };
+
+        Plotly.newPlot('chart-doppler-rate', [dopplerRateTrace], {
+          ...baseLayout,
+          title: { text: '⚡ Doppler Rate of Change', font: { size: 18, color: '#f59e0b' } },
+          xaxis: { ...baseLayout.xaxis, title: 'Time (UTC)' },
+          yaxis: { ...baseLayout.yaxis, title: 'Doppler Rate (kHz/s)' }
+        }, config);
+      }
+    }
+
+    function render() {
+      const root = document.getElementById('root');
+      
+      if (!cwData) {
+        root.innerHTML = `
+          <div class="w-full h-full bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-8 flex items-center justify-center">
+            <div class="text-center max-w-2xl">
+              <svg class="w-16 h-16 text-blue-400 mx-auto mb-4 animate-pulse" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+              <h2 class="text-2xl font-bold mb-2">Upload Calibration Data</h2>
+              <p class="text-slate-300 mb-6">Please upload a calibrations JSON file to begin analysis</p>
+              <div class="bg-slate-800/50 p-6 rounded-lg text-left text-sm mb-6">
+                <p class="font-semibold mb-2">Expected file format:</p>
+                <ul class="list-disc list-inside space-y-1 text-slate-400">
+                  <li>JSON file with calibration data</li>
+                  <li>Must contain downlinkHistory, elevationHistory, and rangeHistory arrays</li>
+                  <li>Any number of observations supported</li>
+                </ul>
+              </div>
+              <label class="inline-block px-8 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg cursor-pointer transition-all transform hover:scale-105 shadow-lg">
+                Choose File
+                <input type="file" accept=".json" id="fileInput" class="hidden">
+              </label>
+              <p id="status" class="mt-4"></p>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+      } else {
+        const passes = analyzePassQuality(cwData);
+        const lowPasses = passes.filter(p => p.type === 'low' || p.type === 'medium');
+        const highPasses = passes.filter(p => p.type === 'high' || p.type === 'overhead');
+        
+        const avgLowDoppler = lowPasses.length > 0 ? 
+          lowPasses.reduce((sum, p) => sum + p.dopplerRange, 0) / lowPasses.length : 0;
+        const avgHighDoppler = highPasses.length > 0 ?
+          highPasses.reduce((sum, p) => sum + p.dopplerRange, 0) / highPasses.length : 0;
+
+        root.innerHTML = `
+          <div class="w-full min-h-full bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white p-8 overflow-auto">
+            <div class="max-w-7xl mx-auto">
+              <div class="mb-8 border-b border-blue-400 pb-6">
+                <div class="flex items-center gap-4 mb-4">
+                  <svg class="w-12 h-12 text-blue-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M13 7 9 3 5 7l4 4"></path>
+                    <path d="m17 11 4 4-4 4-4-4"></path>
+                    <path d="m8 12 4 4 6-6-4-4Z"></path>
+                  </svg>
+                  <div class="flex-1">
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">Satellite Calibration Analysis</h1>
+                    <p class="text-blue-300 text-lg">NORAD ID: ${cwData.noradId} | ${cwData.satelliteName}</p>
+                  </div>
+                  <button id="resetBtn" class="px-4 py-2 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white text-sm font-semibold rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                    Load Different File
+                  </button>
+                </div>
+                <div class="grid grid-cols-4 gap-4 mt-4">
+                  <div class="bg-gradient-to-br from-blue-800/40 to-blue-900/40 p-4 rounded-lg border border-blue-600/30 shadow-lg">
+                    <div class="text-blue-300 text-sm">Total Syncs</div>
+                    <div class="text-3xl font-bold">${cwData.syncCount}</div>
+                  </div>
+                  <div class="bg-gradient-to-br from-green-800/40 to-green-900/40 p-4 rounded-lg border border-green-600/30 shadow-lg">
+                    <div class="text-green-300 text-sm">Calibrated Freq</div>
+                    <div class="text-2xl font-bold">${cwData.calibratedDownlinkMHz.toFixed(5)} MHz</div>
+                  </div>
+                  <div class="bg-gradient-to-br from-purple-800/40 to-purple-900/40 p-4 rounded-lg border border-purple-600/30 shadow-lg">
+                    <div class="text-purple-300 text-sm">Frequency Offset</div>
+                    <div class="text-2xl font-bold">${stats.frequencyDeviation.toFixed(2)} kHz</div>
+                  </div>
+                  <div class="bg-gradient-to-br from-orange-800/40 to-orange-900/40 p-4 rounded-lg border border-orange-600/30 shadow-lg">
+                    <div class="text-orange-300 text-sm">Max Doppler</div>
+                    <div class="text-2xl font-bold">±${(stats.dopplerShift / 2).toFixed(2)} kHz</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Low-Pass vs High-Pass Intelligence -->
+              <div class="bg-gradient-to-r from-purple-900/50 to-pink-900/50 p-6 rounded-lg border-2 border-purple-500 mb-6 shadow-2xl">
+                <h2 class="text-3xl font-bold mb-4 flex items-center gap-2">
+                  <span>🎯</span> Low-Pass vs High-Pass Intelligence
+                </h2>
+                <div class="grid grid-cols-2 gap-6">
+                  <div class="bg-red-900/30 p-5 rounded-lg border-l-4 border-red-500 shadow-lg">
+                    <h3 class="text-xl font-bold mb-3 text-red-300">📡 Low/Medium Elevation Passes</h3>
+                    <div class="space-y-2 text-sm">
+                      <div class="flex justify-between">
+                        <span class="text-slate-300">Total Count:</span>
+                        <span class="font-bold text-white">${lowPasses.length} passes</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-slate-300">Avg Max Elevation:</span>
+                        <span class="font-bold">${lowPasses.length > 0 ? (lowPasses.reduce((s,p) => s + p.maxElevation, 0) / lowPasses.length).toFixed(1) : 0}°</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-slate-300">Avg Doppler Range:</span>
+                        <span class="font-bold">${avgLowDoppler.toFixed(2)} kHz</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-slate-300">Avg Duration:</span>
+                        <span class="font-bold">${lowPasses.length > 0 ? (lowPasses.reduce((s,p) => s + p.duration, 0) / lowPasses.length / 60).toFixed(1) : 0} min</span>
+                      </div>
+                      <div class="mt-3 pt-3 border-t border-red-700">
+                        <p class="text-xs text-slate-400"><strong>Characteristics:</strong> Lower signal strength, wider beamwidth coverage, longer ground track visibility, reduced Doppler rates</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-green-900/30 p-5 rounded-lg border-l-4 border-green-500 shadow-lg">
+                    <h3 class="text-xl font-bold mb-3 text-green-300">🛰️ High/Overhead Passes</h3>
+                    <div class="space-y-2 text-sm">
+                      <div class="flex justify-between">
+                        <span class="text-slate-300">Total Count:</span>
+                        <span class="font-bold text-white">${highPasses.length} passes</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-slate-300">Avg Max Elevation:</span>
+                        <span class="font-bold">${highPasses.length > 0 ? (highPasses.reduce((s,p) => s + p.maxElevation, 0) / highPasses.length).toFixed(1) : 0}°</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-slate-300">Avg Doppler Range:</span>
+                        <span class="font-bold">${avgHighDoppler.toFixed(2)} kHz</span>
+                      </div>
+                      <div class="flex justify-between">
+                        <span class="text-slate-300">Avg Duration:</span>
+                        <span class="font-bold">${highPasses.length > 0 ? (highPasses.reduce((s,p) => s + p.duration, 0) / highPasses.length / 60).toFixed(1) : 0} min</span>
+                      </div>
+                      <div class="mt-3 pt-3 border-t border-green-700">
+                        <p class="text-xs text-slate-400"><strong>Characteristics:</strong> Maximum signal strength, rapid Doppler shifts, shorter visible duration, minimum range distance</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="mt-4 p-4 bg-blue-900/30 rounded shadow-lg">
+                  <p class="text-sm"><strong>📊 Key Insight:</strong> High passes show ${avgLowDoppler > 0 ? Math.abs((avgHighDoppler / avgLowDoppler - 1) * 100).toFixed(0) : 0}% ${avgHighDoppler > avgLowDoppler ? 'greater' : 'less'} Doppler range compared to low passes. This is due to higher angular velocity when satellite passes directly overhead vs. horizon grazing.</p>
+                </div>
+              </div>
+
+              <!-- Tabbed Charts Section -->
+              <div class="bg-slate-800/50 p-6 rounded-lg shadow-2xl mb-6">
+                <h2 class="text-3xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">📈 Interactive Analysis Charts</h2>
+                
+                <!-- Tab Buttons -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                  <button class="tab-button active px-6 py-3 bg-slate-700 rounded-lg font-semibold text-sm hover:bg-slate-600" data-tab="doppler" onclick="switchTab('doppler')">
+                    📡 Doppler Shift
+                  </button>
+                  <button class="tab-button px-6 py-3 bg-slate-700 rounded-lg font-semibold text-sm hover:bg-slate-600" data-tab="elevation" onclick="switchTab('elevation')">
+                    🛰️ Elevation Profile
+                  </button>
+                  <button class="tab-button px-6 py-3 bg-slate-700 rounded-lg font-semibold text-sm hover:bg-slate-600" data-tab="geometry" onclick="switchTab('geometry')">
+                    🌍 Orbital Geometry
+                  </button>
+                  <button class="tab-button px-6 py-3 bg-slate-700 rounded-lg font-semibold text-sm hover:bg-slate-600" data-tab="histogram" onclick="switchTab('histogram')">
+                    📊 Distribution
+                  </button>
+                  <button class="tab-button px-6 py-3 bg-slate-700 rounded-lg font-semibold text-sm hover:bg-slate-600" data-tab="passes" onclick="switchTab('passes')">
+                    🎯 Pass Quality
+                  </button>
+                  <button class="tab-button px-6 py-3 bg-slate-700 rounded-lg font-semibold text-sm hover:bg-slate-600" data-tab="doppler-rate" onclick="switchTab('doppler-rate')">
+                    ⚡ Doppler Rate
+                  </button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-content active" id="tab-doppler">
+                  <div id="chart-doppler" class="chart-container"></div>
+                </div>
+                <div class="tab-content" id="tab-elevation">
+                  <div id="chart-elevation" class="chart-container"></div>
+                </div>
+                <div class="tab-content" id="tab-geometry">
+                  <div id="chart-geometry" class="chart-container"></div>
+                </div>
+                <div class="tab-content" id="tab-histogram">
+                  <div id="chart-histogram" class="chart-container"></div>
+                </div>
+                <div class="tab-content" id="tab-passes">
+                  <div id="chart-passes" class="chart-container"></div>
+                </div>
+                <div class="tab-content" id="tab-doppler-rate">
+                  <div id="chart-doppler-rate" class="chart-container"></div>
+                </div>
+              </div>
+
+              <!-- Statistics Grids -->
+              <div class="space-y-6">
+                <div class="grid grid-cols-2 gap-6">
+                  <div class="bg-gradient-to-br from-slate-800/70 to-blue-900/30 p-6 rounded-lg shadow-xl border border-blue-500/30">
+                    <h2 class="text-2xl font-bold mb-4 text-blue-400">Frequency Statistics</h2>
+                    <div class="space-y-3">
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Nominal Frequency:</span>
+                        <span class="font-mono font-bold">${cwData.nominalDownlinkMHz} MHz</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Calibrated Frequency:</span>
+                        <span class="font-mono font-bold text-blue-400">${cwData.calibratedDownlinkMHz.toFixed(6)} MHz</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Average Observed:</span>
+                        <span class="font-mono font-bold">${stats.avgDownlink.toFixed(6)} MHz</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Standard Deviation:</span>
+                        <span class="font-mono font-bold">${(stats.stdDevDownlink * 1000).toFixed(3)} kHz</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Min Frequency:</span>
+                        <span class="font-mono font-bold text-green-400">${stats.minDownlink.toFixed(6)} MHz</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Max Frequency:</span>
+                        <span class="font-mono font-bold text-red-400">${stats.maxDownlink.toFixed(6)} MHz</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Doppler Range:</span>
+                        <span class="font-mono font-bold text-yellow-400">${stats.dopplerShift.toFixed(3)} kHz</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-gradient-to-br from-slate-800/70 to-green-900/30 p-6 rounded-lg shadow-xl border border-green-500/30">
+                    <h2 class="text-2xl font-bold mb-4 text-green-400">Orbital Statistics</h2>
+                    <div class="space-y-3">
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Max Elevation:</span>
+                        <span class="font-mono font-bold text-green-400">${stats.maxElevation.toFixed(2)}°</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Avg Elevation:</span>
+                        <span class="font-mono font-bold">${stats.avgElevation.toFixed(2)}°</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Min Elevation:</span>
+                        <span class="font-mono font-bold">${stats.minElevation.toFixed(2)}°</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Closest Range:</span>
+                        <span class="font-mono font-bold text-green-400">${stats.minRange.toFixed(1)} km</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Average Range:</span>
+                        <span class="font-mono font-bold">${stats.avgRange.toFixed(1)} km</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Farthest Range:</span>
+                        <span class="font-mono font-bold text-red-400">${stats.maxRange.toFixed(1)} km</span>
+                      </div>
+                      <div class="flex justify-between border-b border-slate-700 pb-2">
+                        <span class="text-slate-300">Range Variation:</span>
+                        <span class="font-mono font-bold">${(stats.maxRange - stats.minRange).toFixed(1)} km</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-blue-900/40 to-purple-900/40 p-6 rounded-lg border border-blue-500 shadow-xl">
+                  <h2 class="text-2xl font-bold mb-3">📡 Calibration Recommendations</h2>
+                  <div class="text-sm text-slate-200 space-y-2">
+                    <p>✓ <strong>Use calibrated frequency:</strong> ${cwData.calibratedDownlinkMHz.toFixed(5)} MHz for future tracking</p>
+                    <p>✓ <strong>Apply Doppler correction:</strong> ±${(stats.dopplerShift / 2).toFixed(2)} kHz range during passes</p>
+                    <p>✓ <strong>Ground station tuning:</strong> Account for ${stats.frequencyDeviation.toFixed(2)} kHz offset from nominal</p>
+                    <p>✓ <strong>Update TLE regularly:</strong> For accurate pass predictions and Doppler compensation</p>
+                    <p>✓ <strong>Pass selection:</strong> High-elevation passes (${highPasses.length} detected) offer best signal quality</p>
+                  </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-slate-800/70 to-purple-900/30 p-6 rounded-lg shadow-xl border border-purple-500/30">
+                  <h2 class="text-2xl font-bold mb-4 text-purple-400">Key Findings & Deductions</h2>
+                  <div class="space-y-4">
+                    <div class="p-4 bg-blue-900/30 rounded border-l-4 border-blue-500 shadow-lg">
+                      <h3 class="font-bold text-lg mb-2">1. Crystal Oscillator Offset</h3>
+                      <p class="text-sm text-slate-300">The calibrated frequency is <strong>${stats.frequencyDeviation.toFixed(2)} kHz</strong> ${stats.frequencyDeviation < 0 ? 'below' : 'above'} the nominal ${cwData.nominalDownlinkMHz} MHz. This indicates either: (a) the satellite transmitter crystal has aged/drifted, or (b) systematic measurement bias in the ground station receiver.</p>
+                    </div>
+
+                    <div class="p-4 bg-green-900/30 rounded border-l-4 border-green-500 shadow-lg">
+                      <h3 class="font-bold text-lg mb-2">2. Doppler Characteristics</h3>
+                      <p class="text-sm text-slate-300">Maximum Doppler shift of <strong>±${(stats.dopplerShift / 2).toFixed(2)} kHz</strong> is consistent with LEO satellite orbital velocity (approx 7.5 km/s). The symmetric Doppler curve indicates regular orbital passes with predictable geometry.</p>
+                    </div>
+
+                    <div class="p-4 bg-yellow-900/30 rounded border-l-4 border-yellow-500 shadow-lg">
+                      <h3 class="font-bold text-lg mb-2">3. Pass Distribution Analysis</h3>
+                      <p class="text-sm text-slate-300">Detected <strong>${passes.length} distinct passes</strong>: ${lowPasses.length} low/medium elevation and ${highPasses.length} high/overhead passes. High-elevation passes show ${avgLowDoppler > 0 ? Math.abs((avgHighDoppler / avgLowDoppler - 1) * 100).toFixed(0) : 0}% stronger Doppler effects due to higher angular velocity.</p>
+                    </div>
+
+                    <div class="p-4 bg-purple-900/30 rounded border-l-4 border-purple-500 shadow-lg">
+                      <h3 class="font-bold text-lg mb-2">4. Range Dynamics</h3>
+                      <p class="text-sm text-slate-300">Range varies from <strong>${stats.minRange.toFixed(0)} km</strong> (near overhead) to <strong>${stats.maxRange.toFixed(0)} km</strong> (horizon), a span of ${(stats.maxRange - stats.minRange).toFixed(0)} km. This is typical for LEO satellites at approximately 500-1000 km orbital altitude.</p>
+                    </div>
+
+                    <div class="p-4 bg-red-900/30 rounded border-l-4 border-red-500 shadow-lg">
+                      <h3 class="font-bold text-lg mb-2">5. Signal Stability</h3>
+                      <p class="text-sm text-slate-300">Frequency standard deviation of <strong>${(stats.stdDevDownlink * 1000).toFixed(3)} kHz</strong> indicates stable signal tracking across <strong>${cwData.syncCount}</strong> observations. The ${cwData.syncMode} mode shows ${(stats.stdDevDownlink * 1000) < 0.5 ? 'excellent' : (stats.stdDevDownlink * 1000) < 1.0 ? 'good' : 'moderate'} stability for beacon transmissions.</p>
+                    </div>
+
+                    <div class="p-4 bg-orange-900/30 rounded border-l-4 border-orange-500 shadow-lg">
+                      <h3 class="font-bold text-lg mb-2">6. Operational Status</h3>
+                      <p class="text-sm text-slate-300">${cwData.satelliteName} is actively transmitting with regular beacon signals. Data shows consistent operation with ${cwData.downlinkHistory.length} frequency observations collected over ${passes.length} orbital passes.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pass Details Table -->
+                <div class="bg-gradient-to-br from-slate-800/70 to-cyan-900/30 p-6 rounded-lg shadow-xl border border-cyan-500/30">
+                  <h2 class="text-2xl font-bold mb-4 text-cyan-400">Detailed Pass Log</h2>
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead class="bg-slate-700/80">
+                        <tr>
+                          <th class="p-3 text-left">#</th>
+                          <th class="p-3 text-left">Start Time (UTC)</th>
+                          <th class="p-3 text-left">Type</th>
+                          <th class="p-3 text-right">Max Elev</th>
+                          <th class="p-3 text-right">Duration</th>
+                          <th class="p-3 text-right">Min Range</th>
+                          <th class="p-3 text-right">Doppler Range</th>
+                          <th class="p-3 text-right">Points</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${passes.map((pass, idx) => `
+                          <tr class="border-b border-slate-700 hover:bg-slate-700/50 transition-colors">
+                            <td class="p-3">${idx + 1}</td>
+                            <td class="p-3 font-mono text-xs">${pass.startTime.toISOString().slice(0, 19).replace('T', ' ')}</td>
+                            <td class="p-3">
+                              <span class="px-3 py-1 rounded-full text-xs font-bold shadow-lg ${
+                                pass.type === 'overhead' ? 'bg-gradient-to-r from-blue-500 to-blue-600' :
+                                pass.type === 'high' ? 'bg-gradient-to-r from-green-500 to-green-600' :
+                                pass.type === 'medium' ? 'bg-gradient-to-r from-yellow-500 to-yellow-600' : 'bg-gradient-to-r from-red-500 to-red-600'
+                              }">${pass.type.toUpperCase()}</span>
+                            </td>
+                            <td class="p-3 text-right font-mono">${pass.maxElevation.toFixed(1)}°</td>
+                            <td class="p-3 text-right font-mono">${(pass.duration / 60).toFixed(1)} min</td>
+                            <td class="p-3 text-right font-mono">${pass.minRange.toFixed(0)} km</td>
+                            <td class="p-3 text-right font-mono">${pass.dopplerRange.toFixed(2)} kHz</td>
+                            <td class="p-3 text-right">${pass.points}</td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-8 pt-6 border-t border-slate-700 text-center text-slate-400 text-sm">
+                <p>Analysis generated from ${cwData.downlinkHistory.length} calibration points across ${passes.length} orbital passes | NORAD ID: ${cwData.noradId}</p>
+                <p class="mt-1">Mode: ${cwData.syncMode} | Transponder: ${cwData.transponderMode}</p>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('resetBtn').addEventListener('change', () => {
+          cwData = null;
+          stats = null;
+          render();
+        });
+
+        // Make switchTab available globally
+        window.switchTab = switchTab;
+
+        // Create initial chart
+        setTimeout(() => createChart('doppler'), 100);
+      }
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const status = document.getElementById('status');
+      status.textContent = 'Loading...';
+      status.className = 'mt-4 text-blue-400';
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          let jsonText = e.target.result.trim();
+          
+          if (jsonText.charCodeAt(0) === 0xFEFF) {
+            jsonText = jsonText.slice(1);
+          }
+          
+          let jsonData = null;
+          let parseError = null;
+          
+          try {
+            jsonData = JSON.parse(jsonText);
+          } catch (firstError) {
+            parseError = firstError;
+            console.warn('Initial parse failed:', firstError.message);
+            
+            if (jsonText.startsWith('[')) {
+              let bracketCount = 0;
+              let lastValidPos = -1;
+              
+              for (let i = 0; i < jsonText.length; i++) {
+                if (jsonText[i] === '[') bracketCount++;
+                if (jsonText[i] === ']') {
+                  bracketCount--;
+                  if (bracketCount === 0) {
+                    lastValidPos = i;
+                    break;
+                  }
+                }
+              }
+              
+              if (lastValidPos > 0) {
+                jsonText = jsonText.slice(0, lastValidPos + 1);
+                console.warn('Truncated to position', lastValidPos);
+                try {
+                  jsonData = JSON.parse(jsonText);
+                  parseError = null;
+                } catch (e) {
+                  console.error('Still failed after truncation:', e);
+                }
+              }
+            }
+          }
+          
+          if (!jsonData) {
+            throw parseError || new Error('Failed to parse JSON');
+          }
+
+          let data = null;
+          let maxObservations = 0;
+          
+          const entries = Array.isArray(jsonData) ? jsonData : [jsonData];
+          
+          for (const entry of entries) {
+            if (entry.downlinkHistory && 
+                entry.elevationHistory && 
+                entry.rangeHistory && 
+                entry.downlinkHistory.length > maxObservations) {
+              data = entry;
+              maxObservations = entry.downlinkHistory.length;
+            }
+          }
+          
+          if (!data) {
+            throw new Error('No suitable calibration data found in file.');
+          }
+
+          const avgDownlink = data.downlinkHistory.reduce((a, b) => a + b, 0) / data.downlinkHistory.length;
+          stats = {
+            avgDownlink: avgDownlink,
+            minDownlink: Math.min(...data.downlinkHistory),
+            maxDownlink: Math.max(...data.downlinkHistory),
+            stdDevDownlink: Math.sqrt(data.downlinkHistory.reduce((sq, n) => sq + Math.pow(n - avgDownlink, 2), 0) / data.downlinkHistory.length),
+            avgElevation: data.elevationHistory.reduce((a, b) => a + b, 0) / data.elevationHistory.length,
+            maxElevation: Math.max(...data.elevationHistory),
+            minElevation: Math.min(...data.elevationHistory),
+            avgRange: data.rangeHistory.reduce((a, b) => a + b, 0) / data.rangeHistory.length,
+            minRange: Math.min(...data.rangeHistory),
+            maxRange: Math.max(...data.rangeHistory),
+            dopplerShift: (Math.max(...data.downlinkHistory) - Math.min(...data.downlinkHistory)) * 1000,
+            frequencyDeviation: (data.calibratedDownlinkMHz - data.nominalDownlinkMHz) * 1000
+          };
+
+          cwData = data;
+          render();
+        } catch (err) {
+          console.error('Parse error:', err);
+          status.textContent = 'Error parsing JSON: ' + err.message + '. Please check the file format.';
+          status.className = 'mt-4 text-red-400';
+        }
+      };
+      reader.onerror = () => {
+        status.textContent = 'Failed to read file';
+        status.className = 'mt-4 text-red-400';
+      };
+      reader.readAsText(file);
+    }
+
+    render();
+  </script>
+</body>
+</html>
