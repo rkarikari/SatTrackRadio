@@ -653,25 +653,29 @@
                 </div>
               </div>
 
-              <!-- Quick Metrics -->
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="metric-box p-4 rounded-lg">
-                  <div class="text-xs text-blue-400 mb-1">Frequency Offset</div>
-                  <div class="text-2xl font-bold">${intelligence.signal.freqOffset} kHz</div>
-                </div>
-                <div class="metric-box p-4 rounded-lg">
-                  <div class="text-xs text-purple-400 mb-1">Orbital Period</div>
-                  <div class="text-2xl font-bold">${intelligence.orbital.period} min</div>
-                </div>
-                <div class="metric-box p-4 rounded-lg">
-                  <div class="text-xs text-green-400 mb-1">Success Rate</div>
-                  <div class="text-2xl font-bold">${intelligence.signal.successRate}%</div>
-                </div>
-                <div class="metric-box p-4 rounded-lg">
-                  <div class="text-xs text-yellow-400 mb-1">Total Passes</div>
-                  <div class="text-2xl font-bold">${intelligence.passes.total}</div>
-                </div>
-              </div>
+			  <!-- Quick Metrics -->
+			  <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+			    <div class="metric-box p-4 rounded-lg">
+				  <div class="text-xs text-cyan-400 mb-1">Beacon Center Frequency</div>
+				  <div class="text-2xl font-bold">${(cwData.nominalDownlinkMHz + parseFloat(intelligence.signal.freqOffset) / 1000).toFixed(6)} MHz</div>
+			    </div>
+			    <div class="metric-box p-4 rounded-lg">
+				  <div class="text-xs text-blue-400 mb-1">Frequency Offset</div>
+				  <div class="text-2xl font-bold">${intelligence.signal.freqOffset} kHz</div>
+			    </div>
+			    <div class="metric-box p-4 rounded-lg">
+				  <div class="text-xs text-purple-400 mb-1">Orbital Period</div>
+				  <div class="text-2xl font-bold">${intelligence.orbital.period} min</div>
+			    </div>
+			    <div class="metric-box p-4 rounded-lg">
+				  <div class="text-xs text-green-400 mb-1">Success Rate</div>
+				  <div class="text-2xl font-bold">${intelligence.signal.successRate}%</div>
+			    </div>
+			    <div class="metric-box p-4 rounded-lg">
+				  <div class="text-xs text-yellow-400 mb-1">Total Passes</div>
+				  <div class="text-2xl font-bold">${intelligence.passes.total}</div>
+			    </div>
+			  </div>
 
               <!-- Navigation Tabs -->
               <div class="bg-slate-800/50 p-6 rounded-xl shadow-2xl mb-6">
