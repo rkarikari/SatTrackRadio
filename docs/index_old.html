@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Satellite Doppler Analysis</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            font-family: system-ui, -apple-system, sans-serif;
+            background: linear-gradient(to bottom right, #0f172a, #1e3a8a, #0f172a);
+            min-height: 100vh;
+            color: white;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .card { background: rgba(30, 41, 59, 0.5); border-radius: 8px; padding: 20px; margin-bottom: 20px; border: 1px solid #334155; }
+        .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        h2 { font-size: 1.5rem; margin-bottom: 15px; color: #60a5fa; }
+        h3 { font-size: 1.3rem; margin-bottom: 15px; }
+        .label { color: #94a3b8; font-size: 0.875rem; margin-bottom: 5px; }
+        .value { font-size: 1.25rem; font-weight: bold; }
+        .small-value { font-size: 1rem; font-weight: bold; }
+        .green { color: #10b981; }
+        .yellow { color: #fbbf24; }
+        .blue { color: #60a5fa; }
+        .red { color: #ef4444; }
+        .purple { color: #a78bfa; }
+        .pink { color: #f472b6; }
+        button { 
+            background: rgba(30, 41, 59, 0.5); 
+            color: #cbd5e1; 
+            border: none; 
+            padding: 10px 20px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        button:hover { background: rgba(51, 65, 85, 0.7); }
+        button.active { background: #2563eb; color: white; }
+        input[type="file"] { display: none; }
+        .upload-label { 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px;
+            font-size: 0.875rem;
+        }
+        canvas { max-width: 100%; height: auto; }
+        .chart-container { position: relative; height: 350px; }
+        .chart-container-small { position: relative; height: 250px; }
+        .tab-buttons { margin-bottom: 20px; border-bottom: 2px solid #334155; padding-bottom: 10px; }
+        .graph-tabs { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
+        .graph-tab { 
+            padding: 8px 16px; 
+            background: rgba(51, 65, 85, 0.3); 
+            border: none; 
+            border-radius: 6px; 
+            color: #cbd5e1; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        .graph-tab:hover { background: rgba(51, 65, 85, 0.5); }
+        .graph-tab.active { background: #2563eb; color: white; }
+        .graph-content { display: none; }
+        .graph-content.active { display: block; }
+        .insight { 
+            background: rgba(59, 130, 246, 0.1); 
+            border-left: 4px solid #3b82f6; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border-radius: 4px;
+        }
+        .insight-title { font-weight: bold; color: #60a5fa; margin-bottom: 8px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .stat-item { padding: 8px; background: rgba(51, 65, 85, 0.3); border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #334155; }
+        th { color: #60a5fa; font-weight: 600; }
+        .section-divider { height: 2px; background: linear-gradient(to right, transparent, #334155, transparent); margin: 30px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <h1>🛰️ Advanced Satellite Doppler Analysis</h1>
+            <p style="color: #cbd5e1; margin-bottom: 30px;">Comprehensive frequency calibration, Doppler shift analysis, and orbital intelligence</p>
+        </div>
+
+        <div class="card">
+            <label class="upload-label" for="fileInput">
+                <span>📤 Upload Calibration JSON</span>
+                <input type="file" id="fileInput" accept=".json">
+                <span id="fileName" style="color: #94a3b8; font-size: 0.75rem;">Default Sample Data</span>
+            </label>
+            <div id="error" style="color: #ef4444; margin-top: 10px; font-size: 0.875rem;"></div>
+        </div>
+
+        <div class="grid3">
+            <div class="card">
+                <div class="label">Satellite</div>
+                <div class="value" id="satName">RS-44 & BREEZE-KM R/B</div>
+                <div class="label" style="margin-top: 5px;">NORAD: <span id="noradId">44909</span></div>
+            </div>
+            <div class="card">
+                <div class="label">Calibrated Downlink</div>
+                <div class="value green" id="calibDownlink">435.602601 MHz</div>
+                <div class="label" style="margin-top: 5px;">Nominal: <span id="nominalDownlink">435.605 MHz</span></div>
+            </div>
+            <div class="card">
+                <div class="label">Average Doppler Shift</div>
+                <div class="value yellow" id="dopplerShift">-2.399 kHz</div>
+                <div class="label" style="margin-top: 5px;">Sync Points: <span id="syncCount">57</span></div>
+            </div>
+        </div>
+
+        <div class="tab-buttons">
+            <button id="btn-overview" class="active" data-view="overview">📊 Overview</button>
+            <button id="btn-doppler" data-view="doppler">📡 Doppler Analysis</button>
+            <button id="btn-orbital" data-view="orbital">🌍 Orbital Dynamics</button>
+            <button id="btn-timing" data-view="timing">⏰ Temporal Analysis</button>
+            <button id="btn-insights" data-view="insights">💡 Insights & Stats</button>
+        </div>
+
+        <div id="viewContainer"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        var calibrationData = {
+            calibratedDownlink: 435.60260139341153,
+            nominalDownlink: 435.605,
+            syncCount: 57,
+            noradId: 44909,
+            satelliteName: "RS-44 & BREEZE-KM R/B",
+            downlinkHistory: [435.6020659550729, 435.60209328014315, 435.6021625320799, 435.6022566577124, 435.6022237570946, 435.60230900832045, 435.6018079155023, 435.6024208562514, 435.6017202824042, 435.60166032537785, 435.6018884627434, 435.6020827355767, 435.6021257903262, 435.60218856461364, 435.60158847406336, 435.60163622894487, 435.60151176864235, 435.6014962052982, 435.6014917391792, 435.6016667075275, 435.60153593322724, 435.601686807546, 435.601768180963, 435.6019026357678, 435.6016575385349, 435.60150062063195, 435.60146644602406, 435.60152983062835, 435.6013665714113, 435.60128956484414, 435.6013764157633, 435.601366514754, 435.60135200824277, 435.6013702536433, 435.6014992268247, 435.60144347320175, 435.60143224907006, 435.60142418137065, 435.60142957193904, 435.60143675553394, 435.6015338082504, 435.60164066170086, 435.60165006767187, 435.6025739578369, 435.602494907354, 435.60244963162785, 435.60249056541153, 435.60245583220075, 435.60243161581536, 435.60240490871007, 435.6023939098435, 435.6024018037246, 435.6024181110234, 435.6024506802618, 435.60249977257376, 435.60254747672786, 435.60260139341153],
+            elevationHistory: [11.97, 23.53, 40.11, 53.35, 55.57, 53.98, 52.09, 10.05, 38.52, 37.05, 28.20, 21.54, 12.40, 9.70, 26.83, 29.48, 30.76, 31.28, 31.15, 30.26, 29.77, 20.96, 12.84, 9.22, 10.34, 14.28, 19.32, 17.75, 15.51, 16.66, 16.74, 16.66, 16.42, 15.72, 13.19, 7.51, 8.31, 8.66, 8.87, 9.00, 6.48, 4.05, 4.03, 2.41, 5.68, 13.36, 16.86, 26.57, 44.62, 52.31, 65.39, 72.09, 80.39, 58.21, 34.12, 30.49, 6.54],
+            rangeHistory: [3506.29, 2740.56, 2075.69, 1770.69, 1731.75, 1749.69, 1780.25, 3541.91, 1758.62, 1803.06, 2122.56, 2446.55, 3059.83, 3284.65, 2560.52, 2436.74, 2379.16, 2353.35, 2355.19, 2385.35, 2403.67, 2811.49, 3330.97, 3613.13, 3100.48, 2815.96, 2514.78, 2650.27, 3204.93, 3115.41, 3105.99, 3106.60, 3118.75, 3159.19, 3329.85, 3375.60, 3314.14, 3289.81, 3276.82, 3275.46, 3545.42, 3807.56, 3810.12, 4405.53, 4063.39, 3393.65, 3137.01, 2580.23, 1948.53, 1785.30, 1601.12, 1541.95, 1491.74, 1664.95, 2199.69, 2331.52, 3811.13],
+            syncHistory: ["2025-10-28T18:44:03Z", "2025-10-28T18:46:33Z", "2025-10-28T18:49:09Z", "2025-10-28T18:51:07Z", "2025-10-28T18:51:40Z", "2025-10-28T18:53:08Z", "2025-10-28T18:53:30Z", "2025-10-28T19:00:34Z", "2025-10-29T07:07:32Z", "2025-10-29T07:07:59Z", "2025-10-29T07:09:47Z", "2025-10-29T07:11:04Z", "2025-10-29T07:13:06Z", "2025-10-29T07:13:48Z", "2025-10-29T19:13:11Z", "2025-10-29T19:14:12Z", "2025-10-29T19:14:57Z", "2025-10-29T19:15:44Z", "2025-10-29T19:16:13Z", "2025-10-29T19:16:59Z", "2025-10-29T19:17:15Z", "2025-10-29T19:20:04Z", "2025-10-29T19:22:18Z", "2025-10-29T19:23:21Z", "2025-10-30T07:25:30Z", "2025-10-30T07:26:50Z", "2025-10-30T07:29:03Z", "2025-10-30T07:32:51Z", "2025-10-30T19:37:21Z", "2025-10-30T19:38:50Z", "2025-10-30T19:39:19Z", "2025-10-30T19:39:50Z", "2025-10-30T19:40:21Z", "2025-10-30T19:41:09Z", "2025-10-30T19:42:52Z", "2025-10-31T07:51:53Z", "2025-10-31T07:52:42Z", "2025-10-31T07:53:11Z", "2025-10-31T07:53:39Z", "2025-10-31T07:54:24Z", "2025-10-31T07:57:42Z", "2025-10-31T07:59:17Z", "2025-10-31T07:59:17Z", "2025-10-31T17:59:06Z", "2025-10-31T18:00:07Z", "2025-10-31T18:02:08Z", "2025-10-31T18:02:55Z", "2025-10-31T18:04:41Z", "2025-10-31T18:06:57Z", "2025-10-31T18:07:41Z", "2025-10-31T18:08:44Z", "2025-10-31T18:09:14Z", "2025-10-31T18:10:31Z", "2025-10-31T18:12:16Z", "2025-10-31T18:14:35Z", "2025-10-31T18:15:03Z", "2025-10-31T18:19:39Z"]
+        };
+
+        var currentCharts = [];
+        var currentView = 'overview';
+
+        function setupGraphTabs() {
+            document.querySelectorAll('.graph-tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    var graphId = this.getAttribute('data-graph');
+                    
+                    document.querySelectorAll('.graph-tab').forEach(function(t) {
+                        t.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    document.querySelectorAll('.graph-content').forEach(function(c) {
+                        c.classList.remove('active');
+                    });
+                    document.getElementById(graphId).classList.add('active');
+                });
+            });
+        }
+
+        function calculateStats() {
+            var doppler = calibrationData.downlinkHistory.map(function(f) {
+                return (f - calibrationData.nominalDownlink) * 1000;
+            });
+            
+            var velocity = calibrationData.rangeHistory.map(function(r, i) {
+                if (i === 0) return 0;
+                var times = calibrationData.syncHistory.map(function(t) { return new Date(t).getTime(); });
+                var dt = (times[i] - times[i-1]) / 1000;
+                var dr = calibrationData.rangeHistory[i] - calibrationData.rangeHistory[i-1];
+                return dr / dt;
+            });
+
+            return {
+                minFreq: Math.min.apply(null, calibrationData.downlinkHistory),
+                maxFreq: Math.max.apply(null, calibrationData.downlinkHistory),
+                avgFreq: calibrationData.downlinkHistory.reduce(function(a,b){return a+b;},0) / calibrationData.downlinkHistory.length,
+                freqStdDev: Math.sqrt(calibrationData.downlinkHistory.reduce(function(sq, n) {
+                    return sq + Math.pow(n - (calibrationData.downlinkHistory.reduce(function(a,b){return a+b;},0) / calibrationData.downlinkHistory.length), 2);
+                }, 0) / calibrationData.downlinkHistory.length),
+                minDoppler: Math.min.apply(null, doppler),
+                maxDoppler: Math.max.apply(null, doppler),
+                avgDoppler: doppler.reduce(function(a,b){return a+b;},0) / doppler.length,
+                dopplerRange: Math.max.apply(null, doppler) - Math.min.apply(null, doppler),
+                minElev: Math.min.apply(null, calibrationData.elevationHistory),
+                maxElev: Math.max.apply(null, calibrationData.elevationHistory),
+                avgElev: calibrationData.elevationHistory.reduce(function(a,b){return a+b;},0) / calibrationData.elevationHistory.length,
+                minRange: Math.min.apply(null, calibrationData.rangeHistory),
+                maxRange: Math.max.apply(null, calibrationData.rangeHistory),
+                avgRange: calibrationData.rangeHistory.reduce(function(a,b){return a+b;},0) / calibrationData.rangeHistory.length,
+                maxVelocity: Math.max.apply(null, velocity.map(Math.abs)),
+                doppler: doppler,
+                velocity: velocity
+            };
+        }
+
+        function destroyCharts() {
+            currentCharts.forEach(function(chart) { 
+                if (chart) chart.destroy(); 
+            });
+            currentCharts = [];
+        }
+
+        function updateDisplay() {
+            document.getElementById('satName').textContent = calibrationData.satelliteName;
+            document.getElementById('noradId').textContent = calibrationData.noradId;
+            document.getElementById('calibDownlink').textContent = calibrationData.calibratedDownlink.toFixed(6) + ' MHz';
+            document.getElementById('nominalDownlink').textContent = calibrationData.nominalDownlink + ' MHz';
+            
+            var doppler = ((calibrationData.calibratedDownlink - calibrationData.nominalDownlink) * 1000).toFixed(3);
+            document.getElementById('dopplerShift').textContent = doppler + ' kHz';
+            document.getElementById('syncCount').textContent = calibrationData.syncCount;
+
+            showView(currentView);
+        }
+
+        function showView(view) {
+            currentView = view;
+            destroyCharts();
+            
+            var buttons = document.querySelectorAll('button[data-view]');
+            buttons.forEach(function(btn) { 
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-view') === view) {
+                    btn.classList.add('active');
+                }
+            });
+
+            var container = document.getElementById('viewContainer');
+            var stats = calculateStats();
+
+            if (view === 'overview') {
+                container.innerHTML = `
+                    <div class="grid4">
+                        <div class="card">
+                            <div class="label">Min Frequency</div>
+                            <div class="value blue">${stats.minFreq.toFixed(6)} MHz</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Max Frequency</div>
+                            <div class="value blue">${stats.maxFreq.toFixed(6)} MHz</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Max Elevation</div>
+                            <div class="value green">${stats.maxElev.toFixed(2)}°</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Min Range</div>
+                            <div class="value green">${stats.minRange.toFixed(2)} km</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="graph-tabs">
+                            <button class="graph-tab active" data-graph="g1">Doppler Shift</button>
+                            <button class="graph-tab" data-graph="g2">Elevation Profile</button>
+                            <button class="graph-tab" data-graph="g3">Range vs Time</button>
+                            <button class="graph-tab" data-graph="g4">Frequency Distribution</button>
+                        </div>
+                        
+                        <div id="g1" class="graph-content active">
+                            <h3>Doppler Shift Over Time</h3>
+                            <div class="chart-container">
+                                <canvas id="chart1"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="g2" class="graph-content">
+                            <h3>Elevation Profile</h3>
+                            <div class="chart-container">
+                                <canvas id="chart2"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="g3" class="graph-content">
+                            <h3>Range vs Time</h3>
+                            <div class="chart-container">
+                                <canvas id="chart3"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="g4" class="graph-content">
+                            <h3>Frequency Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="chart4"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                setupGraphTabs();
+                var labels = calibrationData.downlinkHistory.map(function(_, i) { return i + 1; });
+                
+                currentCharts.push(new Chart(document.getElementById('chart1'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Doppler Shift (kHz)',
+                            data: stats.doppler,
+                            borderColor: '#fbbf24',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            tension: 0.1,
+                            pointRadius: 2
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                currentCharts.push(new Chart(document.getElementById('chart2'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Elevation (°)',
+                            data: calibrationData.elevationHistory,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.1,
+                            pointRadius: 2
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                currentCharts.push(new Chart(document.getElementById('chart3'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Range (km)',
+                            data: calibrationData.rangeHistory,
+                            borderColor: '#f472b6',
+                            backgroundColor: 'rgba(244, 114, 182, 0.1)',
+                            tension: 0.1,
+                            pointRadius: 2
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                var histogram = {};
+                calibrationData.downlinkHistory.forEach(function(f) {
+                    var bin = Math.floor(f * 10000) / 10000;
+                    histogram[bin] = (histogram[bin] || 0) + 1;
+                });
+                var histBins = Object.keys(histogram).sort();
+                var histCounts = histBins.map(function(k) { return histogram[k]; });
+
+                currentCharts.push(new Chart(document.getElementById('chart4'), {
+                    type: 'bar',
+                    data: {
+                        labels: histBins,
+                        datasets: [{
+                            label: 'Frequency Count',
+                            data: histCounts,
+                            backgroundColor: '#8b5cf6'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+            } else if (view === 'doppler') {
+                container.innerHTML = `
+                    <div class="grid3">
+                        <div class="card">
+                            <div class="label">Doppler Range</div>
+                            <div class="value yellow">${stats.dopplerRange.toFixed(3)} kHz</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Min Doppler</div>
+                            <div class="value blue">${stats.minDoppler.toFixed(3)} kHz</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Max Doppler</div>
+                            <div class="value red">${stats.maxDoppler.toFixed(3)} kHz</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="graph-tabs">
+                            <button class="graph-tab active" data-graph="d1">Doppler Shift</button>
+                            <button class="graph-tab" data-graph="d2">Elevation Correlation</button>
+                            <button class="graph-tab" data-graph="d3">Doppler Rate</button>
+                            <button class="graph-tab" data-graph="d4">Frequency Deviation</button>
+                        </div>
+                        
+                        <div id="d1" class="graph-content active">
+                            <h3>Doppler Shift Analysis</h3>
+                            <div class="chart-container">
+                                <canvas id="chart1"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="d2" class="graph-content">
+                            <h3>Elevation vs Doppler Correlation</h3>
+                            <div class="chart-container">
+                                <canvas id="chart2"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="d3" class="graph-content">
+                            <h3>Doppler Rate of Change</h3>
+                            <div class="chart-container">
+                                <canvas id="chart3"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="d4" class="graph-content">
+                            <h3>Frequency Deviation from Nominal</h3>
+                            <div class="chart-container">
+                                <canvas id="chart4"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                setupGraphTabs();
+                var labels = calibrationData.downlinkHistory.map(function(_, i) { return i + 1; });
+                
+                currentCharts.push(new Chart(document.getElementById('chart1'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Doppler Shift (kHz)',
+                            data: stats.doppler,
+                            borderColor: '#fbbf24',
+                            backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                            tension: 0.1,
+                            fill: true,
+                            pointRadius: 3
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                var scatterData = stats.doppler.map(function(d, i) {
+                    return { x: calibrationData.elevationHistory[i], y: d };
+                });
+                currentCharts.push(new Chart(document.getElementById('chart2'), {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Elevation vs Doppler',
+                            data: scatterData,
+                            backgroundColor: '#8b5cf6',
+                            pointRadius: 4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { title: { display: true, text: 'Elevation (°)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { title: { display: true, text: 'Doppler (kHz)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                var dopplerRate = stats.doppler.map(function(d, i) {
+                    if (i === 0) return 0;
+                    return d - stats.doppler[i-1];
+                });
+                currentCharts.push(new Chart(document.getElementById('chart3'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Doppler Rate (kHz/sample)',
+                            data: dopplerRate,
+                            borderColor: '#f472b6',
+                            backgroundColor: 'rgba(244, 114, 182, 0.1)',
+                            tension: 0.1,
+                            pointRadius: 2
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                var deviation = calibrationData.downlinkHistory.map(function(f) {
+                    return (f - calibrationData.nominalDownlink) * 1000;
+                });
+                currentCharts.push(new Chart(document.getElementById('chart4'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Frequency Deviation (kHz)',
+                            data: deviation,
+                            backgroundColor: deviation.map(function(d) {
+                                return d < -2 ? '#ef4444' : d > -1 ? '#10b981' : '#fbbf24';
+                            })
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+            } else if (view === 'orbital') {
+                container.innerHTML = `
+                    <div class="grid4">
+                        <div class="card">
+                            <div class="label">Avg Range</div>
+                            <div class="value purple">${stats.avgRange.toFixed(2)} km</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Range Variation</div>
+                            <div class="value pink">${(stats.maxRange - stats.minRange).toFixed(2)} km</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Avg Elevation</div>
+                            <div class="value green">${stats.avgElev.toFixed(2)}°</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Max Velocity</div>
+                            <div class="value red">${stats.maxVelocity.toFixed(2)} km/s</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="graph-tabs">
+                            <button class="graph-tab active" data-graph="o1">Elevation & Range</button>
+                            <button class="graph-tab" data-graph="o2">3D Relationship</button>
+                            <button class="graph-tab" data-graph="o3">Radial Velocity</button>
+                            <button class="graph-tab" data-graph="o4">Elevation vs Range</button>
+                            <button class="graph-tab" data-graph="o5">Pass Geometry</button>
+                        </div>
+                        
+                        <div id="o1" class="graph-content active">
+                            <h3>Elevation & Range Profile</h3>
+                            <div class="chart-container">
+                                <canvas id="chart1"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="o2" class="graph-content">
+                            <h3>3D Orbital Relationship</h3>
+                            <div class="chart-container">
+                                <canvas id="chart2"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="o3" class="graph-content">
+                            <h3>Radial Velocity</h3>
+                            <div class="chart-container">
+                                <canvas id="chart3"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="o4" class="graph-content">
+                            <h3>Elevation vs Range</h3>
+                            <div class="chart-container">
+                                <canvas id="chart4"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="o5" class="graph-content">
+                            <h3>Pass Geometry Analysis</h3>
+                            <div class="chart-container">
+                                <canvas id="chart5"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                setupGraphTabs();
+                var labels = calibrationData.downlinkHistory.map(function(_, i) { return i + 1; });
+                
+                currentCharts.push(new Chart(document.getElementById('chart1'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Elevation (°)',
+                            data: calibrationData.elevationHistory,
+                            borderColor: '#60a5fa',
+                            backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                            yAxisID: 'y',
+                            tension: 0.1,
+                            pointRadius: 2
+                        }, {
+                            label: 'Range (km)',
+                            data: calibrationData.rangeHistory,
+                            borderColor: '#f472b6',
+                            backgroundColor: 'rgba(244, 114, 182, 0.1)',
+                            yAxisID: 'y1',
+                            tension: 0.1,
+                            pointRadius: 2
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { position: 'left', title: { display: true, text: 'Elevation (°)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y1: { position: 'right', title: { display: true, text: 'Range (km)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { display: false } } } }
+                }));
+
+                var bubble3D = calibrationData.elevationHistory.map(function(e, i) {
+                    return { x: e, y: calibrationData.rangeHistory[i], r: Math.abs(stats.doppler[i]) * 2 };
+                });
+                currentCharts.push(new Chart(document.getElementById('chart2'), {
+                    type: 'bubble',
+                    data: {
+                        datasets: [{
+                            label: 'Elevation-Range-Doppler',
+                            data: bubble3D,
+                            backgroundColor: 'rgba(139, 92, 246, 0.6)',
+                            borderColor: '#8b5cf6'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { title: { display: true, text: 'Elevation (°)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { title: { display: true, text: 'Range (km)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                currentCharts.push(new Chart(document.getElementById('chart3'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Radial Velocity (km/s)',
+                            data: stats.velocity,
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.1,
+                            pointRadius: 2,
+                            fill: true
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                var elevRangeScatter = calibrationData.elevationHistory.map(function(e, i) {
+                    return { x: e, y: calibrationData.rangeHistory[i] };
+                });
+                currentCharts.push(new Chart(document.getElementById('chart4'), {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Elevation vs Range',
+                            data: elevRangeScatter,
+                            backgroundColor: '#fbbf24',
+                            pointRadius: 4
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { title: { display: true, text: 'Elevation (°)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { title: { display: true, text: 'Range (km)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                var slantRange = calibrationData.rangeHistory.map(function(r, i) {
+                    var elev = calibrationData.elevationHistory[i];
+                    return r * Math.sin(elev * Math.PI / 180);
+                });
+                currentCharts.push(new Chart(document.getElementById('chart5'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Slant Range (km)',
+                            data: calibrationData.rangeHistory,
+                            borderColor: '#ef4444',
+                            tension: 0.1,
+                            pointRadius: 2
+                        }, {
+                            label: 'Altitude Component (km)',
+                            data: slantRange,
+                            borderColor: '#60a5fa',
+                            tension: 0.1,
+                            pointRadius: 2
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+            } else if (view === 'timing') {
+                var times = calibrationData.syncHistory.map(function(t) { return new Date(t); });
+                var timeDiffs = times.map(function(t, i) {
+                    if (i === 0) return 0;
+                    return (t - times[i-1]) / 1000;
+                });
+                var avgTimeDiff = timeDiffs.slice(1).reduce(function(a,b){return a+b;},0) / (timeDiffs.length - 1);
+
+                var passSessions = [];
+                var currentSession = [0];
+                for (var i = 1; i < timeDiffs.length; i++) {
+                    if (timeDiffs[i] > 600) {
+                        passSessions.push(currentSession);
+                        currentSession = [i];
+                    } else {
+                        currentSession.push(i);
+                    }
+                }
+                passSessions.push(currentSession);
+
+                container.innerHTML = `
+                    <div class="grid3">
+                        <div class="card">
+                            <div class="label">Total Duration</div>
+                            <div class="value blue">${((times[times.length-1] - times[0]) / 3600000).toFixed(2)} hours</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Avg Sample Interval</div>
+                            <div class="value yellow">${avgTimeDiff.toFixed(1)} seconds</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Pass Sessions</div>
+                            <div class="value green">${passSessions.length}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="graph-tabs">
+                            <button class="graph-tab active" data-graph="t1">Sample Intervals</button>
+                            <button class="graph-tab" data-graph="t2">Frequency vs Time</button>
+                            <button class="graph-tab" data-graph="t3">Pass Sessions</button>
+                            <button class="graph-tab" data-graph="t4">Temporal Distribution</button>
+                        </div>
+                        
+                        <div id="t1" class="graph-content active">
+                            <h3>Sample Timing Intervals</h3>
+                            <div class="chart-container">
+                                <canvas id="chart1"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="t2" class="graph-content">
+                            <h3>Frequency vs Time of Day</h3>
+                            <div class="chart-container">
+                                <canvas id="chart2"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="t3" class="graph-content">
+                            <h3>Pass Session Analysis</h3>
+                            <div class="chart-container">
+                                <canvas id="chart3"></canvas>
+                            </div>
+                        </div>
+                        
+                        <div id="t4" class="graph-content">
+                            <h3>Temporal Data Distribution</h3>
+                            <div class="chart-container">
+                                <canvas id="chart4"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                setupGraphTabs();
+                var labels = calibrationData.downlinkHistory.map(function(_, i) { return i + 1; });
+                
+                currentCharts.push(new Chart(document.getElementById('chart1'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Time Interval (seconds)',
+                            data: timeDiffs,
+                            backgroundColor: timeDiffs.map(function(t) {
+                                return t > 300 ? '#ef4444' : t < 30 ? '#10b981' : '#fbbf24';
+                            })
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                var hourOfDay = times.map(function(t) { return t.getUTCHours() + t.getUTCMinutes() / 60; });
+                var timeFreqData = hourOfDay.map(function(h, i) {
+                    return { x: h, y: calibrationData.downlinkHistory[i] };
+                });
+                currentCharts.push(new Chart(document.getElementById('chart2'), {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Frequency vs UTC Hour',
+                            data: timeFreqData,
+                            backgroundColor: '#8b5cf6',
+                            pointRadius: 5
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { title: { display: true, text: 'UTC Hour', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { title: { display: true, text: 'Frequency (MHz)', color: '#fff' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+                }));
+
+                var sessionData = passSessions.map(function(session, idx) {
+                    var duration = (times[session[session.length-1]] - times[session[0]]) / 60;
+                    return { session: 'Pass ' + (idx + 1), duration: duration, points: session.length };
+                });
+                currentCharts.push(new Chart(document.getElementById('chart3'), {
+                    type: 'bar',
+                    data: {
+                        labels: sessionData.map(function(s) { return s.session; }),
+                        datasets: [{
+                            label: 'Duration (minutes)',
+                            data: sessionData.map(function(s) { return s.duration; }),
+                            backgroundColor: '#60a5fa',
+                            yAxisID: 'y'
+                        }, {
+                            label: 'Sample Points',
+                            data: sessionData.map(function(s) { return s.points; }),
+                            backgroundColor: '#10b981',
+                            yAxisID: 'y1'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { position: 'left', ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y1: { position: 'right', ticks: { color: '#94a3b8' }, grid: { display: false } } } }
+                }));
+
+                var dayOfWeek = times.map(function(t) {
+                    return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][t.getUTCDay()];
+                });
+                var dayCounts = {};
+                dayOfWeek.forEach(function(d) { dayCounts[d] = (dayCounts[d] || 0) + 1; });
+                currentCharts.push(new Chart(document.getElementById('chart4'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(dayCounts),
+                        datasets: [{
+                            data: Object.values(dayCounts),
+                            backgroundColor: ['#ef4444', '#f97316', '#fbbf24', '#10b981', '#60a5fa', '#8b5cf6', '#f472b6']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: '#fff' } } } }
+                }));
+
+            } else if (view === 'insights') {
+                var correlation = 0;
+                var n = stats.doppler.length;
+                var meanElev = stats.avgElev;
+                var meanDoppler = stats.avgDoppler;
+                for (var i = 0; i < n; i++) {
+                    correlation += (calibrationData.elevationHistory[i] - meanElev) * (stats.doppler[i] - meanDoppler);
+                }
+                correlation /= n;
+                correlation /= (Math.sqrt(calibrationData.elevationHistory.reduce(function(s, e) { return s + Math.pow(e - meanElev, 2); }, 0) / n) *
+                              Math.sqrt(stats.doppler.reduce(function(s, d) { return s + Math.pow(d - meanDoppler, 2); }, 0) / n));
+
+                var signalStrength = calibrationData.elevationHistory.map(function(e) {
+                    return 20 * Math.log10(1 / Math.max(0.1, Math.sqrt(calibrationData.rangeHistory[calibrationData.elevationHistory.indexOf(e)])));
+                });
+
+                container.innerHTML = `
+                    <div class="grid4">
+                        <div class="card">
+                            <div class="label">Frequency Std Dev</div>
+                            <div class="small-value purple">${(stats.freqStdDev * 1000).toFixed(3)} Hz</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Doppler-Elevation Correlation</div>
+                            <div class="small-value ${correlation > 0 ? 'green' : 'red'}">${correlation.toFixed(4)}</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Data Quality Score</div>
+                            <div class="small-value green">${(calibrationData.syncCount / 60 * 100).toFixed(1)}%</div>
+                        </div>
+                        <div class="card">
+                            <div class="label">Measurement Precision</div>
+                            <div class="small-value blue">±${(stats.freqStdDev * 1000000).toFixed(1)} Hz</div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h2>📊 Key Insights</h2>
+                        <div class="insight">
+                            <div class="insight-title">🎯 Calibration Accuracy</div>
+                            <p>The calibrated downlink frequency of <strong>${calibrationData.calibratedDownlink.toFixed(6)} MHz</strong> differs from nominal by <strong>${((calibrationData.calibratedDownlink - calibrationData.nominalDownlink) * 1000).toFixed(3)} kHz</strong>. This systematic offset suggests either satellite oscillator drift or ground station calibration requirements.</p>
+                        </div>
+                        
+                        <div class="insight">
+                            <div class="insight-title">🌊 Doppler Pattern Analysis</div>
+                            <p>Doppler shift ranges from <strong>${stats.minDoppler.toFixed(3)} kHz</strong> to <strong>${stats.maxDoppler.toFixed(3)} kHz</strong>, covering <strong>${stats.dopplerRange.toFixed(3)} kHz</strong>. The ${correlation > 0 ? 'positive' : 'negative'} correlation of <strong>${correlation.toFixed(4)}</strong> with elevation indicates ${correlation > 0 ? 'approaching' : 'receding'} satellite motion relative to ground station.</p>
+                        </div>
+                        
+                        <div class="insight">
+                            <div class="insight-title">🛰️ Orbital Geometry</div>
+                            <p>Maximum elevation of <strong>${stats.maxElev.toFixed(2)}°</strong> with minimum range of <strong>${stats.minRange.toFixed(2)} km</strong> indicates excellent pass geometry. The satellite traversed <strong>${(stats.maxRange - stats.minRange).toFixed(2)} km</strong> range variation during observation.</p>
+                        </div>
+                        
+                        <div class="insight">
+                            <div class="insight-title">⚡ Velocity Analysis</div>
+                            <p>Maximum radial velocity of <strong>${stats.maxVelocity.toFixed(2)} km/s</strong> confirms typical LEO satellite dynamics. The velocity profile correlates with range rate changes and Doppler measurements.</p>
+                        </div>
+                        
+                        <div class="insight">
+                            <div class="insight-title">📡 Signal Quality</div>
+                            <p>With <strong>${calibrationData.syncCount} synchronization points</strong>, the data shows ${stats.freqStdDev < 0.00001 ? 'excellent' : 'good'} measurement stability. Standard deviation of <strong>${(stats.freqStdDev * 1000000).toFixed(1)} Hz</strong> indicates high-quality tracking.</p>
+                        </div>
+                    </div>
+
+                    <div class="section-divider"></div>
+
+                    <div class="grid2">
+                        <div class="card">
+                            <h3>Statistical Summary</h3>
+                            <div class="stat-grid">
+                                <div class="stat-item">
+                                    <div class="label">Mean Frequency</div>
+                                    <div class="small-value">${stats.avgFreq.toFixed(6)} MHz</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Frequency Range</div>
+                                    <div class="small-value">${((stats.maxFreq - stats.minFreq) * 1000).toFixed(3)} kHz</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Mean Elevation</div>
+                                    <div class="small-value">${stats.avgElev.toFixed(2)}°</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Mean Range</div>
+                                    <div class="small-value">${stats.avgRange.toFixed(2)} km</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Mean Doppler</div>
+                                    <div class="small-value">${stats.avgDoppler.toFixed(3)} kHz</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="label">Samples</div>
+                                    <div class="small-value">${calibrationData.syncCount}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>Data Quality Metrics</h3>
+                            <div class="chart-container-small">
+                                <canvas id="chart1"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Detailed Calibration Data</h3>
+                        <div style="overflow-x: auto;">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Timestamp (UTC)</th>
+                                        <th>Frequency (MHz)</th>
+                                        <th>Doppler (kHz)</th>
+                                        <th>Elevation (°)</th>
+                                        <th>Range (km)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dataTable">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+
+                var qualityMetrics = {
+                    'Freq Stability': (1 - stats.freqStdDev / 0.001) * 100,
+                    'Coverage': (calibrationData.syncCount / 100) * 100,
+                    'Elev Range': (stats.maxElev / 90) * 100,
+                    'Data Density': Math.min(100, calibrationData.syncCount / 0.5)
+                };
+
+                currentCharts.push(new Chart(document.getElementById('chart1'), {
+                    type: 'radar',
+                    data: {
+                        labels: Object.keys(qualityMetrics),
+                        datasets: [{
+                            label: 'Quality Score (%)',
+                            data: Object.values(qualityMetrics),
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            borderColor: '#10b981',
+                            pointBackgroundColor: '#10b981'
+                        }]
+                    },
+                    options: { 
+                        responsive: true, 
+                        maintainAspectRatio: false, 
+                        plugins: { legend: { labels: { color: '#fff' } } },
+                        scales: { r: { ticks: { color: '#94a3b8', backdropColor: 'transparent' }, grid: { color: '#334155' }, pointLabels: { color: '#cbd5e1' } } }
+                    }
+                }));
+
+                var tableBody = document.getElementById('dataTable');
+                for (var i = 0; i < Math.min(20, calibrationData.syncCount); i++) {
+                    var row = '<tr>' +
+                        '<td>' + (i + 1) + '</td>' +
+                        '<td>' + calibrationData.syncHistory[i] + '</td>' +
+                        '<td>' + calibrationData.downlinkHistory[i].toFixed(6) + '</td>' +
+                        '<td>' + stats.doppler[i].toFixed(3) + '</td>' +
+                        '<td>' + calibrationData.elevationHistory[i].toFixed(2) + '</td>' +
+                        '<td>' + calibrationData.rangeHistory[i].toFixed(2) + '</td>' +
+                        '</tr>';
+                    tableBody.innerHTML += row;
+                }
+                if (calibrationData.syncCount > 20) {
+                    tableBody.innerHTML += '<tr><td colspan="6" style="text-align: center; color: #94a3b8; font-style: italic;">Showing first 20 of ' + calibrationData.syncCount + ' entries</td></tr>';
+                }
+            }
+        }
+
+        document.querySelectorAll('button[data-view]').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                showView(this.getAttribute('data-view'));
+            });
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            var file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('error').textContent = '';
+
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    var json = JSON.parse(event.target.result);
+                    var dataArray = Array.isArray(json) ? json : [json];
+                    
+                    var cwData = dataArray
+                        .filter(function(item) { return item.syncMode === 'CW' || item.transponderMode === 'CW'; })
+                        .sort(function(a, b) { return (b.syncCount || 0) - (a.syncCount || 0); })[0];
+                    
+                    if (!cwData) {
+                        document.getElementById('error').textContent = 'No CW mode calibration data found';
+                        return;
+                    }
+
+                    calibrationData = {
+                        calibratedDownlink: cwData.calibratedDownlinkMHz,
+                        nominalDownlink: cwData.nominalDownlinkMHz,
+                        syncCount: cwData.syncCount,
+                        noradId: cwData.noradId,
+                        satelliteName: cwData.satelliteName,
+                        downlinkHistory: cwData.downlinkHistory,
+                        elevationHistory: cwData.elevationHistory,
+                        rangeHistory: cwData.rangeHistory,
+                        syncHistory: cwData.syncHistory
+                    };
+
+                    updateDisplay();
+                } catch (err) {
+                    document.getElementById('error').textContent = 'Invalid JSON: ' + err.message;
+                }
+            };
+            reader.readAsText(file);
+        });
+
+        window.addEventListener('load', function() {
+            updateDisplay();
+        });
+    </script>
+</body>
+</html>
