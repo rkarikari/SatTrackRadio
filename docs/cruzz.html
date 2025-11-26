@@ -364,19 +364,11 @@
                             </div>
                         </div>
 
-                        <!-- Voltage History -->
+                        <!-- Activity Log -->
                         <div class="metric-card p-4">
-                            <h3 class="font-semibold mb-3 text-white">⚡ Voltage Measurements</h3>
-                            <div class="space-y-2" id="voltage-measurements-list">
+                            <h3 class="font-semibold mb-3 text-white">📝 Activity Log</h3>
+                            <div class="space-y-2 max-h-96 overflow-y-auto" id="activity-log">
                                 <!-- Will be populated by JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- Voltage Historical Graph -->
-                        <div class="metric-card p-4">
-                            <h3 class="font-semibold mb-3 text-white">📈 Voltage History Graph</h3>
-                            <div class="chart-container">
-                                <canvas id="voltageHistoryChart"></canvas>
                             </div>
                         </div>
 
@@ -385,14 +377,6 @@
                             <h3 class="font-semibold mb-3 text-white">📈 Monthly Summary</h3>
                             <div class="chart-container">
                                 <canvas id="monthlySummaryChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Activity Log -->
-                        <div class="metric-card p-4">
-                            <h3 class="font-semibold mb-3 text-white">📝 Activity Log</h3>
-                            <div class="space-y-2 max-h-96 overflow-y-auto" id="activity-log">
-                                <!-- Will be populated by JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -423,11 +407,6 @@
                                         </button>
                                     </div>
                                     <p class="text-xs text-gray-400 mt-1">Enter resting voltage (no load, no charging) to estimate SOC.</p>
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-medium mb-2 text-gray-300">Voltage Measurement Date/Time</label>
-                                    <input type="datetime-local" class="w-full border rounded px-3 py-2 bg-gray-700 border-gray-600 text-white" id="voltage-datetime-input">
                                 </div>
 
                                 <div>
@@ -628,16 +607,7 @@
                     {voltage: 10.50, soc: 0}
                 ];
                 this.data = this.loadData();
-                if (!this.data.voltageHistory || this.data.voltageHistory.length === 0) {
-                    this.data.voltageHistory = [];
-                    const initialSoc = this.data.batteryLevel || 78;
-                    const initialVoltage = this.getVoltageFromSoc(initialSoc);
-                    this.data.voltageHistory.push({
-                        timestamp: this.data.trackingStartDate,
-                        voltage: initialVoltage
-                    });
-                }
-                this.data.batteryLevel = this.calculateCurrentBatteryLevel();
+                this.applyAutomaticAdjustment();
                 this.autosaveTimer = null;
                 this.charts = {};
                 this.init();
@@ -672,36 +642,6 @@
                 return 0; // Fallback
             }
 
-            getVoltageFromSoc(soc) {
-                if (soc >= 100) return this.voltageToSocMap[0].voltage;
-                if (soc <= 0) return this.voltageToSocMap[this.voltageToSocMap.length - 1].voltage;
-
-                for (let i = 0; i < this.voltageToSocMap.length - 1; i++) {
-                    const high = this.voltageToSocMap[i];
-                    const low = this.voltageToSocMap[i + 1];
-                    if (soc <= high.soc && soc >= low.soc) {
-                        const rangeSoc = high.soc - low.soc;
-                        const rangeV = high.voltage - low.voltage;
-                        return low.voltage + ((soc - low.soc) / rangeSoc) * rangeV;
-                    }
-                }
-                return 10.50; // Fallback
-            }
-
-            calculateCurrentBatteryLevel() {
-                if (this.data.voltageHistory.length === 0) return 78;
-                const sorted = [...this.data.voltageHistory].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)); // ascending
-                const last = sorted[sorted.length - 1];
-                const lastTime = new Date(last.timestamp);
-                const now = new Date();
-                const days = (now - lastTime) / (1000 * 60 * 60 * 24);
-                const netAh = days * this.calculateNetAhPerDay();
-                const cap = this.calculateCurrentCapacity();
-                const percent = (netAh / cap) * 100;
-                const lastSoc = this.getSocFromVoltage(last.voltage);
-                return Math.max(0, Math.min(100, lastSoc + percent));
-            }
-
             // Load data from localStorage or initialize with defaults
             loadData() {
                 const savedData = localStorage.getItem('cruzeBatteryData');
@@ -721,7 +661,6 @@
                         fuelLevel: 3.5,
                         solarActive: true,
                         remoteStarts: [],
-                        voltageHistory: [],
                         activityLog: [
                             {
                                 timestamp: now,
@@ -781,7 +720,26 @@
 
             // Apply automatic battery adjustment based on time passed since last update
             applyAutomaticAdjustment() {
-                // Removed, handled by calculateCurrentBatteryLevel
+                if (!this.data.lastUpdated) return;
+
+                const now = new Date();
+                const last = new Date(this.data.lastUpdated);
+                const daysPassed = (now - last) / (1000 * 60 * 60 * 24);
+
+                if (daysPassed > 0) {
+                    const currentCapacity = this.calculateCurrentCapacity();
+                    const netAhPerDay = this.calculateNetAhPerDay();
+                    const totalAhChange = netAhPerDay * daysPassed;
+                    const percentChange = (totalAhChange / currentCapacity) * 100;
+                    this.data.batteryLevel = Math.max(0, Math.min(100, this.data.batteryLevel + percentChange));
+
+                    const message = `Applied automatic ${netAhPerDay >= 0 ? 'gain' : 'drain'} of ${totalAhChange.toFixed(2)} Ah over ${daysPassed.toFixed(1)} days`;
+                    this.addActivityLog(message, 'system');
+
+                    if (this.data.batteryLevel <= this.constants.criticalSocPercent) {
+                        alert(`Warning: Battery level has dropped to ${this.data.batteryLevel.toFixed(1)}% due to time passed. Charge recommended.`);
+                    }
+                }
             }
 
             // Calculate net Ah per day
@@ -806,7 +764,6 @@
                         fuelLevel: 3.5,
                         solarActive: true,
                         remoteStarts: [],
-                        voltageHistory: [],
                         activityLog: [
                             {
                                 timestamp: now,
@@ -816,11 +773,7 @@
                         ],
                         consecutiveStarts: 0
                     };
-                    const initialVoltage = this.getVoltageFromSoc(78);
-                    this.data.voltageHistory.push({
-                        timestamp: now,
-                        voltage: initialVoltage
-                    });
+                    
                     this.saveData();
                     this.updateUI();
                     this.updateCharts();
@@ -899,10 +852,6 @@
                 // Add to activity log
                 this.addActivityLog(`Remote start activated (+${this.constants.remoteStartChargeAh} Ah, -${this.constants.remoteStartFuelGal} gal)`, "remote-start");
                 
-                // Since remote start charges the battery, add a "measurement" with new voltage
-                const newVoltage = this.getVoltageFromSoc(this.data.batteryLevel);
-                this.addVoltageMeasurement(newVoltage, timestamp);
-                
                 this.saveData();
                 this.updateUI();
                 this.updateCharts();
@@ -918,36 +867,6 @@
                 
                 this.saveData();
                 this.updateUI();
-            }
-
-            // Add a voltage measurement
-            addVoltageMeasurement(voltage, timestamp) {
-                // Validate timestamp not future
-                if (new Date(timestamp) > new Date()) {
-                    alert('Measurement date/time cannot be in the future.');
-                    return;
-                }
-                // Add to voltage history
-                this.data.voltageHistory.push({
-                    timestamp: timestamp,
-                    voltage: voltage
-                });
-                
-                // Update current battery level
-                this.data.batteryLevel = this.calculateCurrentBatteryLevel();
-
-                // Add to activity log
-                this.addActivityLog(`Voltage measurement added: ${voltage}V at ${new Date(timestamp).toLocaleString()}`, "voltage-measurement");
-            }
-
-            // Delete a voltage measurement
-            deleteVoltageMeasurement(timestamp) {
-                this.data.voltageHistory = this.data.voltageHistory.filter(entry => entry.timestamp !== timestamp);
-                this.data.batteryLevel = this.calculateCurrentBatteryLevel();
-                this.addActivityLog(`Deleted voltage measurement from ${new Date(timestamp).toLocaleString()}`, "system");
-                this.saveData();
-                this.updateVoltageMeasurementsList();
-                this.updateCharts();
             }
 
             // Add entry to activity log with limit
@@ -983,7 +902,6 @@
                         if (importedData.trackingStartDate && importedData.batteryLevel && importedData.directSunHours) {
                             this.data = importedData;
                             this.data.lastUpdated = new Date().toISOString();
-                            this.data.batteryLevel = this.calculateCurrentBatteryLevel();
                             this.addActivityLog("Data imported from file", "system");
                             this.saveData();
                             this.updateUI();
@@ -1055,15 +973,8 @@
                 // Update solar toggle
                 document.getElementById('solar-toggle').checked = this.data.solarActive;
 
-                // Set default datetime to now
-                const nowLocal = new Date().toISOString().slice(0, 16);
-                document.getElementById('voltage-datetime-input').value = nowLocal;
-
                 // Update remote starts list (show last 10)
                 this.updateRemoteStartsList();
-
-                // Update voltage measurements list (show last 10)
-                this.updateVoltageMeasurementsList();
 
                 // Update activity log (show last 20)
                 this.updateActivityLog();
@@ -1175,7 +1086,7 @@
                 const container = document.getElementById('remote-starts-list');
                 container.innerHTML = '';
 
-                const recentStarts = [...this.data.remoteStarts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
+                const recentStarts = this.data.remoteStarts.slice(0, 10);
 
                 if (recentStarts.length === 0) {
                     container.innerHTML = '<div class="text-center text-gray-400 py-4">No remote starts recorded</div>';
@@ -1217,44 +1128,6 @@
                 this.updateCharts();
             }
 
-            // Update voltage measurements list in history tab (show last 10)
-            updateVoltageMeasurementsList() {
-                const container = document.getElementById('voltage-measurements-list');
-                container.innerHTML = '';
-
-                const recentMeasurements = [...this.data.voltageHistory].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
-
-                if (recentMeasurements.length === 0) {
-                    container.innerHTML = '<div class="text-center text-gray-400 py-4">No voltage measurements recorded</div>';
-                    return;
-                }
-
-                recentMeasurements.forEach(entry => {
-                    const element = document.createElement('div');
-                    element.className = 'flex justify-between items-center p-2 rounded bg-gray-700';
-                    element.innerHTML = `
-                        <div>
-                            <div class="text-sm font-medium text-gray-200">${new Date(entry.timestamp).toLocaleString()}</div>
-                            <div class="text-xs text-gray-400">${entry.voltage} V</div>
-                        </div>
-                        <button class="text-red-500 hover:text-red-700 delete-voltage-measurement" data-timestamp="${entry.timestamp}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    `;
-                    container.appendChild(element);
-                });
-
-                // Add event listeners to delete buttons
-                document.querySelectorAll('.delete-voltage-measurement').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const timestamp = e.target.closest('button').getAttribute('data-timestamp');
-                        this.deleteVoltageMeasurement(timestamp);
-                    });
-                });
-            }
-
             // Update activity log in history tab (show last 20)
             updateActivityLog() {
                 const container = document.getElementById('activity-log');
@@ -1281,7 +1154,6 @@
                 this.createFuelAnalysisChart();
                 this.createYearProjectionChart();
                 this.createMonthlySummaryChart();
-                this.createVoltageHistoryChart();
             }
 
             // Update charts
@@ -1354,93 +1226,31 @@
                 };
             }
 
-            // Simulate historical and projected data from tracking start date
-            simulateBatteryHistory(zeroSun = false) {
-                const dailyPercentGain = zeroSun ? -(this.constants.parasiticDrainAhPerDay / this.calculateCurrentCapacity()) * 100 : (this.calculateNetAhPerDay() / this.calculateCurrentCapacity()) * 100;
-                const sortedHistory = [...this.data.voltageHistory].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                let historyIndex = 0;
-                const startDate = new Date(this.data.trackingStartDate);
-                startDate.setHours(0, 0, 0, 0);
-                const endDate = new Date(startDate);
-                endDate.setDate(endDate.getDate() + 365);
-                const now = new Date();
-                now.setHours(0, 0, 0, 0);
-                let currentDate = new Date(startDate);
-                let currentSoc;
-
-                if (sortedHistory.length > 0) {
-                    const firstMeasDate = new Date(sortedHistory[0].timestamp);
-                    firstMeasDate.setHours(0, 0, 0, 0);
-                    const daysToFirst = (firstMeasDate - startDate) / (1000 * 60 * 60 * 24);
-                    const firstSoc = this.getSocFromVoltage(sortedHistory[0].voltage);
-                    currentSoc = firstSoc - dailyPercentGain * daysToFirst;
-                    currentSoc = Math.max(0, Math.min(100, currentSoc));
-                } else {
-                    currentSoc = this.data.batteryLevel;
-                }
-
-                const dataPoints = [];
-                while (currentDate <= endDate) {
-                    let isMeasured = false;
-                    let voltage = this.getVoltageFromSoc(currentSoc);
-
-                    if (historyIndex < sortedHistory.length && !zeroSun) {
-                        const measDate = new Date(sortedHistory[historyIndex].timestamp);
-                        measDate.setHours(0, 0, 0, 0);
-                        if (measDate.getTime() === currentDate.getTime()) {
-                            currentSoc = this.getSocFromVoltage(sortedHistory[historyIndex].voltage);
-                            voltage = sortedHistory[historyIndex].voltage;
-                            isMeasured = true;
-                            historyIndex++;
-                        }
-                    }
-
-                    dataPoints.push({
-                        date: new Date(currentDate),
-                        soc: currentSoc,
-                        voltage: voltage,
-                        isHistorical: currentDate <= now,
-                        isMeasured: isMeasured
-                    });
-
-                    currentSoc += dailyPercentGain;
-                    currentSoc = Math.max(0, Math.min(100, currentSoc));
-                    currentDate.setDate(currentDate.getDate() + 1);
-                }
-
-                return dataPoints;
-            }
-
             // Create Battery Projection Chart
             createBatteryProjectionChart() {
                 const ctx = document.getElementById('batteryProjectionChart').getContext('2d');
-                const simulatedData = this.simulateBatteryHistory();
-
+                const currentCapacity = this.calculateCurrentCapacity();
+                const dailyPercentGain = (this.calculateNetAhPerDay() / currentCapacity) * 100;
+                
                 this.charts.batteryProjection = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: simulatedData.map(d => d.date.toLocaleDateString()),
+                        labels: Array.from({length: 91}, (_, i) => i),
                         datasets: [
                             {
                                 label: 'Battery Level',
-                                data: simulatedData.map(d => d.soc),
+                                data: Array.from({length: 91}, (_, i) => {
+                                    const level = this.data.batteryLevel + (dailyPercentGain * i);
+                                    return Math.min(100, Math.max(0, level));
+                                }),
                                 borderColor: '#3b82f6',
                                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
                                 fill: true,
                                 unit: '%'
                             },
                             {
-                                label: 'Measured Points',
-                                data: simulatedData.map(d => d.isMeasured ? d.soc : null),
-                                borderColor: '#10b981',
-                                backgroundColor: '#10b981',
-                                pointRadius: 5,
-                                showLine: false,
-                                unit: '%'
-                            },
-                            {
                                 label: 'Sustainable Level',
-                                data: simulatedData.map(() => 100),
+                                data: Array(91).fill(100),
                                 borderColor: '#10b981',
                                 borderDash: [5, 5],
                                 borderWidth: 1,
@@ -1449,7 +1259,7 @@
                             },
                             {
                                 label: 'Critical Level',
-                                data: simulatedData.map(() => this.constants.criticalSocPercent),
+                                data: Array(91).fill(this.constants.criticalSocPercent),
                                 borderColor: '#ef4444',
                                 borderDash: [5, 5],
                                 borderWidth: 1,
@@ -1464,7 +1274,7 @@
                             ...this.getChartOptions().plugins,
                             title: {
                                 display: true,
-                                text: 'Battery Level Projection from Tracking Start',
+                                text: `90-Day Projection | Net: ${dailyPercentGain > 0 ? '+' : ''}${dailyPercentGain.toFixed(2)} %/day`,
                                 color: '#3b82f6',
                                 font: { size: 14, weight: 'bold' }
                             }
@@ -1473,7 +1283,7 @@
                             ...this.getChartOptions().scales,
                             x: {
                                 ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Date', color: '#94a3b8' }
+                                title: { display: true, text: 'Days', color: '#94a3b8' }
                             },
                             y: {
                                 ...this.getChartOptions().scales.y,
@@ -1489,16 +1299,22 @@
             // Create Zero-Sun Survival Chart
             createZeroSunChart() {
                 const ctx = document.getElementById('zeroSunChart').getContext('2d');
-                const simulatedData = this.simulateBatteryHistory(true);
-
+                const currentCapacity = this.calculateCurrentCapacity();
+                const dailyPercentLoss = (this.constants.parasiticDrainAhPerDay / currentCapacity) * 100;
+                const usablePercent = this.data.batteryLevel - this.constants.criticalSocPercent;
+                const daysToCritical = Math.max(0, Math.floor(usablePercent / dailyPercentLoss));
+                const chartDays = Math.max(31, daysToCritical + 5);
+                
                 this.charts.zeroSun = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: simulatedData.map(d => d.date.toLocaleDateString()),
+                        labels: Array.from({length: chartDays}, (_, i) => i),
                         datasets: [
                             {
-                                label: 'Battery SOC (Zero Sun)',
-                                data: simulatedData.map(d => d.soc),
+                                label: 'Battery SOC',
+                                data: Array.from({length: chartDays}, (_, i) => {
+                                    return Math.max(0, this.data.batteryLevel - (dailyPercentLoss * i));
+                                }),
                                 borderColor: '#8b5cf6',
                                 backgroundColor: 'rgba(139, 92, 246, 0.1)',
                                 fill: true,
@@ -1506,7 +1322,7 @@
                             },
                             {
                                 label: 'Critical Threshold',
-                                data: simulatedData.map(() => this.constants.criticalSocPercent),
+                                data: Array(chartDays).fill(this.constants.criticalSocPercent),
                                 borderColor: '#ef4444',
                                 borderDash: [5, 5],
                                 borderWidth: 2,
@@ -1521,7 +1337,7 @@
                             ...this.getChartOptions().plugins,
                             title: {
                                 display: true,
-                                text: 'Zero-Sun Scenario from Tracking Start',
+                                text: `Zero-Sun Scenario | Survival: ${daysToCritical} days to critical`,
                                 color: '#8b5cf6',
                                 font: { size: 14, weight: 'bold' }
                             }
@@ -1530,7 +1346,7 @@
                             ...this.getChartOptions().scales,
                             x: {
                                 ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Date', color: '#94a3b8' }
+                                title: { display: true, text: 'Days Without Sun', color: '#94a3b8' }
                             },
                             y: {
                                 ...this.getChartOptions().scales.y,
@@ -1813,107 +1629,6 @@
                 });
             }
 
-            // Create Voltage History Chart
-            createVoltageHistoryChart() {
-                const ctx = document.getElementById('voltageHistoryChart').getContext('2d');
-                const simulatedData = this.simulateBatteryHistory();
-
-                const monthlyData = [];
-                const monthlyLabels = [];
-                const monthlyMeasuredVoltages = [];
-                let currentMonth = simulatedData[0].date.getMonth();
-                let sumVoltage = 0;
-                let count = 0;
-                let measuredSum = 0;
-                let measuredCount = 0;
-
-                simulatedData.forEach(d => {
-                    const month = d.date.getMonth();
-                    if (month !== currentMonth) {
-                        monthlyData.push(sumVoltage / count);
-                        monthlyLabels.push(new Date(d.date.getFullYear(), currentMonth, 1).toLocaleString('default', { month: 'short' }));
-                        monthlyMeasuredVoltages.push(measuredCount > 0 ? measuredSum / measuredCount : null);
-                        sumVoltage = 0;
-                        count = 0;
-                        measuredSum = 0;
-                        measuredCount = 0;
-                        currentMonth = month;
-                    }
-                    sumVoltage += d.voltage;
-                    count++;
-                    if (d.isMeasured) {
-                        measuredSum += d.voltage;
-                        measuredCount++;
-                    }
-                });
-                if (count > 0) {
-                    monthlyData.push(sumVoltage / count);
-                    monthlyLabels.push(new Date(simulatedData[simulatedData.length - 1].date).toLocaleString('default', { month: 'short' }));
-                    monthlyMeasuredVoltages.push(measuredCount > 0 ? measuredSum / measuredCount : null);
-                }
-
-                this.charts.voltageHistory = new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: monthlyLabels,
-                        datasets: [
-                            {
-                                label: 'Average Monthly Voltage',
-                                data: monthlyData,
-                                borderColor: '#3b82f6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                fill: true,
-                                unit: 'V'
-                            },
-                            {
-                                label: 'Measured Voltage (Avg)',
-                                data: monthlyMeasuredVoltages,
-                                borderColor: '#10b981',
-                                backgroundColor: '#10b981',
-                                pointRadius: 5,
-                                showLine: false,
-                                unit: 'V'
-                            },
-                            {
-                                label: 'Critical Voltage (~50% SOC)',
-                                data: Array(monthlyLabels.length).fill(this.getVoltageFromSoc(this.constants.criticalSocPercent)),
-                                borderColor: '#ef4444',
-                                borderDash: [5, 5],
-                                borderWidth: 1,
-                                pointRadius: 0,
-                                fill: false,
-                                unit: 'V'
-                            }
-                        ]
-                    },
-                    options: {
-                        ...this.getChartOptions(),
-                        plugins: {
-                            ...this.getChartOptions().plugins,
-                            title: {
-                                display: true,
-                                text: 'Voltage History and Projection from Tracking Start',
-                                color: '#3b82f6',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
-                        scales: {
-                            ...this.getChartOptions().scales,
-                            x: {
-                                ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Month', color: '#94a3b8' }
-                            },
-                            y: {
-                                ...this.getChartOptions().scales.y,
-                                title: { display: true, text: 'Voltage (V)', color: '#94a3b8' },
-                                min: 10,
-                                max: 13
-                            }
-                        }
-                    }
-                });
-            }
-
             // Set up event listeners
             setupEventListeners() {
                 // Tab switching
@@ -1943,7 +1658,6 @@
                 document.getElementById('battery-level-slider').addEventListener('input', (e) => {
                     this.data.batteryLevel = parseInt(e.target.value);
                     document.getElementById('battery-level-value').textContent = this.data.batteryLevel;
-                    // Update last measurement if it's the only one or something, but to keep simple, manual slider doesn't add measurement
                     this.scheduleAutosave();
                     this.updateUI();
                     this.updateCharts();
@@ -1951,30 +1665,22 @@
 
                 document.getElementById('update-from-voltage-btn').addEventListener('click', () => {
                     const voltage = parseFloat(document.getElementById('voltage-input').value);
-                    const datetimeInput = document.getElementById('voltage-datetime-input').value;
                     if (isNaN(voltage) || voltage < 10 || voltage > 13) {
                         alert('Please enter a valid resting voltage between 10V and 13V.');
                         return;
                     }
-                    if (!datetimeInput) {
-                        alert('Please enter a valid date/time.');
-                        return;
-                    }
-                    const timestamp = new Date(datetimeInput).toISOString();
-                    this.addVoltageMeasurement(voltage, timestamp);
-                    this.data.batteryLevel = this.calculateCurrentBatteryLevel();
                     const newSoc = this.getSocFromVoltage(voltage);
-                    this.addActivityLog(`Updated battery level from voltage ${voltage}V to ${newSoc.toFixed(1)}% SOC at ${new Date(timestamp).toLocaleString()}`, "system");
+                    this.data.batteryLevel = newSoc;
+                    this.addActivityLog(`Updated battery level from voltage ${voltage}V to ${newSoc.toFixed(1)}% SOC`, "system");
                     this.scheduleAutosave();
                     this.updateUI();
                     this.updateCharts();
-                    alert(`Battery level updated based on ${voltage}V resting voltage at ${new Date(timestamp).toLocaleString()}. Current estimated SOC: ${this.data.batteryLevel.toFixed(1)}%`);
+                    alert(`Battery level updated to ${newSoc.toFixed(1)}% based on ${voltage}V resting voltage.`);
                 });
 
                 document.getElementById('direct-sun-hours-slider').addEventListener('input', (e) => {
                     this.data.directSunHours = parseFloat(e.target.value);
                     document.getElementById('direct-sun-hours-value').textContent = this.data.directSunHours;
-                    this.data.batteryLevel = this.calculateCurrentBatteryLevel(); // Recalc since net changed
                     this.scheduleAutosave();
                     this.updateUI();
                     this.updateCharts();
@@ -1983,7 +1689,6 @@
                 document.getElementById('non-direct-sun-hours-slider').addEventListener('input', (e) => {
                     this.data.nonDirectSunHours = parseFloat(e.target.value);
                     document.getElementById('non-direct-sun-hours-value').textContent = this.data.nonDirectSunHours;
-                    this.data.batteryLevel = this.calculateCurrentBatteryLevel();
                     this.scheduleAutosave();
                     this.updateUI();
                     this.updateCharts();
@@ -2002,7 +1707,6 @@
 
                 document.getElementById('solar-toggle').addEventListener('change', (e) => {
                     this.data.solarActive = e.target.checked;
-                    this.data.batteryLevel = this.calculateCurrentBatteryLevel();
                     this.scheduleAutosave();
                     this.updateUI();
                     this.updateCharts();

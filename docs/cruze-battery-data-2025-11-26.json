@@ -1,0 +1,140 @@
+{
+  "trackingStartDate": "2025-11-25T00:00:00.000Z",
+  "batteryLevel": 100,
+  "sunHours": 2,
+  "fuelLevel": 5.85,
+  "solarActive": true,
+  "remoteStarts": [
+    {
+      "timestamp": "2025-11-25T00:31:33.746Z",
+      "batteryChange": 0.6,
+      "fuelChange": 0.025
+    }
+  ],
+  "activityLog": [
+    {
+      "timestamp": "2025-11-26T18:58:20.049Z",
+      "message": "Updated battery level from voltage 12.79V to 100.0% SOC at 11/26/2025, 6:58:00 PM",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-26T18:58:20.049Z",
+      "message": "Voltage measurement added: 12.79V at 11/26/2025, 6:58:00 PM",
+      "type": "voltage-measurement"
+    },
+    {
+      "timestamp": "2025-11-26T18:11:12.115Z",
+      "message": "Tracking start date updated to 2025-11-25",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-26T18:10:25.903Z",
+      "message": "Deleted voltage measurement from 11/25/2025, 12:00:00 AM",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-26T18:08:12.043Z",
+      "message": "Updated battery level from voltage 12.77V to 100.0% SOC at 11/26/2025, 4:45:00 AM",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-26T18:08:12.042Z",
+      "message": "Voltage measurement added: 12.77V at 11/26/2025, 4:45:00 AM",
+      "type": "voltage-measurement"
+    },
+    {
+      "timestamp": "2025-11-26T18:07:29.680Z",
+      "message": "Updated battery level from voltage 12.81V to 100.0% SOC at 11/25/2025, 8:00:00 AM",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-26T18:07:29.680Z",
+      "message": "Voltage measurement added: 12.81V at 11/25/2025, 8:00:00 AM",
+      "type": "voltage-measurement"
+    },
+    {
+      "timestamp": "2025-11-26T17:19:27.153Z",
+      "message": "Applied automatic gain of 0.05 Ah over 0.8 days",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T20:51:47.018Z",
+      "message": "Updated battery level from voltage 12.81V to 100.0% SOC",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T20:48:59.930Z",
+      "message": "Applied automatic gain of 0.00 Ah over 0.1 days",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T17:46:51.707Z",
+      "message": "Battery install date updated to 2024-06-25",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T17:45:10.113Z",
+      "message": "Applied automatic drain of NaN Ah over 0.3 days",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T09:42:39.064Z",
+      "message": "Battery install date updated to 2023-06-25",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T09:40:36.460Z",
+      "message": "Applied automatic drain of -0.01 Ah over 0.0 days",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T09:22:19.114Z",
+      "message": "Tracking start date updated to 2025-11-25",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T09:21:59.675Z",
+      "message": "Tracking start date updated to 2025-11-23",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T00:31:33.746Z",
+      "message": "Remote start activated (+0.6 Ah, -0.025 gal)",
+      "type": "remote-start"
+    },
+    {
+      "timestamp": "2025-11-25T00:29:48.817Z",
+      "message": "Tracking initialized",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T00:31:01.813Z",
+      "message": "Tracking start date updated to 2025-11-23",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-25T00:31:10.876Z",
+      "message": "Tracking start date updated to 2025-11-23",
+      "type": "system"
+    }
+  ],
+  "consecutiveStarts": 1,
+  "lastUpdated": "2025-11-26T18:58:25.776Z",
+  "batteryInstallDate": "2024-06-25T00:00:00.000Z",
+  "directSunHours": 1,
+  "nonDirectSunHours": 8,
+  "voltageHistory": [
+    {
+      "timestamp": "2025-11-25T08:00:00.000Z",
+      "voltage": 12.81
+    },
+    {
+      "timestamp": "2025-11-26T04:45:00.000Z",
+      "voltage": 12.77
+    },
+    {
+      "timestamp": "2025-11-26T18:58:00.000Z",
+      "voltage": 12.79
+    }
+  ]
+}
