@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cruze Battery Tracker - Professional Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; }
+        #root { width: 100%; min-height: 100vh; }
+        
+        /* Professional styling inspired by satellite analysis */
+        .metric-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.6);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            border-radius: 10px 10px 0 0;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .tab-content { 
+            display: none; 
+        }
+        .tab-content.active { 
+            display: block; 
+        }
+        
+        .chart-container { 
+            width: 100%; 
+            height: 400px; 
+            margin-bottom: 20px; 
+            position: relative; 
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+        }
+        .glow-box {
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        .insight-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        .insight-card:hover {
+            transform: translateX(4px);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Toggle Switch Styles */
+        .toggle-container {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        
+        .toggle-container input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #4B5563;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #10B981;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Autosave indicator */
+        .autosave-indicator {
+            transition: all 0.3s ease;
+        }
+        .autosave-indicator.saving {
+            opacity: 0.7;
+        }
+        .autosave-indicator.saved {
+            color: #10B981;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
+    <div id="root">
+        <div class="max-w-6xl mx-auto min-h-screen">
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 shadow-lg">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h1 class="text-xl font-bold flex items-center">
+                            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            Cruze Battery Tracker - Professional Analytics
+                        </h1>
+                        <p class="text-xs opacity-90 mt-1">Comprehensive Battery Maintenance System with Professional Visualizations</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm opacity-90">Tracking Since</div>
+                        <div class="text-sm font-medium" id="tracking-start-date">Loading...</div>
+                        <div class="text-xs opacity-75 autosave-indicator" id="autosave-status">Autosave: Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="bg-gray-800 border-gray-700 border-b flex overflow-x-auto">
+                <button class="tab-button active flex-1 py-3 px-4 font-medium text-sm flex items-center justify-center text-white" data-tab="dashboard">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    Dashboard
+                </button>
+                <button class="tab-button flex-1 py-3 px-4 font-medium text-sm flex items-center justify-center text-gray-400 hover:text-gray-200" data-tab="analytics">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path>
+                    </svg>
+                    Analytics
+                </button>
+                <button class="tab-button flex-1 py-3 px-4 font-medium text-sm flex items-center justify-center text-gray-400 hover:text-gray-200" data-tab="history">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    History
+                </button>
+                <button class="tab-button flex-1 py-3 px-4 font-medium text-sm flex items-center justify-center text-gray-400 hover:text-gray-200" data-tab="settings">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Settings
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="p-4">
+                <!-- Dashboard Tab -->
+                <div class="tab-content active" id="tab-dashboard">
+                    <!-- Status Cards -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="metric-card p-4 glow-box">
+                            <div class="flex items-center justify-between mb-2">
+                                <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                                </svg>
+                                <span class="text-2xl font-bold text-blue-400" id="battery-level-display">78%</span>
+                            </div>
+                            <div class="text-sm opacity-90">Battery Level</div>
+                            <div class="text-xs mt-1 opacity-75" id="battery-detail">Loading...</div>
+                        </div>
+
+                        <div class="metric-card p-4 glow-box">
+                            <div class="flex items-center justify-between mb-2">
+                                <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <span class="text-2xl font-bold text-green-400" id="days-remaining-display">∞</span>
+                            </div>
+                            <div class="text-sm opacity-90">Days Remaining</div>
+                            <div class="text-xs mt-1 opacity-75" id="days-detail">Self-sustaining</div>
+                        </div>
+
+                        <div class="metric-card p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <svg class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                                <span class="text-2xl font-bold text-yellow-400" id="sun-hours-display">4h</span>
+                            </div>
+                            <div class="text-sm opacity-90">Direct Sun Hours/Day</div>
+                            <div class="text-xs mt-1 opacity-75" id="solar-detail">+1.20 Ah/day</div>
+                        </div>
+
+                        <div class="metric-card p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                </svg>
+                                <span class="text-2xl font-bold text-purple-400" id="remote-starts-display">0/2</span>
+                            </div>
+                            <div class="text-sm opacity-90">Remote Starts</div>
+                            <div class="text-xs mt-1 opacity-75" id="fuel-detail">Fuel: 3.5 gal</div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="metric-card p-4 mb-6">
+                        <h3 class="font-semibold mb-3 flex items-center text-white">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                            </svg>
+                            Quick Actions
+                        </h3>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="bg-blue-500 hover:bg-blue-600 text-white py-3 px-4 rounded-lg font-medium transition" id="remote-start-btn">
+                                Remote Start
+                            </button>
+                            <button class="bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition" id="physical-start-btn">
+                                Physical Start
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Battery Projection Chart -->
+                    <div class="metric-card p-4 mb-6">
+                        <h3 class="font-semibold mb-3 text-white">📈 Battery Level Projection - Self-Sustaining with Solar</h3>
+                        <div class="chart-container">
+                            <canvas id="batteryProjectionChart"></canvas>
+                        </div>
+                        <div class="mt-4 p-4 bg-slate-800/50 rounded-lg">
+                            <p class="text-sm text-slate-300" id="projection-analysis">
+                                <strong>Analysis:</strong> With 4 hours of daily sun and 5W solar panel, the system maintains a positive energy balance. 
+                                Battery remains at sustainable levels indefinitely with current configuration. 
+                                Net daily gain: +0.24 Ah/day provides comfortable margin against parasitic drain.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Zero-Sun Survival Analysis -->
+                    <div class="metric-card p-4 mb-6">
+                        <h3 class="font-semibold mb-3 text-white">🌑 Zero-Sun Survival Analysis</h3>
+                        <div class="chart-container">
+                            <canvas id="zeroSunChart"></canvas>
+                        </div>
+                        <div class="mt-4 p-4 bg-slate-800/50 rounded-lg">
+                            <p class="text-sm text-slate-300" id="zerosun-analysis">
+                                <strong>Analysis:</strong> Without solar charging, battery reaches critical level (50% SOC) in approximately 14 days. 
+                                This provides sufficient buffer for typical cloudy periods in your region. 
+                                Worst-case winter scenario (0.4 sun-hours/day) extends survival to ~16 days.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Tab -->
+                <div class="tab-content" id="tab-analytics">
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-bold text-blue-400 mb-4">📊 Advanced Analytics</h2>
+                        
+                        <!-- Solar Net Energy Analysis -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-3 text-white">☀️ Solar Net Energy Analysis</h3>
+                            <div class="chart-container">
+                                <canvas id="solarAnalysisChart"></canvas>
+                            </div>
+                            <div class="mt-4 p-4 bg-slate-800/50 rounded-lg">
+                                <p class="text-sm text-slate-300" id="solar-analysis">
+                                    <strong>Analysis:</strong> Solar break-even point occurs at 3.2 hours of daily sun. 
+                                    Current region average of 4 hours provides comfortable +0.24 Ah/day surplus. 
+                                    Even during poor sun conditions (1-2 hours), battery depletion is gradual with weeks of survival time.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Fuel Endurance Analysis -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-3 text-white">⛽ Fuel Endurance Analysis</h3>
+                            <div class="chart-container">
+                                <canvas id="fuelAnalysisChart"></canvas>
+                            </div>
+                            <div class="mt-4 p-4 bg-slate-800/50 rounded-lg">
+                                <p class="text-sm text-slate-300" id="fuel-analysis">
+                                    <strong>Analysis:</strong> Current quarter-tank (3.5 gal) provides 140 remote starts. 
+                                    At typical usage of 2 starts/month, fuel will last 70 months (5.8 years). 
+                                    Fuel consumption is minimal concern compared to battery maintenance requirements.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- 12-Month Projection -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-3 text-white">📅 12-Month Battery Projection</h3>
+                            <div class="chart-container">
+                                <canvas id="yearProjectionChart"></canvas>
+                            </div>
+                            <div class="mt-4 p-4 bg-slate-800/50 rounded-lg">
+                                <p class="text-sm text-slate-300">
+                                    <strong>Analysis:</strong> Long-term projection shows sustainable operation with current solar configuration.
+                                    Even worst-case winter conditions maintain battery above critical levels.
+                                    Remote start usage has minimal impact on long-term battery health.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Technical Insights -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="insight-card p-4 rounded-lg border-blue-500">
+                                <div class="font-semibold text-blue-300 mb-2">🔋 Battery Health Metrics</div>
+                                <div class="text-sm text-slate-300 space-y-1" id="battery-insight">
+                                    <div>• <strong>Capacity:</strong> Loading...</div>
+                                    <div>• <strong>Age:</strong> Loading...</div>
+                                    <div>• <strong>Parasitic Drain:</strong> 0.96 Ah/day (40 mA)</div>
+                                    <div>• <strong>Usable Capacity:</strong> Loading...</div>
+                                </div>
+                            </div>
+
+                            <div class="insight-card p-4 rounded-lg border-green-500">
+                                <div class="font-semibold text-green-300 mb-2">☀️ Solar Performance</div>
+                                <div class="text-sm text-slate-300 space-y-1" id="solar-insight">
+                                    <div>• <strong>Panel:</strong> 5W (0.30 A peak)</div>
+                                    <div>• <strong>Daily Harvest:</strong> 1.2 Ah @ 4 sun-hours</div>
+                                    <div>• <strong>Break-even:</strong> 3.2 hours sun/day</div>
+                                    <div>• <strong>Net Gain:</strong> +0.24 Ah/day current</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- History Tab -->
+                <div class="tab-content" id="tab-history">
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-bold text-blue-400 mb-4">📋 Activity History</h2>
+                        
+                        <!-- Recent Remote Starts -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-3 text-white">🔄 Recent Remote Starts</h3>
+                            <div class="space-y-2" id="remote-starts-list">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Activity Log -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-3 text-white">📝 Activity Log</h3>
+                            <div class="space-y-2 max-h-96 overflow-y-auto" id="activity-log">
+                                <!-- Will be populated by JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Monthly Summary -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-3 text-white">📈 Monthly Summary</h3>
+                            <div class="chart-container">
+                                <canvas id="monthlySummaryChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-content" id="tab-settings">
+                    <div class="space-y-6">
+                        <h2 class="text-2xl font-bold text-blue-400 mb-4">⚙️ Configuration Settings</h2>
+                        
+                        <!-- Battery Configuration -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-4 text-white">🔋 Battery Configuration</h3>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-2 text-gray-300">Current Battery Level (%)</label>
+                                    <input type="range" min="0" max="100" value="78" class="w-full" id="battery-level-slider">
+                                    <div class="text-right text-sm text-gray-400"><span id="battery-level-value">78</span>%</div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2 text-gray-300">Current Resting Voltage (V)</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" min="10" max="13" step="0.01" class="w-full border rounded px-3 py-2 bg-gray-700 border-gray-600 text-white" id="voltage-input">
+                                        <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium text-sm transition" id="update-from-voltage-btn">
+                                            Update SOC
+                                        </button>
+                                    </div>
+                                    <p class="text-xs text-gray-400 mt-1">Enter resting voltage (no load, no charging) to estimate SOC.</p>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2 text-gray-300">Average Direct Sun Hours per Day</label>
+                                    <input type="range" min="0" max="8" step="0.5" value="4" class="w-full" id="direct-sun-hours-slider">
+                                    <div class="text-right text-sm text-gray-400"><span id="direct-sun-hours-value">4.0</span> hours</div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2 text-gray-300">Average Non-Direct Sunlight Hours per Day</label>
+                                    <input type="range" min="0" max="12" step="0.5" value="4" class="w-full" id="non-direct-sun-hours-slider">
+                                    <div class="text-right text-sm text-gray-400"><span id="non-direct-sun-hours-value">4.0</span> hours</div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium mb-2 text-gray-300">Fuel Level (gallons)</label>
+                                    <input type="number" min="0" max="13" step="0.1" value="3.5" class="w-full border rounded px-3 py-2 bg-gray-700 border-gray-600 text-white" id="fuel-level-input">
+                                </div>
+
+                                <!-- Fixed Solar Panel Toggle -->
+                                <div class="flex items-center justify-between p-3 rounded bg-gray-700">
+                                    <span class="font-medium text-gray-200">5W Solar Panel Active</span>
+                                    <label class="toggle-container">
+                                        <input type="checkbox" id="solar-toggle" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tracking Information -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-4 text-white">📊 Tracking Information</h3>
+                            
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center p-3 rounded bg-gray-700">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-200">Tracking Start Date</div>
+                                        <div class="text-xs text-gray-400" id="tracking-start-date-display">Loading...</div>
+                                    </div>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium text-sm transition" id="update-start-date-btn">
+                                        Update
+                                    </button>
+                                </div>
+
+                                <div class="flex justify-between items-center p-3 rounded bg-gray-700">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-200">Battery Install Date</div>
+                                        <div class="text-xs text-gray-400" id="battery-install-date-display">Loading...</div>
+                                    </div>
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg font-medium text-sm transition" id="update-install-date-btn">
+                                        Update
+                                    </button>
+                                </div>
+
+                                <div class="flex justify-between items-center p-3 rounded bg-gray-700">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-200">Data Reset</div>
+                                        <div class="text-xs text-gray-400">Reset all tracking data to default values</div>
+                                    </div>
+                                    <button class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-medium text-sm transition" id="reset-data-btn">
+                                        Reset Data
+                                    </button>
+                                </div>
+
+                                <div class="flex justify-between items-center p-3 rounded bg-gray-700">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-200">Export Data</div>
+                                        <div class="text-xs text-gray-400">Download tracking data as JSON file</div>
+                                    </div>
+                                    <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg font-medium text-sm transition" id="export-data-btn">
+                                        Export
+                                    </button>
+                                </div>
+
+                                <div class="flex justify-between items-center p-3 rounded bg-gray-700">
+                                    <div>
+                                        <div class="text-sm font-medium text-gray-200">Import Data</div>
+                                        <div class="text-xs text-gray-400">Upload previously exported JSON file</div>
+                                    </div>
+                                    <input type="file" id="import-data-input" accept=".json" class="hidden">
+                                    <button class="bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded-lg font-medium text-sm transition" id="import-data-btn">
+                                        Import
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Technical Specifications -->
+                        <div class="metric-card p-4">
+                            <h3 class="font-semibold mb-3 text-white">🔧 Technical Specifications</h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Battery Capacity (new):</span>
+                                    <span class="font-medium text-gray-200">60 Ah</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Current Battery Capacity:</span>
+                                    <span class="font-medium text-gray-200" id="current-capacity-spec">Loading...</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Usable Capacity (50% DOD):</span>
+                                    <span class="font-medium text-gray-200" id="usable-capacity-spec">Loading...</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Parasitic Draw:</span>
+                                    <span class="font-medium text-gray-200">40 mA (0.96 Ah/day)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Remote Start Duration:</span>
+                                    <span class="font-medium text-gray-200">10 minutes</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Remote Start Charge:</span>
+                                    <span class="font-medium text-gray-200">0.6 Ah per start</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Remote Start Limit:</span>
+                                    <span class="font-medium text-gray-200">2 consecutive</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Solar Panel Output (Direct):</span>
+                                    <span class="font-medium text-gray-200">5W (0.30 Ah/sun-hour)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Solar Panel Output (Non-Direct):</span>
+                                    <span class="font-medium text-gray-200">1.5W (0.09 Ah/sun-hour)</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Fuel Burn Rate:</span>
+                                    <span class="font-medium text-gray-200">0.025 gal/start</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-400">Idle Fuel Consumption:</span>
+                                    <span class="font-medium text-gray-200">0.15 gal/hour</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Maintenance Recommendations -->
+                        <div class="insight-card p-4 rounded-lg border-yellow-500">
+                            <div class="font-semibold text-yellow-300 mb-2">💡 Maintenance Recommendations</div>
+                            <div class="text-sm text-slate-300 space-y-2" id="maintenance-recs">
+                                <p><strong>Current Status: OPTIMAL</strong> - System is self-sustaining with current configuration.</p>
+                                <ul class="list-disc list-inside ml-2 space-y-1">
+                                    <li>Continue current solar maintenance strategy</li>
+                                    <li>Check solar panel connections monthly</li>
+                                    <li>Monitor battery health every 3 months</li>
+                                    <li>Consider battery replacement at 70% capacity (approx. 6 months)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-gray-800 border-gray-700 text-gray-400 border-t p-4 text-center text-xs">
+                <div class="flex items-center justify-center mb-2">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>All calculations based on validated Chevy Cruze 1.4T specifications</span>
+                </div>
+                <div>Parasitic Draw: 40mA | Solar: 5W Panel | Remote Start: 10min cycles | Fuel: 0.15 gal/hr idle</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data management and autosave functionality
+        class CruzeBatteryTracker {
+            constructor() {
+                this.constants = {
+                    originalCapacityAh: 60,
+                    degradationRate: 0.05, // 5% per year
+                    minCapacityRetention: 0.7, // 70%
+                    parasiticDrainAhPerDay: 0.96,
+                    solarGainAhPerHourDirect: 0.3,
+                    solarGainAhPerHourNonDirect: 0.09, // 30% of direct
+                    remoteStartChargeAh: 0.6,
+                    remoteStartFuelGal: 0.025,
+                    criticalSocPercent: 50,
+                    maxActivityLog: 100,
+                    maxFuelGal: 13
+                };
+                this.voltageToSocMap = [
+                    {voltage: 12.70, soc: 100},
+                    {voltage: 12.50, soc: 90},
+                    {voltage: 12.42, soc: 80},
+                    {voltage: 12.32, soc: 70},
+                    {voltage: 12.20, soc: 60},
+                    {voltage: 12.06, soc: 50},
+                    {voltage: 11.90, soc: 40},
+                    {voltage: 11.79, soc: 30},
+                    {voltage: 11.58, soc: 20},
+                    {voltage: 11.31, soc: 10},
+                    {voltage: 10.50, soc: 0}
+                ];
+                this.data = this.loadData();
+                this.applyAutomaticAdjustment();
+                this.autosaveTimer = null;
+                this.charts = {};
+                this.init();
+            }
+
+            calculateBatteryAge() {
+                const now = new Date();
+                const install = new Date(this.data.batteryInstallDate);
+                return (now - install) / (1000 * 60 * 60 * 24 * 365.25);
+            }
+
+            calculateCurrentCapacity() {
+                const age = this.calculateBatteryAge();
+                const degradationFactor = age * this.constants.degradationRate;
+                const retention = Math.max(this.constants.minCapacityRetention, 1 - degradationFactor);
+                return this.constants.originalCapacityAh * retention;
+            }
+
+            getSocFromVoltage(voltage) {
+                if (voltage >= this.voltageToSocMap[0].voltage) return 100;
+                if (voltage <= this.voltageToSocMap[this.voltageToSocMap.length - 1].voltage) return 0;
+
+                for (let i = 0; i < this.voltageToSocMap.length - 1; i++) {
+                    const high = this.voltageToSocMap[i];
+                    const low = this.voltageToSocMap[i + 1];
+                    if (voltage <= high.voltage && voltage >= low.voltage) {
+                        const rangeV = high.voltage - low.voltage;
+                        const rangeSoc = high.soc - low.soc;
+                        return low.soc + ((voltage - low.voltage) / rangeV) * rangeSoc;
+                    }
+                }
+                return 0; // Fallback
+            }
+
+            // Load data from localStorage or initialize with defaults
+            loadData() {
+                const savedData = localStorage.getItem('cruzeBatteryData');
+                if (savedData) {
+                    return JSON.parse(savedData);
+                } else {
+                    // Initialize with default data
+                    const now = new Date().toISOString();
+                    const install = new Date(new Date().getTime() - 1.5 * 365.25 * 24 * 60 * 60 * 1000).toISOString();
+                    return {
+                        trackingStartDate: now,
+                        batteryInstallDate: install,
+                        lastUpdated: now,
+                        batteryLevel: 78,
+                        directSunHours: 4,
+                        nonDirectSunHours: 4,
+                        fuelLevel: 3.5,
+                        solarActive: true,
+                        remoteStarts: [],
+                        activityLog: [
+                            {
+                                timestamp: now,
+                                message: "Tracking initialized",
+                                type: "system"
+                            }
+                        ],
+                        consecutiveStarts: 0
+                    };
+                }
+            }
+
+            // Save data to localStorage
+            saveData() {
+                this.data.lastUpdated = new Date().toISOString();
+                this.updateAutosaveStatus('saving');
+                localStorage.setItem('cruzeBatteryData', JSON.stringify(this.data));
+                
+                // Simulate saving delay
+                setTimeout(() => {
+                    this.updateAutosaveStatus('saved');
+                }, 300);
+            }
+
+            // Update autosave status indicator
+            updateAutosaveStatus(status) {
+                const indicator = document.getElementById('autosave-status');
+                indicator.textContent = `Autosave: ${status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : 'Ready'}`;
+                
+                if (status === 'saving') {
+                    indicator.classList.add('saving');
+                    indicator.classList.remove('saved');
+                } else if (status === 'saved') {
+                    indicator.classList.remove('saving');
+                    indicator.classList.add('saved');
+                    
+                    // Reset status after 2 seconds
+                    setTimeout(() => {
+                        indicator.classList.remove('saved');
+                        indicator.textContent = 'Autosave: Ready';
+                    }, 2000);
+                } else {
+                    indicator.classList.remove('saving', 'saved');
+                }
+            }
+
+            // Schedule autosave with debouncing
+            scheduleAutosave() {
+                if (this.autosaveTimer) {
+                    clearTimeout(this.autosaveTimer);
+                }
+                
+                this.autosaveTimer = setTimeout(() => {
+                    this.saveData();
+                }, 1000);
+            }
+
+            // Apply automatic battery adjustment based on time passed since last update
+            applyAutomaticAdjustment() {
+                if (!this.data.lastUpdated) return;
+
+                const now = new Date();
+                const last = new Date(this.data.lastUpdated);
+                const daysPassed = (now - last) / (1000 * 60 * 60 * 24);
+
+                if (daysPassed > 0) {
+                    const currentCapacity = this.calculateCurrentCapacity();
+                    const netAhPerDay = this.calculateNetAhPerDay();
+                    const totalAhChange = netAhPerDay * daysPassed;
+                    const percentChange = (totalAhChange / currentCapacity) * 100;
+                    this.data.batteryLevel = Math.max(0, Math.min(100, this.data.batteryLevel + percentChange));
+
+                    const message = `Applied automatic ${netAhPerDay >= 0 ? 'gain' : 'drain'} of ${totalAhChange.toFixed(2)} Ah over ${daysPassed.toFixed(1)} days`;
+                    this.addActivityLog(message, 'system');
+
+                    if (this.data.batteryLevel <= this.constants.criticalSocPercent) {
+                        alert(`Warning: Battery level has dropped to ${this.data.batteryLevel.toFixed(1)}% due to time passed. Charge recommended.`);
+                    }
+                }
+            }
+
+            // Calculate net Ah per day
+            calculateNetAhPerDay() {
+                const directGain = this.data.solarActive ? this.data.directSunHours * this.constants.solarGainAhPerHourDirect : 0;
+                const nonDirectGain = this.data.solarActive ? this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect : 0;
+                return directGain + nonDirectGain - this.constants.parasiticDrainAhPerDay;
+            }
+
+            // Reset all data to defaults
+            resetData() {
+                if (confirm('Are you sure you want to reset all tracking data? This cannot be undone.')) {
+                    const now = new Date().toISOString();
+                    const install = new Date(new Date().getTime() - 1.5 * 365.25 * 24 * 60 * 60 * 1000).toISOString();
+                    this.data = {
+                        trackingStartDate: now,
+                        batteryInstallDate: install,
+                        lastUpdated: now,
+                        batteryLevel: 78,
+                        directSunHours: 4,
+                        nonDirectSunHours: 4,
+                        fuelLevel: 3.5,
+                        solarActive: true,
+                        remoteStarts: [],
+                        activityLog: [
+                            {
+                                timestamp: now,
+                                message: "Data reset to defaults",
+                                type: "system"
+                            }
+                        ],
+                        consecutiveStarts: 0
+                    };
+                    
+                    this.saveData();
+                    this.updateUI();
+                    this.updateCharts();
+                    
+                    // Show confirmation
+                    alert('All tracking data has been reset to default values.');
+                }
+            }
+
+            // Update tracking start date
+            updateTrackingStartDate() {
+                const newDate = prompt('Enter new tracking start date (YYYY-MM-DD):', 
+                    new Date(this.data.trackingStartDate).toISOString().split('T')[0]);
+                
+                if (newDate) {
+                    const dateObj = new Date(newDate);
+                    if (!isNaN(dateObj.getTime())) {
+                        this.data.trackingStartDate = dateObj.toISOString();
+                        this.addActivityLog(`Tracking start date updated to ${newDate}`, "system");
+                        this.saveData();
+                        this.updateUI();
+                    } else {
+                        alert('Invalid date format. Please use YYYY-MM-DD.');
+                    }
+                }
+            }
+
+            // Update battery install date
+            updateBatteryInstallDate() {
+                const newDate = prompt('Enter new battery install date (YYYY-MM-DD):', 
+                    new Date(this.data.batteryInstallDate).toISOString().split('T')[0]);
+                
+                if (newDate) {
+                    const dateObj = new Date(newDate);
+                    if (!isNaN(dateObj.getTime())) {
+                        this.data.batteryInstallDate = dateObj.toISOString();
+                        this.addActivityLog(`Battery install date updated to ${newDate}`, "system");
+                        this.saveData();
+                        this.updateUI();
+                        this.updateCharts();
+                    } else {
+                        alert('Invalid date format. Please use YYYY-MM-DD.');
+                    }
+                }
+            }
+
+            // Add a remote start event
+            addRemoteStart() {
+                if (this.data.consecutiveStarts >= 2) {
+                    alert('Remote start limit reached. Please perform a physical start to reset the counter.');
+                    return;
+                }
+
+                if (this.data.fuelLevel < this.constants.remoteStartFuelGal) {
+                    alert('Insufficient fuel for remote start.');
+                    return;
+                }
+
+                const currentCapacity = this.calculateCurrentCapacity();
+
+                // Update data
+                this.data.consecutiveStarts++;
+                this.data.fuelLevel = Math.max(0, this.data.fuelLevel - this.constants.remoteStartFuelGal);
+                const percentGain = (this.constants.remoteStartChargeAh / currentCapacity) * 100;
+                this.data.batteryLevel = Math.min(100, this.data.batteryLevel + percentGain);
+                
+                const timestamp = new Date().toISOString();
+                
+                // Add to remote starts list
+                this.data.remoteStarts.unshift({
+                    timestamp: timestamp,
+                    batteryChange: this.constants.remoteStartChargeAh,
+                    fuelChange: this.constants.remoteStartFuelGal
+                });
+                
+                // Add to activity log
+                this.addActivityLog(`Remote start activated (+${this.constants.remoteStartChargeAh} Ah, -${this.constants.remoteStartFuelGal} gal)`, "remote-start");
+                
+                this.saveData();
+                this.updateUI();
+                this.updateCharts();
+            }
+
+            // Add a physical start event
+            addPhysicalStart() {
+                // Reset consecutive starts counter
+                this.data.consecutiveStarts = 0;
+                
+                // Add to activity log
+                this.addActivityLog("Physical start - remote start counter reset", "physical-start");
+                
+                this.saveData();
+                this.updateUI();
+            }
+
+            // Add entry to activity log with limit
+            addActivityLog(message, type) {
+                this.data.activityLog.unshift({
+                    timestamp: new Date().toISOString(),
+                    message: message,
+                    type: type
+                });
+                if (this.data.activityLog.length > this.constants.maxActivityLog) {
+                    this.data.activityLog.pop();
+                }
+            }
+
+            // Export data as JSON file
+            exportData() {
+                const dataStr = JSON.stringify(this.data, null, 2);
+                const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(dataBlob);
+                link.download = `cruze-battery-data-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+            }
+
+            // Import data from JSON file
+            importData(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        // Validate basic structure
+                        if (importedData.trackingStartDate && importedData.batteryLevel && importedData.directSunHours) {
+                            this.data = importedData;
+                            this.data.lastUpdated = new Date().toISOString();
+                            this.addActivityLog("Data imported from file", "system");
+                            this.saveData();
+                            this.updateUI();
+                            this.updateCharts();
+                            alert('Data imported successfully.');
+                        } else {
+                            alert('Invalid data format.');
+                        }
+                    } catch (error) {
+                        alert('Error importing data: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            // Update the UI with current data
+            updateUI() {
+                const currentCapacity = this.calculateCurrentCapacity();
+                const batteryAge = this.calculateBatteryAge();
+
+                // Update header information
+                const startDate = new Date(this.data.trackingStartDate).toLocaleDateString();
+                document.getElementById('tracking-start-date').textContent = startDate;
+                document.getElementById('tracking-start-date-display').textContent = startDate;
+
+                const installDateStr = new Date(this.data.batteryInstallDate).toLocaleDateString();
+                document.getElementById('battery-install-date-display').textContent = installDateStr;
+
+                // Update dashboard cards
+                document.getElementById('battery-level-display').textContent = `${this.data.batteryLevel.toFixed(0)}%`;
+                document.getElementById('battery-level-value').textContent = this.data.batteryLevel.toFixed(0);
+                document.getElementById('battery-level-slider').value = this.data.batteryLevel;
+                
+                const remainingAh = (currentCapacity * (this.data.batteryLevel / 100)).toFixed(1);
+                document.getElementById('battery-detail').textContent = 
+                    `${remainingAh} Ah remaining (${currentCapacity.toFixed(0)} Ah capacity)`;
+
+                document.getElementById('sun-hours-display').textContent = `${this.data.directSunHours}h`;
+                document.getElementById('direct-sun-hours-value').textContent = this.data.directSunHours;
+                document.getElementById('direct-sun-hours-slider').value = this.data.directSunHours;
+                document.getElementById('non-direct-sun-hours-value').textContent = this.data.nonDirectSunHours;
+                document.getElementById('non-direct-sun-hours-slider').value = this.data.nonDirectSunHours;
+                
+                const solarGainAh = (this.data.solarActive ? this.data.directSunHours * this.constants.solarGainAhPerHourDirect + this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect : 0).toFixed(2);
+                document.getElementById('solar-detail').textContent = 
+                    `+${solarGainAh} Ah/day`;
+
+                document.getElementById('remote-starts-display').textContent = 
+                    `${this.data.consecutiveStarts}/2`;
+                
+                document.getElementById('fuel-detail').textContent = 
+                    `Fuel: ${this.data.fuelLevel.toFixed(1)} gal`;
+                document.getElementById('fuel-level-input').value = this.data.fuelLevel;
+
+                // Update days remaining
+                const netAh = this.calculateNetAhPerDay();
+                let daysRemaining = '∞';
+                let daysDetail = 'Self-sustaining';
+                if (netAh < 0) {
+                    const usablePercent = this.data.batteryLevel - this.constants.criticalSocPercent;
+                    const dailyLossPercent = Math.abs(netAh) / currentCapacity * 100;
+                    const calculatedDays = Math.floor(usablePercent / dailyLossPercent);
+                    daysRemaining = Math.max(0, calculatedDays).toString();
+                    daysDetail = `To ${this.constants.criticalSocPercent}% SOC`;
+                }
+                document.getElementById('days-remaining-display').textContent = daysRemaining;
+                document.getElementById('days-detail').textContent = daysDetail;
+
+                // Update solar toggle
+                document.getElementById('solar-toggle').checked = this.data.solarActive;
+
+                // Update remote starts list (show last 10)
+                this.updateRemoteStartsList();
+
+                // Update activity log (show last 20)
+                this.updateActivityLog();
+
+                // Update dynamic texts
+                this.updateDynamicTexts();
+
+                // Update specs
+                const percentOriginal = ((currentCapacity / this.constants.originalCapacityAh) * 100).toFixed(0);
+                document.getElementById('current-capacity-spec').textContent = `${currentCapacity.toFixed(0)} Ah (${percentOriginal}%)`;
+                document.getElementById('usable-capacity-spec').textContent = `${(currentCapacity * 0.5).toFixed(0)} Ah`;
+
+                // Update insights
+                const degradationStatus = batteryAge < 2 ? 'minimal degradation' : batteryAge < 4 ? 'normal degradation' : 'advanced degradation';
+                document.getElementById('battery-insight').innerHTML = `
+                    <div>• <strong>Capacity:</strong> ${currentCapacity.toFixed(0)} Ah (${percentOriginal}% of original 60 Ah)</div>
+                    <div>• <strong>Age:</strong> ${batteryAge.toFixed(1)} years - ${degradationStatus}</div>
+                    <div>• <strong>Parasitic Drain:</strong> 0.96 Ah/day (40 mA)</div>
+                    <div>• <strong>Usable Capacity:</strong> ${(currentCapacity * 0.5).toFixed(0)} Ah (50% DOD)</div>
+                `;
+            }
+
+            // Update dynamic analysis texts
+            updateDynamicTexts() {
+                const batteryAge = this.calculateBatteryAge();
+                const currentCapacity = this.calculateCurrentCapacity();
+                const netAh = this.calculateNetAhPerDay();
+                const directGain = this.data.directSunHours * this.constants.solarGainAhPerHourDirect;
+                const nonDirectGain = this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect;
+                const totalSolarGain = directGain + nonDirectGain;
+                const breakEvenDirect = this.constants.parasiticDrainAhPerDay / this.constants.solarGainAhPerHourDirect;
+                const dailyPercentLoss = (this.constants.parasiticDrainAhPerDay / currentCapacity) * 100;
+                const usablePercent = this.data.batteryLevel - this.constants.criticalSocPercent;
+                const zeroSunDays = Math.max(0, Math.floor(usablePercent / dailyPercentLoss));
+                const winterDirectSunHours = 0.4;
+                const winterNonDirectSunHours = this.data.nonDirectSunHours; // Assume same non-direct
+                const winterNet = winterDirectSunHours * this.constants.solarGainAhPerHourDirect + winterNonDirectSunHours * this.constants.solarGainAhPerHourNonDirect - this.constants.parasiticDrainAhPerDay;
+                const winterDays = winterNet >= 0 ? '∞' : Math.max(0, Math.floor(usablePercent / (Math.abs(winterNet) / currentCapacity * 100))).toString();
+
+                // Projection analysis
+                document.getElementById('projection-analysis').innerHTML = `
+                    <strong>Analysis:</strong> With ${this.data.directSunHours} direct and ${this.data.nonDirectSunHours} non-direct hours of daily sun and 5W solar panel, the system ${netAh >= 0 ? 'maintains a positive' : 'has a negative'} energy balance. 
+                    Battery remains at sustainable levels ${netAh >= 0 ? 'indefinitely' : 'for a limited time'} with current configuration. 
+                    Net daily: ${netAh >= 0 ? '+' : ''}${netAh.toFixed(2)} Ah/day.
+                `;
+
+                // Zero-sun analysis
+                document.getElementById('zerosun-analysis').innerHTML = `
+                    <strong>Analysis:</strong> Without solar charging, battery reaches critical level (${this.constants.criticalSocPercent}% SOC) in approximately ${zeroSunDays} days. 
+                    This provides sufficient buffer for typical cloudy periods in your region. 
+                    Worst-case winter scenario (${winterDirectSunHours} direct sun-hours/day) extends survival to ~${winterDays} days.
+                `;
+
+                // Solar analysis
+                document.getElementById('solar-analysis').innerHTML = `
+                    <strong>Analysis:</strong> Solar break-even point occurs at ${breakEvenDirect.toFixed(1)} direct hours of daily sun. 
+                    Current region average of ${this.data.directSunHours} direct and ${this.data.nonDirectSunHours} non-direct hours provides comfortable ${netAh >= 0 ? '+' : ''}${netAh.toFixed(2)} Ah/day ${netAh >= 0 ? 'surplus' : 'deficit'}. 
+                    Even during poor sun conditions (1-2 hours), battery depletion is gradual with weeks of survival time.
+                `;
+
+                // Fuel analysis
+                const possibleStarts = Math.floor(this.data.fuelLevel / this.constants.remoteStartFuelGal);
+                const monthsAt2PerMonth = (possibleStarts / 2).toFixed(1);
+                const years = (monthsAt2PerMonth / 12).toFixed(1);
+                document.getElementById('fuel-analysis').innerHTML = `
+                    <strong>Analysis:</strong> Current fuel (${this.data.fuelLevel.toFixed(1)} gal) provides ${possibleStarts} remote starts. 
+                    At typical usage of 2 starts/month, fuel will last ${monthsAt2PerMonth} months (${years} years). 
+                    Fuel consumption is minimal concern compared to battery maintenance requirements.
+                `;
+
+                // Solar insight
+                document.getElementById('solar-insight').innerHTML = `
+                    <div>• <strong>Panel:</strong> 5W (0.30 A peak direct, 0.09 A non-direct)</div>
+                    <div>• <strong>Daily Harvest:</strong> ${totalSolarGain.toFixed(1)} Ah @ ${this.data.directSunHours} direct + ${this.data.nonDirectSunHours} non-direct hours</div>
+                    <div>• <strong>Break-even:</strong> ${breakEvenDirect.toFixed(1)} direct hours sun/day</div>
+                    <div>• <strong>Net Gain:</strong> ${netAh >= 0 ? '+' : ''}${netAh.toFixed(2)} Ah/day current</div>
+                `;
+
+                // Maintenance recs
+                let status = 'OPTIMAL';
+                let additional = '';
+                if (this.data.batteryLevel < 60) {
+                    status = 'WARNING';
+                    additional = '<li>Charge battery immediately</li>';
+                } else if (netAh < 0) {
+                    status = 'CAUTION';
+                    additional = '<li>Consider increasing sun exposure or reducing drain</li>';
+                }
+                if (this.data.fuelLevel < 1) {
+                    additional += '<li>Refuel soon</li>';
+                }
+                if (batteryAge > 3) {
+                    additional += '<li>Consider battery replacement soon</li>';
+                }
+                document.getElementById('maintenance-recs').innerHTML = `
+                    <p><strong>Current Status: ${status}</strong> - ${netAh >= 0 ? 'System is self-sustaining' : 'System has net loss'} with current configuration.</p>
+                    <ul class="list-disc list-inside ml-2 space-y-1">
+                        <li>Continue current solar maintenance strategy</li>
+                        <li>Check solar panel connections monthly</li>
+                        <li>Monitor battery health every 3 months</li>
+                        <li>Consider battery replacement at 70% capacity</li>
+                        ${additional}
+                    </ul>
+                `;
+            }
+
+            // Update remote starts list in history tab (show last 10)
+            updateRemoteStartsList() {
+                const container = document.getElementById('remote-starts-list');
+                container.innerHTML = '';
+
+                const recentStarts = this.data.remoteStarts.slice(0, 10);
+
+                if (recentStarts.length === 0) {
+                    container.innerHTML = '<div class="text-center text-gray-400 py-4">No remote starts recorded</div>';
+                    return;
+                }
+
+                recentStarts.forEach(start => {
+                    const element = document.createElement('div');
+                    element.className = 'flex justify-between items-center p-2 rounded bg-gray-700';
+                    element.innerHTML = `
+                        <div>
+                            <div class="text-sm font-medium text-gray-200">${new Date(start.timestamp).toLocaleString()}</div>
+                            <div class="text-xs text-gray-400">+${start.batteryChange} Ah, -${start.fuelChange} gal</div>
+                        </div>
+                        <button class="text-red-500 hover:text-red-700 delete-remote-start" data-timestamp="${start.timestamp}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    `;
+                    container.appendChild(element);
+                });
+
+                // Add event listeners to delete buttons
+                document.querySelectorAll('.delete-remote-start').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const timestamp = e.target.closest('button').getAttribute('data-timestamp');
+                        this.deleteRemoteStart(timestamp);
+                    });
+                });
+            }
+
+            // Delete a remote start entry
+            deleteRemoteStart(timestamp) {
+                this.data.remoteStarts = this.data.remoteStarts.filter(start => start.timestamp !== timestamp);
+                this.addActivityLog(`Deleted remote start entry from ${new Date(timestamp).toLocaleString()}`, "system");
+                this.saveData();
+                this.updateRemoteStartsList();
+                this.updateCharts();
+            }
+
+            // Update activity log in history tab (show last 20)
+            updateActivityLog() {
+                const container = document.getElementById('activity-log');
+                container.innerHTML = '';
+
+                const recentActivities = this.data.activityLog.slice(0, 20);
+                
+                recentActivities.forEach(entry => {
+                    const element = document.createElement('div');
+                    element.className = 'p-2 rounded bg-gray-700';
+                    element.innerHTML = `
+                        <div class="text-xs text-gray-400">${new Date(entry.timestamp).toLocaleString()}</div>
+                        <div class="text-sm text-gray-200">${entry.message}</div>
+                    `;
+                    container.appendChild(element);
+                });
+            }
+
+            // Initialize charts
+            initCharts() {
+                this.createBatteryProjectionChart();
+                this.createZeroSunChart();
+                this.createSolarAnalysisChart();
+                this.createFuelAnalysisChart();
+                this.createYearProjectionChart();
+                this.createMonthlySummaryChart();
+            }
+
+            // Update charts
+            updateCharts() {
+                Object.values(this.charts).forEach(chart => {
+                    if (chart) chart.destroy();
+                });
+                this.initCharts();
+            }
+
+            // Chart configuration
+            getChartOptions() {
+                return {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            labels: { 
+                                color: '#e2e8f0', 
+                                font: { size: 12 },
+                                usePointStyle: true
+                            },
+                            position: 'top'
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#e2e8f0',
+                            bodyColor: '#cbd5e1',
+                            borderColor: '#334155',
+                            borderWidth: 1,
+                            cornerRadius: 8,
+                            displayColors: true,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}${context.dataset.unit || ''}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { 
+                            ticks: { color: '#94a3b8' }, 
+                            grid: { color: '#334155' },
+                            title: {
+                                display: true,
+                                color: '#94a3b8',
+                                font: { size: 12 }
+                            }
+                        },
+                        y: { 
+                            ticks: { color: '#94a3b8' }, 
+                            grid: { color: '#334155' },
+                            title: {
+                                display: true,
+                                color: '#94a3b8',
+                                font: { size: 12 }
+                            }
+                        }
+                    },
+                    elements: {
+                        line: {
+                            tension: 0.4,
+                            borderWidth: 2
+                        },
+                        point: {
+                            radius: 3,
+                            hoverRadius: 6
+                        }
+                    }
+                };
+            }
+
+            // Create Battery Projection Chart
+            createBatteryProjectionChart() {
+                const ctx = document.getElementById('batteryProjectionChart').getContext('2d');
+                const currentCapacity = this.calculateCurrentCapacity();
+                const dailyPercentGain = (this.calculateNetAhPerDay() / currentCapacity) * 100;
+                
+                this.charts.batteryProjection = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: 91}, (_, i) => i),
+                        datasets: [
+                            {
+                                label: 'Battery Level',
+                                data: Array.from({length: 91}, (_, i) => {
+                                    const level = this.data.batteryLevel + (dailyPercentGain * i);
+                                    return Math.min(100, Math.max(0, level));
+                                }),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                unit: '%'
+                            },
+                            {
+                                label: 'Sustainable Level',
+                                data: Array(91).fill(100),
+                                borderColor: '#10b981',
+                                borderDash: [5, 5],
+                                borderWidth: 1,
+                                pointRadius: 0,
+                                fill: false
+                            },
+                            {
+                                label: 'Critical Level',
+                                data: Array(91).fill(this.constants.criticalSocPercent),
+                                borderColor: '#ef4444',
+                                borderDash: [5, 5],
+                                borderWidth: 1,
+                                pointRadius: 0,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        ...this.getChartOptions(),
+                        plugins: {
+                            ...this.getChartOptions().plugins,
+                            title: {
+                                display: true,
+                                text: `90-Day Projection | Net: ${dailyPercentGain > 0 ? '+' : ''}${dailyPercentGain.toFixed(2)} %/day`,
+                                color: '#3b82f6',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        scales: {
+                            ...this.getChartOptions().scales,
+                            x: {
+                                ...this.getChartOptions().scales.x,
+                                title: { display: true, text: 'Days', color: '#94a3b8' }
+                            },
+                            y: {
+                                ...this.getChartOptions().scales.y,
+                                title: { display: true, text: 'Battery Level (%)', color: '#94a3b8' },
+                                min: this.constants.criticalSocPercent - 10,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Create Zero-Sun Survival Chart
+            createZeroSunChart() {
+                const ctx = document.getElementById('zeroSunChart').getContext('2d');
+                const currentCapacity = this.calculateCurrentCapacity();
+                const dailyPercentLoss = (this.constants.parasiticDrainAhPerDay / currentCapacity) * 100;
+                const usablePercent = this.data.batteryLevel - this.constants.criticalSocPercent;
+                const daysToCritical = Math.max(0, Math.floor(usablePercent / dailyPercentLoss));
+                const chartDays = Math.max(31, daysToCritical + 5);
+                
+                this.charts.zeroSun = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: Array.from({length: chartDays}, (_, i) => i),
+                        datasets: [
+                            {
+                                label: 'Battery SOC',
+                                data: Array.from({length: chartDays}, (_, i) => {
+                                    return Math.max(0, this.data.batteryLevel - (dailyPercentLoss * i));
+                                }),
+                                borderColor: '#8b5cf6',
+                                backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                                fill: true,
+                                unit: '%'
+                            },
+                            {
+                                label: 'Critical Threshold',
+                                data: Array(chartDays).fill(this.constants.criticalSocPercent),
+                                borderColor: '#ef4444',
+                                borderDash: [5, 5],
+                                borderWidth: 2,
+                                pointRadius: 0,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        ...this.getChartOptions(),
+                        plugins: {
+                            ...this.getChartOptions().plugins,
+                            title: {
+                                display: true,
+                                text: `Zero-Sun Scenario | Survival: ${daysToCritical} days to critical`,
+                                color: '#8b5cf6',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        scales: {
+                            ...this.getChartOptions().scales,
+                            x: {
+                                ...this.getChartOptions().scales.x,
+                                title: { display: true, text: 'Days Without Sun', color: '#94a3b8' }
+                            },
+                            y: {
+                                ...this.getChartOptions().scales.y,
+                                title: { display: true, text: 'State of Charge (%)', color: '#94a3b8' },
+                                min: 0,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Create Solar Analysis Chart
+            createSolarAnalysisChart() {
+                const ctx = document.getElementById('solarAnalysisChart').getContext('2d');
+                const breakEven = (this.constants.parasiticDrainAhPerDay / this.constants.solarGainAhPerHourDirect).toFixed(1);
+                
+                this.charts.solarAnalysis = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
+                        datasets: [
+                            {
+                                label: 'Direct Gain',
+                                data: [0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
+                                backgroundColor: 'rgba(34, 197, 94, 0.7)',
+                                borderColor: '#22c55e',
+                                borderWidth: 1,
+                                unit: ' Ah/day'
+                            },
+                            {
+                                label: 'Non-Direct Gain',
+                                data: Array(9).fill(this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect), // Show fixed non-direct
+                                type: 'line',
+                                borderColor: '#fbbf24',
+                                borderWidth: 2,
+                                pointRadius: 0,
+                                fill: false,
+                                unit: ' Ah/day'
+                            },
+                            {
+                                label: 'Parasitic Loss',
+                                data: Array(9).fill(this.constants.parasiticDrainAhPerDay),
+                                type: 'line',
+                                borderColor: '#ef4444',
+                                borderWidth: 2,
+                                borderDash: [5, 5],
+                                pointRadius: 0,
+                                fill: false,
+                                unit: ' Ah/day'
+                            },
+                            {
+                                label: 'Net Balance (Direct + Non-Direct)',
+                                data: [0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4].map(gain => gain + this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect - this.constants.parasiticDrainAhPerDay),
+                                type: 'line',
+                                borderColor: '#3b82f6',
+                                borderWidth: 3,
+                                pointRadius: 4,
+                                pointBackgroundColor: '#3b82f6',
+                                fill: false,
+                                unit: ' Ah/day'
+                            }
+                        ]
+                    },
+                    options: {
+                        ...this.getChartOptions(),
+                        plugins: {
+                            ...this.getChartOptions().plugins,
+                            title: {
+                                display: true,
+                                text: `Break-even (Direct): ${breakEven} hours | Current: ${this.data.directSunHours} direct + ${this.data.nonDirectSunHours} non-direct`,
+                                color: '#22c55e',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        scales: {
+                            ...this.getChartOptions().scales,
+                            x: {
+                                ...this.getChartOptions().scales.x,
+                                title: { display: true, text: 'Direct Sun Hours per Day', color: '#94a3b8' }
+                            },
+                            y: {
+                                ...this.getChartOptions().scales.y,
+                                title: { display: true, text: 'Energy (Ah/day)', color: '#94a3b8' }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Create Fuel Analysis Chart
+            createFuelAnalysisChart() {
+                const ctx = document.getElementById('fuelAnalysisChart').getContext('2d');
+                const currentStarts = Math.floor(this.data.fuelLevel / this.constants.remoteStartFuelGal);
+                
+                this.charts.fuelAnalysis = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Quarter Tank', 'Half Tank', 'Full Tank', 'Current'],
+                        datasets: [
+                            {
+                                label: 'Remote Starts Possible',
+                                data: [140, 280, 520, currentStarts], // Full tank 13 gal
+                                backgroundColor: [
+                                    'rgba(239, 68, 68, 0.7)',
+                                    'rgba(251, 191, 36, 0.7)',
+                                    'rgba(34, 197, 94, 0.7)',
+                                    'rgba(59, 130, 246, 0.7)'
+                                ],
+                                borderColor: [
+                                    '#ef4444',
+                                    '#fbbf24',
+                                    '#22c55e',
+                                    '#3b82f6'
+                                ],
+                                borderWidth: 1,
+                                unit: ' starts'
+                            }
+                        ]
+                    },
+                    options: {
+                        ...this.getChartOptions(),
+                        plugins: {
+                            ...this.getChartOptions().plugins,
+                            title: {
+                                display: true,
+                                text: `Fuel Endurance | Current: ${this.data.fuelLevel.toFixed(1)} gal (${currentStarts} starts)`,
+                                color: '#fbbf24',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        scales: {
+                            ...this.getChartOptions().scales,
+                            x: {
+                                ...this.getChartOptions().scales.x,
+                                title: { display: true, text: 'Fuel Level', color: '#94a3b8' }
+                            },
+                            y: {
+                                ...this.getChartOptions().scales.y,
+                                title: { display: true, text: 'Remote Starts', color: '#94a3b8' },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Create Year Projection Chart
+            createYearProjectionChart() {
+                const ctx = document.getElementById('yearProjectionChart').getContext('2d');
+                const currentCapacity = this.calculateCurrentCapacity();
+                const dailyPercentGain = (this.calculateNetAhPerDay() / currentCapacity) * 100;
+                
+                this.charts.yearProjection = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [
+                            {
+                                label: 'Battery Level',
+                                data: Array.from({length: 12}, (_, i) => {
+                                    const level = this.data.batteryLevel + (dailyPercentGain * 30 * i);
+                                    return Math.min(100, Math.max(0, level));
+                                }),
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                fill: true,
+                                unit: '%'
+                            },
+                            {
+                                label: 'Critical Level',
+                                data: Array(12).fill(this.constants.criticalSocPercent),
+                                borderColor: '#ef4444',
+                                borderDash: [5, 5],
+                                borderWidth: 1,
+                                pointRadius: 0,
+                                fill: false
+                            }
+                        ]
+                    },
+                    options: {
+                        ...this.getChartOptions(),
+                        plugins: {
+                            ...this.getChartOptions().plugins,
+                            title: {
+                                display: true,
+                                text: '12-Month Projection | Sustainable Operation',
+                                color: '#3b82f6',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        scales: {
+                            ...this.getChartOptions().scales,
+                            x: {
+                                ...this.getChartOptions().scales.x,
+                                title: { display: true, text: 'Month', color: '#94a3b8' }
+                            },
+                            y: {
+                                ...this.getChartOptions().scales.y,
+                                title: { display: true, text: 'Battery Level (%)', color: '#94a3b8' },
+                                min: this.constants.criticalSocPercent - 10,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Create Monthly Summary Chart
+            createMonthlySummaryChart() {
+                const ctx = document.getElementById('monthlySummaryChart').getContext('2d');
+                
+                // Get current month data
+                const now = new Date();
+                const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+                const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
+                
+                const monthlyStarts = this.data.remoteStarts.filter(start => start.timestamp >= monthStart && start.timestamp <= monthEnd);
+                const monthlyFuelUsed = monthlyStarts.reduce((sum, start) => sum + start.fuelChange, 0);
+                const monthlyBatteryFromStarts = monthlyStarts.reduce((sum, start) => sum + start.batteryChange, 0);
+                
+                // Approximate days in month
+                const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+                const approxDirectSolarHoursTotal = this.data.directSunHours * daysInMonth;
+                const approxBatteryGain = (this.calculateNetAhPerDay() * daysInMonth) + monthlyBatteryFromStarts;
+                
+                this.charts.monthlySummary = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Remote Starts', 'Direct Solar Hours (Total)', 'Fuel Used', 'Battery Gain (Ah)'],
+                        datasets: [
+                            {
+                                label: 'Current Month',
+                                data: [
+                                    monthlyStarts.length,
+                                    approxDirectSolarHoursTotal,
+                                    monthlyFuelUsed,
+                                    approxBatteryGain
+                                ],
+                                backgroundColor: [
+                                    'rgba(59, 130, 246, 0.7)',
+                                    'rgba(34, 197, 94, 0.7)',
+                                    'rgba(239, 68, 68, 0.7)',
+                                    'rgba(139, 92, 246, 0.7)'
+                                ],
+                                borderColor: [
+                                    '#3b82f6',
+                                    '#22c55e',
+                                    '#ef4444',
+                                    '#8b5cf6'
+                                ],
+                                borderWidth: 1
+                            }
+                        ]
+                    },
+                    options: {
+                        ...this.getChartOptions(),
+                        plugins: {
+                            ...this.getChartOptions().plugins,
+                            title: {
+                                display: true,
+                                text: 'Monthly Summary | All Metrics Normal',
+                                color: '#3b82f6',
+                                font: { size: 14, weight: 'bold' }
+                            }
+                        },
+                        scales: {
+                            ...this.getChartOptions().scales,
+                            x: {
+                                ...this.getChartOptions().scales.x,
+                                title: { display: true, text: 'Metrics', color: '#94a3b8' }
+                            },
+                            y: {
+                                ...this.getChartOptions().scales.y,
+                                title: { display: true, text: 'Values', color: '#94a3b8' },
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Set up event listeners
+            setupEventListeners() {
+                // Tab switching
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.addEventListener('click', function() {
+                        const tabId = this.getAttribute('data-tab');
+                        
+                        // Remove active class from all buttons and contents
+                        document.querySelectorAll('.tab-button').forEach(btn => {
+                            btn.classList.remove('active', 'text-white');
+                            btn.classList.add('text-gray-400', 'hover:text-gray-200');
+                        });
+                        
+                        document.querySelectorAll('.tab-content').forEach(content => {
+                            content.classList.remove('active');
+                        });
+                        
+                        // Add active class to clicked button and corresponding content
+                        this.classList.add('active', 'text-white');
+                        this.classList.remove('text-gray-400', 'hover:text-gray-200');
+                        
+                        document.getElementById(`tab-${tabId}`).classList.add('active');
+                    });
+                });
+
+                // Settings controls with validation
+                document.getElementById('battery-level-slider').addEventListener('input', (e) => {
+                    this.data.batteryLevel = parseInt(e.target.value);
+                    document.getElementById('battery-level-value').textContent = this.data.batteryLevel;
+                    this.scheduleAutosave();
+                    this.updateUI();
+                    this.updateCharts();
+                });
+
+                document.getElementById('update-from-voltage-btn').addEventListener('click', () => {
+                    const voltage = parseFloat(document.getElementById('voltage-input').value);
+                    if (isNaN(voltage) || voltage < 10 || voltage > 13) {
+                        alert('Please enter a valid resting voltage between 10V and 13V.');
+                        return;
+                    }
+                    const newSoc = this.getSocFromVoltage(voltage);
+                    this.data.batteryLevel = newSoc;
+                    this.addActivityLog(`Updated battery level from voltage ${voltage}V to ${newSoc.toFixed(1)}% SOC`, "system");
+                    this.scheduleAutosave();
+                    this.updateUI();
+                    this.updateCharts();
+                    alert(`Battery level updated to ${newSoc.toFixed(1)}% based on ${voltage}V resting voltage.`);
+                });
+
+                document.getElementById('direct-sun-hours-slider').addEventListener('input', (e) => {
+                    this.data.directSunHours = parseFloat(e.target.value);
+                    document.getElementById('direct-sun-hours-value').textContent = this.data.directSunHours;
+                    this.scheduleAutosave();
+                    this.updateUI();
+                    this.updateCharts();
+                });
+
+                document.getElementById('non-direct-sun-hours-slider').addEventListener('input', (e) => {
+                    this.data.nonDirectSunHours = parseFloat(e.target.value);
+                    document.getElementById('non-direct-sun-hours-value').textContent = this.data.nonDirectSunHours;
+                    this.scheduleAutosave();
+                    this.updateUI();
+                    this.updateCharts();
+                });
+
+                document.getElementById('fuel-level-input').addEventListener('change', (e) => {
+                    let value = parseFloat(e.target.value);
+                    if (isNaN(value) || value < 0) value = 0;
+                    if (value > this.constants.maxFuelGal) value = this.constants.maxFuelGal;
+                    this.data.fuelLevel = value;
+                    e.target.value = value;
+                    this.scheduleAutosave();
+                    this.updateUI();
+                    this.updateCharts();
+                });
+
+                document.getElementById('solar-toggle').addEventListener('change', (e) => {
+                    this.data.solarActive = e.target.checked;
+                    this.scheduleAutosave();
+                    this.updateUI();
+                    this.updateCharts();
+                });
+
+                // Action buttons
+                document.getElementById('remote-start-btn').addEventListener('click', () => {
+                    this.addRemoteStart();
+                });
+
+                document.getElementById('physical-start-btn').addEventListener('click', () => {
+                    this.addPhysicalStart();
+                });
+
+                document.getElementById('reset-data-btn').addEventListener('click', () => {
+                    this.resetData();
+                });
+
+                document.getElementById('update-start-date-btn').addEventListener('click', () => {
+                    this.updateTrackingStartDate();
+                });
+
+                document.getElementById('update-install-date-btn').addEventListener('click', () => {
+                    this.updateBatteryInstallDate();
+                });
+
+                document.getElementById('export-data-btn').addEventListener('click', () => {
+                    this.exportData();
+                });
+
+                document.getElementById('import-data-btn').addEventListener('click', () => {
+                    document.getElementById('import-data-input').click();
+                });
+
+                document.getElementById('import-data-input').addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.importData(e.target.files[0]);
+                    }
+                });
+            }
+
+            // Initialize the application
+            init() {
+                this.setupEventListeners();
+                this.updateUI();
+                this.initCharts();
+                this.updateAutosaveStatus('ready');
+            }
+        }
+
+        // Initialize the application when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.cruzeTracker = new CruzeBatteryTracker();
+        });
+    </script>
+</body>
+</html>
