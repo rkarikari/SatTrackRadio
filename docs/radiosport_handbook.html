@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioSport STEM Handbook 2025</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .page-container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+        }
+        
+        .cover-page {
+            height: 297mm;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.3;
+        }
+        
+        .logo-section {
+            margin-bottom: 40px;
+            z-index: 1;
+        }
+        
+        .radio-icon {
+            font-size: 120px;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .cover-title {
+            font-size: 52px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+            z-index: 1;
+        }
+        
+        .cover-subtitle {
+            font-size: 28px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            z-index: 1;
+        }
+        
+        .cover-description {
+            font-size: 18px;
+            max-width: 600px;
+            line-height: 1.8;
+            margin-bottom: 50px;
+            opacity: 0.9;
+            z-index: 1;
+        }
+        
+        .version-box {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+        
+        .content-page {
+            padding: 40px;
+            min-height: 297mm;
+            page-break-after: always;
+        }
+        
+        h1 {
+            color: #1e3c72;
+            font-size: 36px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 4px solid #667eea;
+        }
+        
+        h2 {
+            color: #2a5298;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #34495e;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .stem-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .icon-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .icon-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .icon-symbol {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .diagram {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        ul, ol {
+            margin: 20px 0 20px 30px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .keyword { color: #e74c3c; }
+        .string { color: #2ecc71; }
+        .comment { color: #95a5a6; font-style: italic; }
+        .function { color: #3498db; }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .toc-item {
+            padding: 10px 0;
+            border-bottom: 1px dotted #ccc;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .page-number {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .page-container {
+                box-shadow: none;
+            }
+            .content-page {
+                page-break-after: always;
+            }
+            #downloadBtn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- COVER PAGE -->
+        <div class="cover-page">
+            <div class="logo-section">
+                <div class="radio-icon">📡</div>
+            </div>
+            <h1 class="cover-title">RADIOSPORT</h1>
+            <h2 class="cover-subtitle">Advanced STEM Education Program</h2>
+            <p class="cover-description">
+                Self-Sustaining Offline Technology & Non-Commercial Electronic Communication Education
+                <br><br>
+                Empowering Youth Through Amateur Radio, AI, Coding, and Field Science
+            </p>
+            <div>
+                <span class="stem-badge">🔬 SCIENCE</span>
+                <span class="stem-badge">💻 TECHNOLOGY</span>
+                <span class="stem-badge">⚙️ ENGINEERING</span>
+                <span class="stem-badge">📐 MATHEMATICS</span>
+            </div>
+            <div style="margin-top: 60px;">
+                <div class="version-box">
+                    <strong>Version 2.0 — 2025</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLE OF CONTENTS -->
+        <div class="content-page">
+            <h1>📋 Table of Contents</h1>
+            <div class="toc">
+                <div class="toc-item">
+                    <span>1. Mission Statement & STEM Excellence</span>
+                    <span class="page-number">3</span>
+                </div>
+                <div class="toc-item">
+                    <span>2. Program Structure</span>
+                    <span class="page-number">4</span>
+                </div>
+                <div class="toc-item">
+                    <span>3. Solar & Battery Power Systems</span>
+                    <span class="page-number">5</span>
+                </div>
+                <div class="toc-item">
+                    <span>4. HF/VHF/UHF Communications</span>
+                    <span class="page-number">7</span>
+                </div>
+                <div class="toc-item">
+                    <span>5. Artificial Intelligence</span>
+                    <span class="page-number">9</span>
+                </div>
+                <div class="toc-item">
+                    <span>6. Advanced Coding: C++ & Python</span>
+                    <span class="page-number">11</span>
+                </div>
+                <div class="toc-item">
+                    <span>7. Hands-On Projects</span>
+                    <span class="page-number">13</span>
+                </div>
+                <div class="toc-item">
+                    <span>8. Field Operations</span>
+                    <span class="page-number">15</span>
+                </div>
+                <div class="toc-item">
+                    <span>9. Awards & Budget</span>
+                    <span class="page-number">17</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- MISSION STATEMENT -->
+        <div class="content-page">
+            <h1>1. Mission Statement & STEM Excellence</h1>
+            
+            <div class="highlight-box">
+                <h3>🎯 Our Mission</h3>
+                <p><strong>RadioSport develops advanced offline youth competence in cutting-edge technologies that bridge theoretical knowledge with real-world applications.</strong></p>
+            </div>
+
+            <h2>Core Competencies</h2>
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <div class="icon-symbol">🤖</div>
+                    <strong>Artificial Intelligence</strong>
+                    <p>Offline AI & algorithms</p>
+                </div>
+                <div class="icon-item">
+                    <div class="icon-symbol">📻</div>
+                    <strong>Radio Communication</strong>
+                    <p>HF/VHF/UHF operations</p>
+                </div>
+                <div class="icon-item">
+                    <div class="icon-symbol">💻</div>
+                    <strong>Software Development</strong>
+                    <p>C++/Python for RF</p>
+                </div>
+                <div class="icon-item">
+                    <div class="icon-symbol">⚡</div>
+                    <strong>Renewable Energy</strong>
+                    <p>Solar/battery systems</p>
+                </div>
+            </div>
+
+            <h2>Why RadioSport is Exceptional STEM</h2>
+            
+            <ul>
+                <li><strong>Real-World Physics:</strong> Direct observation of electromagnetic wave propagation</li>
+                <li><strong>Applied Mathematics:</strong> Calculate wavelengths, optimize antenna designs</li>
+                <li><strong>Practical Engineering:</strong> Design, build, test complete systems</li>
+                <li><strong>Modern Computer Science:</strong> Develop AI algorithms and signal processing</li>
+                <li><strong>Environmental Science:</strong> Design sustainable solar-powered systems</li>
+            </ul>
+
+            <h2>Program Duration & Structure</h2>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td>Duration</td>
+                    <td>9 months per cohort</td>
+                </tr>
+                <tr>
+                    <td>Weekly Sessions</td>
+                    <td>3 hours (theory + coding + hands-on)</td>
+                </tr>
+                <tr>
+                    <td>Monthly Field Days</td>
+                    <td>8 hours outdoor deployment</td>
+                </tr>
+                <tr>
+                    <td>Donation</td>
+                    <td>$15/month minimum</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- PROGRAM STRUCTURE -->
+        <div class="content-page">
+            <h1>2. Program Structure</h1>
+
+            <h2>Knowledge Streams</h2>
+
+            <h3>Offline AI & Computational Thinking</h3>
+            <ul>
+                <li>Classical AI algorithms: search, heuristics, constraint solving</li>
+                <li>Machine learning: k-means, decision trees, naïve Bayes</li>
+                <li>AI for radio optimization and propagation prediction</li>
+                <li>Message routing and offline network simulation</li>
+            </ul>
+
+            <h3>Radio & RF Theory</h3>
+            <ul>
+                <li>RF fundamentals: frequency, wavelength, power, impedance</li>
+                <li>Antenna design and tuning (dipoles, verticals, Yagis)</li>
+                <li>VHF/UHF/HF propagation modes</li>
+                <li>Digital modes: AFSK, D-STAR, C4FM, PSK31</li>
+                <li>SDR reception and signal analysis</li>
+            </ul>
+
+            <h3>Coding & Software Engineering</h3>
+            <ul>
+                <li>Python for rapid prototyping and data analysis</li>
+                <li>C++ for high-performance signal processing</li>
+                <li>RF propagation simulators</li>
+                <li>Signal processing and demodulation tools</li>
+                <li>AI prediction models</li>
+            </ul>
+
+            <h2>Participant Requirements</h2>
+            <ul>
+                <li>Mandatory monthly donation: $15</li>
+                <li>Minimum 80% attendance</li>
+                <li>Weekly experiment logs</li>
+                <li>Team collaboration in projects</li>
+                <li>Safe operation of equipment</li>
+            </ul>
+
+            <h2>Specialization Tracks</h2>
+
+            <table>
+                <tr>
+                    <th>Track</th>
+                    <th>Focus Areas</th>
+                </tr>
+                <tr>
+                    <td>RF Engineering</td>
+                    <td>Antenna design, propagation, impedance matching</td>
+                </tr>
+                <tr>
+                    <td>AI Signal Intelligence</td>
+                    <td>Machine learning, signal classification, optimization</td>
+                </tr>
+                <tr>
+                    <td>Communications</td>
+                    <td>Field operations, digital modes, relay networks</td>
+                </tr>
+                <tr>
+                    <td>Software Development</td>
+                    <td>DSP algorithms, SDR applications, automation</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- SOLAR & BATTERY SYSTEMS -->
+        <div class="content-page">
+            <h1>3. Solar & Battery Power Systems</h1>
+
+            <p><strong>Renewable energy systems enable completely off-grid field operations and teach sustainable engineering principles.</strong></p>
+
+            <h2>Solar Power Fundamentals</h2>
+
+            <div class="highlight-box">
+                <h3>☀️ Complete Solar System Components</h3>
+                <p><strong>Solar Panel → Charge Controller → Battery → Radio Equipment</strong></p>
+                <ul>
+                    <li>100W solar panel produces ~400Wh in 4 peak sun hours</li>
+                    <li>MPPT charge controller optimizes energy harvest</li>
+                    <li>35Ah LiFePO4 battery stores energy for night operations</li>
+                    <li>Anderson Powerpole connectors for reliable connections</li>
+                </ul>
+            </div>
+
+            <h3>Key Solar Concepts</h3>
+            <ul>
+                <li><strong>Photovoltaic Effect:</strong> Converting sunlight to electrical current</li>
+                <li><strong>Peak Sun Hours:</strong> Equivalent hours of 1000 W/m² irradiance</li>
+                <li><strong>Panel Efficiency:</strong> Monocrystalline 18-22%, Polycrystalline 15-17%</li>
+                <li><strong>MPPT:</strong> Maximum Power Point Tracking for optimization</li>
+            </ul>
+
+            <h2>Battery Technology</h2>
+
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Voltage</th>
+                    <th>Energy Density</th>
+                    <th>Lifespan</th>
+                    <th>Best Use</th>
+                </tr>
+                <tr>
+                    <td>Lead Acid</td>
+                    <td>12V</td>
+                    <td>35-40 Wh/kg</td>
+                    <td>300-500 cycles</td>
+                    <td>Budget stations</td>
+                </tr>
+                <tr>
+                    <td>LiFePO4</td>
+                    <td>12.8V</td>
+                    <td>90-120 Wh/kg</td>
+                    <td>2000-5000 cycles</td>
+                    <td>Portable field ops</td>
+                </tr>
+                <tr>
+                    <td>Li-Ion</td>
+                    <td>14.8V (4S)</td>
+                    <td>150-200 Wh/kg</td>
+                    <td>500-1000 cycles</td>
+                    <td>Handheld radios</td>
+                </tr>
+            </table>
+
+            <h2>Power Budget Calculations</h2>
+
+            <div class="highlight-box">
+                <h3>📐 Example: 8-Hour Field Deployment</h3>
+                <table>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Power</th>
+                        <th>Duration</th>
+                        <th>Energy</th>
+                    </tr>
+                    <tr>
+                        <td>VHF Radio (TX)</td>
+                        <td>50W</td>
+                        <td>1h</td>
+                        <td>50 Wh</td>
+                    </tr>
+                    <tr>
+                        <td>VHF Radio (RX)</td>
+                        <td>2W</td>
+                        <td>7h</td>
+                        <td>14 Wh</td>
+                    </tr>
+                    <tr>
+                        <td>Raspberry Pi + SDR</td>
+                        <td>15W</td>
+                        <td>8h</td>
+                        <td>120 Wh</td>
+                    </tr>
+                    <tr>
+                        <td>Laptop</td>
+                        <td>45W</td>
+                        <td>4h</td>
+                        <td>180 Wh</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>Total</strong></td>
+                        <td><strong>364 Wh</strong></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 15px;"><strong>System Requirements:</strong></p>
+                <ul>
+                    <li>Battery: 364Wh ÷ 12V = 30.3Ah → Use 35Ah battery</li>
+                    <li>Solar: 100W panel adequate for recharge</li>
+                    <li>Controller: 10A MPPT charge controller</li>
+                </ul>
+            </div>
+
+            <h2>Practical Exercises</h2>
+
+            <h3>Exercise 1: Solar Panel Characterization</h3>
+            <ul>
+                <li>Measure open-circuit voltage and short-circuit current</li>
+                <li>Plot I-V curve using variable load</li>
+                <li>Determine maximum power point</li>
+                <li>Calculate fill factor: FF = Pmax / (Voc × Isc)</li>
+            </ul>
+
+            <h3>Exercise 2: Battery Capacity Testing</h3>
+            <ul>
+                <li>Fully charge battery with monitoring</li>
+                <li>Discharge at constant current</li>
+                <li>Record voltage vs. time</li>
+                <li>Calculate actual capacity in Ah and Wh</li>
+            </ul>
+        </div>
+
+        <!-- HF/VHF/UHF COMMUNICATIONS -->
+        <div class="content-page">
+            <h1>4. HF/VHF/UHF Communications</h1>
+
+            <h2>Frequency Band Characteristics</h2>
+
+            <table>
+                <tr>
+                    <th>Band</th>
+                    <th>Frequency</th>
+                    <th>Propagation</th>
+                    <th>Range</th>
+                </tr>
+                <tr>
+                    <td><strong>HF (20m)</strong></td>
+                    <td>14-14.35 MHz</td>
+                    <td>Ionospheric skip</td>
+                    <td>Worldwide</td>
+                </tr>
+                <tr>
+                    <td><strong>HF (40m)</strong></td>
+                    <td>7-7.3 MHz</td>
+                    <td>Skywave</td>
+                    <td>500-2000 km</td>
+                </tr>
+                <tr>
+                    <td><strong>6m</strong></td>
+                    <td>50-54 MHz</td>
+                    <td>Sporadic-E</td>
+                    <td>50-2000 km</td>
+                </tr>
+                <tr>
+                    <td><strong>2m (VHF)</strong></td>
+                    <td>144-148 MHz</td>
+                    <td>Line-of-sight</td>
+                    <td>5-200 km</td>
+                </tr>
+                <tr>
+                    <td><strong>70cm (UHF)</strong></td>
+                    <td>420-450 MHz</td>
+                    <td>Line-of-sight</td>
+                    <td>5-80 km</td>
+                </tr>
+            </table>
+
+            <h2>HF Communication Exercises</h2>
+
+            <h3>Ionospheric Propagation</h3>
+            <p>HF signals reflect off the ionosphere, enabling long-distance communication. Key factors:</p>
+            <ul>
+                <li><strong>Solar Activity:</strong> Track solar flux index for band predictions</li>
+                <li><strong>Time of Day:</strong> D-layer absorption during day, F2 layer at night</li>
+                <li><strong>Frequency Selection:</strong> Higher frequencies during solar maximum</li>
+                <li><strong>Skip Distance:</strong> Minimum distance for sky wave return</li>
+            </ul>
+
+            <h3>Practical HF Projects</h3>
+            <ol>
+                <li>Monitor solar flux and predict propagation conditions</li>
+                <li>Attempt contacts on 20m, 40m bands</li>
+                <li>Compare dipole vs. vertical antenna performance</li>
+                <li>Build AI model to forecast optimal operating times</li>
+            </ol>
+
+            <h2>VHF/UHF Local Communications</h2>
+
+            <h3>Line-of-Sight Calculations</h3>
+            <div class="highlight-box">
+                <p><strong>Radio Horizon Formula:</strong></p>
+                <p style="font-family: monospace; font-size: 18px; text-align: center; margin: 15px 0;">
+                    d (km) = 4.12 × [√h₁ + √h₂]
+                </p>
+                <p>where h₁ and h₂ are antenna heights in meters</p>
+                
+                <p style="margin-top: 15px;"><strong>Example:</strong></p>
+                <p>10m and 20m heights: d = 4.12 × [3.16 + 4.47] = 31.4 km</p>
+            </div>
+
+            <h3>VHF/UHF Exercises</h3>
+
+            <h4>Exercise 1: Antenna Height vs. Range</h4>
+            <ul>
+                <li>Set up base station at known elevation</li>
+                <li>Portable station travels outward</li>
+                <li>Record maximum reliable distance</li>
+                <li>Compare measured to theoretical</li>
+            </ul>
+
+            <h4>Exercise 2: Repeater Operations</h4>
+            <ul>
+                <li>Program handhelds with repeater frequencies</li>
+                <li>Calculate CTCSS tones</li>
+                <li>Measure coverage area</li>
+                <li>Design optimal repeater placement</li>
+            </ul>
+
+            <h4>Exercise 3: Digital Voice Modes</h4>
+            <ul>
+                <li>Configure D-STAR or C4FM equipment</li>
+                <li>Compare analog vs. digital quality</li>
+                <li>Measure data throughput</li>
+                <li>Integrate GPS position reporting</li>
+            </ul>
+
+            <h2>Antenna Design</h2>
+
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Formula (meters)</th>
+                    <th>Example (146 MHz)</th>
+                </tr>
+                <tr>
+                    <td>Half-wave dipole</td>
+                    <td>143 / f(MHz)</td>
+                    <td>0.979 m</td>
+                </tr>
+                <tr>
+                    <td>Quarter-wave vertical</td>
+                    <td>71.5 / f(MHz)</td>
+                    <td>0.490 m</td>
+                </tr>
+                <tr>
+                    <td>5/8-wave vertical</td>
+                    <td>179 / f(MHz)</td>
+                    <td>1.226 m</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- AI APPLICATIONS -->
+        <div class="content-page">
+            <h1>5. Artificial Intelligence Applications</h1>
+
+            <h2>Propagation Prediction AI</h2>
+
+            <h3>Dataset Collection</h3>
+            <ul>
+                <li><strong>Inputs:</strong> Time, date, solar flux, K-index, frequency, antenna</li>
+                <li><strong>Outputs:</strong> Signal strength, contact success, propagation mode</li>
+                <li><strong>Sources:</strong> Manual logs, automated monitoring, databases</li>
+            </ul>
+
+            <h3>Model Development Example</h3>
+            <div class="code-block">
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestClassifier
+
+<span class="comment"># Load training data</span>
+X_train = load_propagation_data()
+y_train = load_contact_success()
+
+<span class="comment"># Train model</span>
+model = <span class="function">RandomForestClassifier</span>(n_estimators=<span class="string">100</span>)
+model.<span class="function">fit</span>(X_train, y_train)
+
+<span class="comment"># Predict optimal time</span>
+conditions = [<span class="string">14</span>, <span class="string">180</span>, <span class="string">120</span>, <span class="string">2</span>, <span class="string">14.2</span>, <span class="string">1</span>]
+probability = model.<span class="function">predict_proba</span>([conditions])
+<span class="keyword">print</span>(<span class="string">f"Success: {probability[0][1]:.2%}"</span>)
+            </div>
+
+            <h2>Interference Classification</h2>
+
+            <table>
+                <tr>
+                    <th>Type</th>
+                    <th>Characteristics</th>
+                    <th>Mitigation</th>
+                </tr>
+                <tr>
+                    <td>Power Line Noise</td>
+                    <td>Buzzing at 50/60 Hz</td>
+                    <td>Directional antenna</td>
+                </tr>
+                <tr>
+                    <td>Plasma TV/LED</td>
+                    <td>Broadband hash</td>
+                    <td>Identify source</td>
+                </tr>
+                <tr>
+                    <td>Wi-Fi/Bluetooth</td>
+                    <td>Regular bursts</td>
+                    <td>Frequency avoidance</td>
+                </tr>
+            </table>
+
+            <h2>Automated Message Routing</h2>
+
+            <p>AI agents prioritize and route messages efficiently through relay networks:</p>
+
+            <div class="code-block">
+<span class="keyword">class</span> <span class="function">MessageRouter</span>:
+    <span class="keyword">def</span> <span class="function">priority_score</span>(self, message):
+        score = message.urgency * <span class="string">0.5</span>
+        score += message.source_trust * <span class="string">0.3</span>
+        score += (<span class="string">1.0</span> / message.age_minutes) * <span class="string">0.2</span>
+        <span class="keyword">return</span> score
+            </div>
+
+            <h2>AI-Powered Antenna Optimization</h2>
+
+            <ul>
+                <li><strong>Objective:</strong> Maximize gain while minimizing SWR</li>
+                <li><strong>Variables:</strong> Element lengths, spacing, director count</li>
+                <li><strong>Fitness:</strong> Weighted sum of gain, F/B ratio, SWR</li>
+                <li><strong>Evolution:</strong> Genetic algorithm over 100+ generations</li>
+            </ul>
+        </div>
+
+        <!-- CODING -->
+        <div class="content-page">
+            <h1>6. Advanced Coding: C++ & Python</h1>
+
+            <h2>Python for RF Applications</h2>
+
+            <h3>Spectrum Analyzer Example</h3>
+            <div class="code-block">
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+<span class="keyword">from</span> rtlsdr <span class="keyword">import</span> RtlSdr
+
+<span class="keyword">class</span> <span class="function">SpectrumAnalyzer</span>:
+    <span class="keyword">def</span> <span class="function">__init__</span>(self, center_freq=<span class="string">145e6</span>):
+        self.sdr = <span class="function">RtlSdr()</span>
+        self.sdr.center_freq = center_freq
+        self.sdr.sample_rate = <span class="string">2.4e6</span>
+    
+    <span class="keyword">def</span> <span class="function">capture_spectrum</span>(self):
+        samples = self.sdr.<span class="function">read_samples</span>(<span class="string">256*1024</span>)
+        fft_result = np.<span class="function">fft.fftshift</span>(np.<span class="function">fft.fft</span>(samples))
+        power_db = <span class="string">10</span> * np.<span class="function">log10</span>(np.<span class="function">abs</span>(fft_result)**<span class="string">2</span>)
+        <span class="keyword">return</span> power_db
+            </div>
+
+            <h3>Key Python Libraries</h3>
+            <ul>
+                <li><strong>NumPy:</strong> Array operations, FFT, math functions</li>
+                <li><strong>SciPy:</strong> Signal processing, filter design</li>
+                <li><strong>Matplotlib:</strong> Plotting and visualization</li>
+                <li><strong>PySDR:</strong> Software-defined radio interfacing</li>
+            </ul>
+
+            <h2>C++ for Real-Time DSP</h2>
+
+            <h3>FIR Filter Implementation</h3>
+            <div class="code-block">
+<span class="keyword">class</span> <span class="function">FIRFilter</span> {
+<span class="keyword">private</span>:
+    std::vector&lt;<span class="keyword">float</span>&gt; coefficients;
+    std::vector&lt;<span class="keyword">float</span>&gt; buffer;
+    <span class="keyword">int</span> bufferIndex;
+
+<span class="keyword">public</span>:
+    <span class="keyword">float</span> <span class="function">process</span>(<span class="keyword">float</span> input) {
+        buffer[bufferIndex] = input;
+        <span class="keyword">float</span> output = <span class="string">0.0f</span>;
+        <span class="keyword">int</span> idx = bufferIndex;
+        
+        <span class="keyword">for</span> (<span class="keyword">size_t</span> i = <span class="string">0</span>; i &lt; coefficients.<span class="function">size</span>(); ++i) {
+            output += coefficients[i] * buffer[idx];
+            idx = (idx == <span class="string">0</span>) ? buffer.<span class="function">size</span>()-<span class="string">1</span> : idx-<span class="string">1</span>;
+        }
+        
+        bufferIndex = (bufferIndex + <span class="string">1</span>) % buffer.<span class="function">size</span>();
+        <span class="keyword">return</span> output;
+    }
+};
+            </div>
+
+            <h2>Integration Projects</h2>
+
+            <div class="highlight-box">
+                <h3>🚀 Advanced: SDR Receiver System</h3>
+                <ul>
+                    <li><strong>C++ Core:</strong> Real-time I/Q processing, filtering</li>
+                    <li><strong>Python Interface:</strong> GUI, spectrum display, logging</li>
+                    <li><strong>Features:</strong> Multiple demodulation modes, waterfall</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- HANDS-ON PROJECTS -->
+        <div class="content-page">
+            <h1>7. Hands-On Practical Projects</h1>
+
+            <h2>Antenna Construction</h2>
+
+            <h3>Project 1: VHF Dipole (2m)</h3>
+            <ul>
+                <li><strong>Materials:</strong> 4mm copper wire, SO-239 connector</li>
+                <li><strong>Dimensions:</strong> 49.5 cm each element (146 MHz)</li>
+                <li><strong>Steps:</strong> Cut wire, solder to connector, test SWR</li>
+                <li><strong>Goal:</strong> SWR < 2:1 across 144-148 MHz</li>
+            </ul>
+
+            <h3>Project 2: Yagi-Uda Directional</h3>
+            <table>
+                <tr>
+                    <th>Element</th>
+                    <th>Length</th>
+                    <th>Spacing</th>
+                </tr>
+                <tr>
+                    <td>Reflector</td>
+                    <td>104 cm</td>
+                    <td>0 cm</td>
+                </tr>
+                <tr>
+                    <td>Driven</td>
+                    <td>99 cm</td>
+                    <td>32 cm</td>
+                </tr>
+                <tr>
+                    <td>Director 1</td>
+                    <td>91 cm</td>
+                    <td>62 cm</td>
+                </tr>
+                <tr>
+                    <td>Director 2</td>
+                    <td>89 cm</td>
+                    <td>110 cm</td>
+                </tr>
+            </table>
+            <p><strong>Expected:</strong> 10-12 dBi gain, 20 dB F/B ratio</p>
+
+            <h2>RF Filter Construction</h2>
+
+            <h3>Bandpass Filter for 2m</h3>
+            <ul>
+                <li>3-pole Chebyshev design</li>
+                <li>Components: C1/C3 = 15 pF, C2 = 22 pF, L1/L2 = 47 nH</li>
+                <li>Reduces out-of-band interference</li>
+            </ul>
+
+            <h2>SDR Station Setup</h2>
+
+            <div class="highlight-box">
+                <h3>Complete RTL-SDR Station</h3>
+                <p><strong>Hardware:</strong></p>
+                <ul>
+                    <li>RTL-SDR USB dongle (R820T2)</li>
+                    <li>Wideband antenna</li>
+                    <li>RF preamplifier (LNA)</li>
+                    <li>Raspberry Pi 4 or laptop</li>
+                </ul>
+                <p><strong>Software:</strong></p>
+                <ul>
+                    <li>GNU Radio for flowgraphs</li>
+                    <li>GQRX spectrum analyzer</li>
+                    <li>Custom Python scripts</li>
+                </ul>
+            </div>
+
+            <h2>Solar Power Station</h2>
+
+            <h3>Assembly Steps</h3>
+            <ol>
+                <li>Mount 100W solar panel on adjustable frame</li>
+                <li>Connect to 10A MPPT charge controller</li>
+                <li>Wire 35Ah LiFePO4 battery with BMS</li>
+                <li>Install Anderson Powerpole distribution</li>
+                <li>Add voltage/current monitoring</li>
+                <li>Test with radio equipment load</li>
+            </ol>
+        </div>
+
+        <!-- FIELD OPERATIONS -->
+        <div class="content-page">
+            <h1>8. Field Operations & Challenges</h1>
+
+            <h2>Monthly Field Day Structure</h2>
+
+            <table>
+                <tr>
+                    <th>Time</th>
+                    <th>Activity</th>
+                </tr>
+                <tr>
+                    <td>08:00-09:30</td>
+                    <td>Site setup, antenna raising, power deployment</td>
+                </tr>
+                <tr>
+                    <td>09:30-10:00</td>
+                    <td>Equipment testing, calibration</td>
+                </tr>
+                <tr>
+                    <td>10:00-12:00</td>
+                    <td>VHF/UHF operations</td>
+                </tr>
+                <tr>
+                    <td>12:00-13:00</td>
+                    <td>Lunch, maintenance</td>
+                </tr>
+                <tr>
+                    <td>13:00-15:00</td>
+                    <td>HF long-distance attempts</td>
+                </tr>
+                <tr>
+                    <td>15:00-16:00</td>
+                    <td>Data analysis, awards</td>
+                </tr>
+                <tr>
+                    <td>16:00-17:00</td>
+                    <td>Teardown, cleanup</td>
+                </tr>
+            </table>
+
+            <h2>Challenge Categories</h2>
+
+            <h3>Distance Challenge</h3>
+            <ul>
+                <li>Power limits: 5W HF, 1W VHF/UHF</li>
+                <li>Scoring: Distance (km) × Band multiplier</li>
+                <li>Verification: GPS coordinates, signal reports</li>
+            </ul>
+
+            <h3>Relay Race</h3>
+            <ul>
+                <li>Multi-hop message delivery A → B → C → D</li>
+                <li>Stations 20-50 km apart</li>
+                <li>Timed from start to finish</li>
+                <li>Accuracy penalties for decode errors</li>
+            </ul>
+
+            <h3>Solar-Only Operations</h3>
+            <ul>
+                <li>No grid power or pre-charged batteries</li>
+                <li>Manage power budget throughout day</li>
+                <li>Points for number of contacts</li>
+            </ul>
+
+            <h2>Annual RadioSport Games</h2>
+
+            <div class="highlight-box">
+                <h3>🏆 Championship Events</h3>
+                
+                <h4>24-Hour Marathon</h4>
+                <p>Continuous operations with team rotations, solar+battery power</p>
+                
+                <h4>Antenna Building Competition</h4>
+                <p>2-hour build time, must achieve SWR < 2:1</p>
+                
+                <h4>Fox Hunt (Direction Finding)</h4>
+                <p>Locate hidden transmitters using signal analysis</p>
+            </div>
+
+            <h2>Safety Protocols</h2>
+
+            <h3>RF Safety</h3>
+            <ul>
+                <li>Maintain safe distance from transmitting antennas</li>
+                <li>Calculate power density at operator position</li>
+                <li>Limit high-power transmission duration</li>
+            </ul>
+
+            <h3>Electrical Safety</h3>
+            <ul>
+                <li>GFCI protection on all outdoor circuits</li>
+                <li>Battery terminals covered when not in use</li>
+                <li>Fire extinguisher accessible</li>
+            </ul>
+        </div>
+
+        <!-- AWARDS & BUDGET -->
+        <div class="content-page">
+            <h1>9. Awards System & Budget</h1>
+
+            <h2>Performance-Based Awards</h2>
+
+            <h3>Tier 1 – Weekly Micro Awards</h3>
+            <ul>
+                <li>RF components (resistors, capacitors, connectors)</li>
+                <li>Coax cable segments</li>
+                <li>Soldering supplies</li>
+            </ul>
+
+            <h3>Tier 2 – Monthly Achievement Awards</h3>
+            <ul>
+                <li>Handheld VHF/UHF transceiver kits</li>
+                <li>RTL-SDR receivers with antennas</li>
+                <li>SWR meters / RF power meters</li>
+                <li>Antenna construction kits</li>
+            </ul>
+
+            <h3>Tier 3 – Apex Awards</h3>
+            <ul>
+                <li>Complete VHF/UHF base stations</li>
+                <li>HF QRP transceivers</li>
+                <li>Solar panel + charge controller kits</li>
+                <li>Advanced antenna analyzers</li>
+            </ul>
+
+            <h2>Program Budget</h2>
+
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Cost (USD)</th>
+                </tr>
+                <tr>
+                    <td>Radio Equipment (50 students)</td>
+                    <td>$3,300</td>
+                </tr>
+                <tr>
+                    <td>Computing (Pi + SDR)</td>
+                    <td>$5,500</td>
+                </tr>
+                <tr>
+                    <td>Power Systems</td>
+                    <td>$4,700</td>
+                </tr>
+                <tr>
+                    <td>Antennas & Materials</td>
+                    <td>$1,750</td>
+                </tr>
+                <tr>
+                    <td>Tools & Consumables</td>
+                    <td>$1,500</td>
+                </tr>
+                <tr>
+                    <td>Venue (9 months)</td>
+                    <td>$1,800</td>
+                </tr>
+                <tr>
+                    <td>Instructors (36 sessions)</td>
+                    <td>$7,200</td>
+                </tr>
+                <tr>
+                    <td>Administrative</td>
+                    <td>$2,000</td>
+                </tr>
+                <tr>
+                    <td>Award Pool</td>
+                    <td>$3,000</td>
+                </tr>
+                <tr>
+                    <td>Contingency (10%)</td>
+                    <td>$3,075</td>
+                </tr>
+                <tr style="background: #667eea; color: white; font-weight: bold;">
+                    <td>TOTAL</td>
+                    <td>$33,825</td>
+                </tr>
+                <tr style="background: #2ecc71; color: white;">
+                    <td>Per Student (50)</td>
+                    <td>$677</td>
+                </tr>
+                <tr style="background: #3498db; color: white;">
+                    <td>Monthly (÷ 9 months)</td>
+                    <td>$75/student</td>
+                </tr>
+            </table>
+
+            <div class="highlight-box">
+                <h3>💰 Flexible Donation Model</h3>
+                <ul>
+                    <li><strong>Minimum ($15/month):</strong> Basic operations</li>
+                    <li><strong>Standard ($40/month):</strong> Equipment loans + awards</li>
+                    <li><strong>Full ($75/month):</strong> Complete program access</li>
+                </ul>
+            </div>
+
+            <h2>Sustainability</h2>
+            <ul>
+                <li>Participant donations ensure operational costs</li>
+                <li>Larger cohorts increase prize pool value</li>
+                <li>Community sponsorships and grants</li>
+                <li>Equipment sharing reduces per-student cost</li>
+            </ul>
+        </div>
+
+        <!-- CONCLUSION -->
+        <div class="content-page">
+            <h1>Conclusion</h1>
+
+            <p style="font-size: 18px; line-height: 1.8;">
+                <strong>RadioSport represents the future of STEM education</strong>—a comprehensive program that transforms theoretical knowledge into practical skills through hands-on radio communication, renewable energy, AI, and software development.
+            </p>
+
+            <h2>Why RadioSport Matters</h2>
+
+            <ul style="font-size: 16px;">
+                <li><strong>Real-World Skills:</strong> Build, test, and deploy actual systems</li>
+                <li><strong>Problem-Solving:</strong> Troubleshooting teaches analytical thinking</li>
+                <li><strong>Confidence:</strong> Making long-distance contacts builds self-efficacy</li>
+                <li><strong>Community:</strong> Connect with fellow enthusiasts worldwide</li>
+                <li><strong>Career Foundation:</strong> Direct pathway to technical careers</li>
+            </ul>
+
+            <div class="highlight-box" style="margin: 40px 0; padding: 30px;">
+                <h3 style="text-align: center; font-size: 24px;">📻 Join the RadioSport Revolution</h3>
+                <p style="text-align: center; font-size: 18px; margin-top: 20px;">
+                    <strong>The future of technology is in your hands. Build it. Test it. Perfect it.</strong>
+                </p>
+            </div>
+
+            <h2>Program Completion Certificate</h2>
+            <p><strong>Requirements:</strong></p>
+            <ul>
+                <li>80% minimum attendance</li>
+                <li>Complete all AI, coding, and RF projects</li>
+                <li>Participate in 6+ field deployments</li>
+                <li>Successful capstone project</li>
+                <li>Safe equipment operation</li>
+            </ul>
+
+            <hr style="margin: 50px 0; border: none; border-top: 3px solid #667eea;">
+
+            <div style="text-align: center; padding: 40px 0;">
+                <div style="font-size: 80px; margin-bottom: 20px;">📡</div>
+                <h2 style="color: #1e3c72;">RADIOSPORT</h2>
+                <p style="font-size: 20px; color: #2a5298; font-weight: bold;">Building Tomorrow's Engineers Today</p>
+                <p style="margin-top: 30px; color: #666;">Version 2.0 — 2025</p>
+            </div>
+        </div>
+
+        <!-- BACK COVER -->
+        <div class="cover-page" style="background: linear-gradient(135deg, #2a5298 0%, #1e3c72 50%, #0d1b2a 100%);">
+            <div style="max-width: 600px; text-align: center;">
+                <h2 style="font-size: 32px; margin-bottom: 30px;">Transform Your Future</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 40px 0;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 48px;">📡</div>
+                        <strong>Communicate</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 48px;">☀️</div>
+                        <strong>Energize</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 48px;">🤖</div>
+                        <strong>Innovate</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 48px;">💻</div>
+                        <strong>Code</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.3);">
+                    <p style="font-size: 14px; opacity: 0.8;">
+                        © 2025 RadioSport Program<br>
+                        Non-Commercial Educational Use
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <button id="downloadBtn" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 1000;
+    " onclick="window.print()">
+        📥 Print/Save as PDF
+    </button>
+</body>
+</html>

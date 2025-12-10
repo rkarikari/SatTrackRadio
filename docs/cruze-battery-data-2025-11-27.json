@@ -13,6 +13,16 @@
   ],
   "activityLog": [
     {
+      "timestamp": "2025-11-27T20:45:42.076Z",
+      "message": "Updated battery level from voltage 12.7V to 100.0% SOC at 11/26/2025, 10:55:00 PM",
+      "type": "system"
+    },
+    {
+      "timestamp": "2025-11-27T20:45:42.076Z",
+      "message": "Voltage measurement added: 12.7V at 11/26/2025, 10:55:00 PM",
+      "type": "voltage-measurement"
+    },
+    {
       "timestamp": "2025-11-26T22:55:44.792Z",
       "message": "Physical start - remote start counter reset",
       "type": "physical-start"
@@ -124,7 +134,7 @@
     }
   ],
   "consecutiveStarts": 0,
-  "lastUpdated": "2025-11-26T22:55:44.792Z",
+  "lastUpdated": "2025-11-27T20:45:44.102Z",
   "batteryInstallDate": "2024-06-25T00:00:00.000Z",
   "directSunHours": 1,
   "nonDirectSunHours": 8,
@@ -140,6 +150,10 @@
     {
       "timestamp": "2025-11-26T18:58:00.000Z",
       "voltage": 12.79
+    },
+    {
+      "timestamp": "2025-11-26T22:55:00.000Z",
+      "voltage": 12.7
     }
   ]
 }

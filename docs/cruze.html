@@ -122,6 +122,16 @@
         .autosave-indicator.saved {
             color: #10B981;
         }
+
+        /* Activity log code-block style */
+        .log-message {
+            white-space: pre-line;
+            background: rgba(30, 30, 30, 0.6);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
@@ -185,7 +195,7 @@
                         <div class="metric-card p-4 glow-box">
                             <div class="flex items-center justify-between mb-2">
                                 <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806a3.42 3.42 0 014.438 0a3.42 3.42 0 001.946.806a3.42 3.42 0 013.138 3.138a3.42 3.42 0 00.806 1.946a3.42 3.42 0 010 4.438a3.42 3.42 0 00-.806 1.946a3.42 3.42 0 01-3.138 3.138a3.42 3.42 0 00-1.946.806a3.42 3.42 0 01-4.438 0a3.42 3.42 0 00-1.946-.806a3.42 3.42 0 01-3.138-3.138a3.42 3.42 0 00-.806-1.946a3.42 3.42 0 010-4.438a3.42 3.42 0 00.806-1.946a3.42 3.42 0 013.138-3.138z"></path>
                                 </svg>
                                 <span class="text-2xl font-bold text-blue-400" id="battery-level-display">78%</span>
                             </div>
@@ -391,7 +401,7 @@
                         <!-- Activity Log -->
                         <div class="metric-card p-4">
                             <h3 class="font-semibold mb-3 text-white">📝 Activity Log</h3>
-                            <div class="space-y-2 max-h-96 overflow-y-auto" id="activity-log">
+                            <div class="space-y-3 max-h-96 overflow-y-auto" id="activity-log">
                                 <!-- Will be populated by JavaScript -->
                             </div>
                         </div>
@@ -690,7 +700,7 @@
 
             calculateCurrentBatteryLevel() {
                 if (this.data.voltageHistory.length === 0) return 78;
-                const sorted = [...this.data.voltageHistory].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)); // ascending
+                const sorted = [...this.data.voltageHistory].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
                 const last = sorted[sorted.length - 1];
                 const lastTime = new Date(last.timestamp);
                 const now = new Date();
@@ -702,13 +712,11 @@
                 return Math.max(0, Math.min(100, lastSoc + percent));
             }
 
-            // Load data from localStorage or initialize with defaults
             loadData() {
                 const savedData = localStorage.getItem('cruzeBatteryData');
                 if (savedData) {
                     return JSON.parse(savedData);
                 } else {
-                    // Initialize with default data
                     const now = new Date().toISOString();
                     const install = new Date(new Date().getTime() - 1.5 * 365.25 * 24 * 60 * 60 * 1000).toISOString();
                     return {
@@ -734,31 +742,24 @@
                 }
             }
 
-            // Save data to localStorage
             saveData() {
                 this.data.lastUpdated = new Date().toISOString();
                 this.updateAutosaveStatus('saving');
                 localStorage.setItem('cruzeBatteryData', JSON.stringify(this.data));
-                
-                // Simulate saving delay
                 setTimeout(() => {
                     this.updateAutosaveStatus('saved');
                 }, 300);
             }
 
-            // Update autosave status indicator
             updateAutosaveStatus(status) {
                 const indicator = document.getElementById('autosave-status');
                 indicator.textContent = `Autosave: ${status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : 'Ready'}`;
-                
                 if (status === 'saving') {
                     indicator.classList.add('saving');
                     indicator.classList.remove('saved');
                 } else if (status === 'saved') {
                     indicator.classList.remove('saving');
                     indicator.classList.add('saved');
-                    
-                    // Reset status after 2 seconds
                     setTimeout(() => {
                         indicator.classList.remove('saved');
                         indicator.textContent = 'Autosave: Ready';
@@ -768,30 +769,17 @@
                 }
             }
 
-            // Schedule autosave with debouncing
             scheduleAutosave() {
-                if (this.autosaveTimer) {
-                    clearTimeout(this.autosaveTimer);
-                }
-                
-                this.autosaveTimer = setTimeout(() => {
-                    this.saveData();
-                }, 1000);
+                if (this.autosaveTimer) clearTimeout(this.autosaveTimer);
+                this.autosaveTimer = setTimeout(() => this.saveData(), 1000);
             }
 
-            // Apply automatic battery adjustment based on time passed since last update
-            applyAutomaticAdjustment() {
-                // Removed, handled by calculateCurrentBatteryLevel
-            }
-
-            // Calculate net Ah per day
             calculateNetAhPerDay() {
                 const directGain = this.data.solarActive ? this.data.directSunHours * this.constants.solarGainAhPerHourDirect : 0;
                 const nonDirectGain = this.data.solarActive ? this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect : 0;
                 return directGain + nonDirectGain - this.constants.parasiticDrainAhPerDay;
             }
 
-            // Reset all data to defaults
             resetData() {
                 if (confirm('Are you sure you want to reset all tracking data? This cannot be undone.')) {
                     const now = new Date().toISOString();
@@ -807,34 +795,24 @@
                         solarActive: true,
                         remoteStarts: [],
                         voltageHistory: [],
-                        activityLog: [
-                            {
-                                timestamp: now,
-                                message: "Data reset to defaults",
-                                type: "system"
-                            }
-                        ],
+                        activityLog: [{
+                            timestamp: now,
+                            message: "Data reset to defaults",
+                            type: "system"
+                        }],
                         consecutiveStarts: 0
                     };
                     const initialVoltage = this.getVoltageFromSoc(78);
-                    this.data.voltageHistory.push({
-                        timestamp: now,
-                        voltage: initialVoltage
-                    });
+                    this.data.voltageHistory.push({ timestamp: now, voltage: initialVoltage });
                     this.saveData();
                     this.updateUI();
                     this.updateCharts();
-                    
-                    // Show confirmation
                     alert('All tracking data has been reset to default values.');
                 }
             }
 
-            // Update tracking start date
             updateTrackingStartDate() {
-                const newDate = prompt('Enter new tracking start date (YYYY-MM-DD):', 
-                    new Date(this.data.trackingStartDate).toISOString().split('T')[0]);
-                
+                const newDate = prompt('Enter new tracking start date (YYYY-MM-DD):', new Date(this.data.trackingStartDate).toISOString().split('T')[0]);
                 if (newDate) {
                     const dateObj = new Date(newDate);
                     if (!isNaN(dateObj.getTime())) {
@@ -848,11 +826,8 @@
                 }
             }
 
-            // Update battery install date
             updateBatteryInstallDate() {
-                const newDate = prompt('Enter new battery install date (YYYY-MM-DD):', 
-                    new Date(this.data.batteryInstallDate).toISOString().split('T')[0]);
-                
+                const newDate = prompt('Enter new battery install date (YYYY-MM-DD):', new Date(this.data.batteryInstallDate).toISOString().split('T')[0]);
                 if (newDate) {
                     const dateObj = new Date(newDate);
                     if (!isNaN(dateObj.getTime())) {
@@ -867,80 +842,62 @@
                 }
             }
 
-            // Add a remote start event
             addRemoteStart() {
                 if (this.data.consecutiveStarts >= 2) {
                     alert('Remote start limit reached. Please perform a physical start to reset the counter.');
                     return;
                 }
-
                 if (this.data.fuelLevel < this.constants.remoteStartFuelGal) {
                     alert('Insufficient fuel for remote start.');
                     return;
                 }
 
                 const currentCapacity = this.calculateCurrentCapacity();
+                const oldBattery = this.data.batteryLevel.toFixed(1);
+                const oldFuel = this.data.fuelLevel.toFixed(3);
 
-                // Update data
                 this.data.consecutiveStarts++;
                 this.data.fuelLevel = Math.max(0, this.data.fuelLevel - this.constants.remoteStartFuelGal);
                 const percentGain = (this.constants.remoteStartChargeAh / currentCapacity) * 100;
                 this.data.batteryLevel = Math.min(100, this.data.batteryLevel + percentGain);
-                
+
                 const timestamp = new Date().toISOString();
-                
-                // Add to remote starts list
+                const newBattery = this.data.batteryLevel.toFixed(1);
+                const newFuel = this.data.fuelLevel.toFixed(3);
+
                 this.data.remoteStarts.unshift({
                     timestamp: timestamp,
                     batteryChange: this.constants.remoteStartChargeAh,
                     fuelChange: this.constants.remoteStartFuelGal
                 });
-                
-                // Add to activity log
-                this.addActivityLog(`Remote start activated (+${this.constants.remoteStartChargeAh} Ah, -${this.constants.remoteStartFuelGal} gal)`, "remote-start");
-                
-                // Since remote start charges the battery, add a "measurement" with new voltage
+
+                this.addActivityLog(`Remote start activated (consecutive: ${this.data.consecutiveStarts}/2)\n\nBattery: ${oldBattery}% → ${newBattery}%\nFuel: ${oldFuel} gal → ${newFuel} gal\n+${this.constants.remoteStartChargeAh} Ah added`, "remote-start");
+
                 const newVoltage = this.getVoltageFromSoc(this.data.batteryLevel);
                 this.addVoltageMeasurement(newVoltage, timestamp);
-                
+
                 this.saveData();
                 this.updateUI();
                 this.updateCharts();
             }
 
-            // Add a physical start event
             addPhysicalStart() {
-                // Reset consecutive starts counter
                 this.data.consecutiveStarts = 0;
-                
-                // Add to activity log
                 this.addActivityLog("Physical start - remote start counter reset", "physical-start");
-                
                 this.saveData();
                 this.updateUI();
             }
 
-            // Add a voltage measurement
             addVoltageMeasurement(voltage, timestamp) {
-                // Validate timestamp not future
                 if (new Date(timestamp) > new Date()) {
                     alert('Measurement date/time cannot be in the future.');
                     return;
                 }
-                // Add to voltage history
-                this.data.voltageHistory.push({
-                    timestamp: timestamp,
-                    voltage: voltage
-                });
-                
-                // Update current battery level
+                this.data.voltageHistory.push({ timestamp: timestamp, voltage: voltage });
                 this.data.batteryLevel = this.calculateCurrentBatteryLevel();
-
-                // Add to activity log
                 this.addActivityLog(`Voltage measurement added: ${voltage}V at ${new Date(timestamp).toLocaleString()}`, "voltage-measurement");
             }
 
-            // Delete a voltage measurement
             deleteVoltageMeasurement(timestamp) {
                 this.data.voltageHistory = this.data.voltageHistory.filter(entry => entry.timestamp !== timestamp);
                 this.data.batteryLevel = this.calculateCurrentBatteryLevel();
@@ -950,7 +907,6 @@
                 this.updateCharts();
             }
 
-            // Add entry to activity log with limit
             addActivityLog(message, type) {
                 this.data.activityLog.unshift({
                     timestamp: new Date().toISOString(),
@@ -962,24 +918,20 @@
                 }
             }
 
-            // Export data as JSON file
             exportData() {
                 const dataStr = JSON.stringify(this.data, null, 2);
                 const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(dataBlob);
                 link.download = `cruze-battery-data-${new Date().toISOString().split('T')[0]}.json`;
                 link.click();
             }
 
-            // Import data from JSON file
             importData(file) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const importedData = JSON.parse(e.target.result);
-                        // Validate basic structure
                         if (importedData.trackingStartDate && importedData.batteryLevel && importedData.directSunHours) {
                             this.data = importedData;
                             this.data.lastUpdated = new Date().toISOString();
@@ -999,46 +951,32 @@
                 reader.readAsText(file);
             }
 
-            // Update the UI with current data
             updateUI() {
                 const currentCapacity = this.calculateCurrentCapacity();
                 const batteryAge = this.calculateBatteryAge();
 
-                // Update header information
-                const startDate = new Date(this.data.trackingStartDate).toLocaleDateString();
-                document.getElementById('tracking-start-date').textContent = startDate;
-                document.getElementById('tracking-start-date-display').textContent = startDate;
+                document.getElementById('tracking-start-date').textContent = new Date(this.data.trackingStartDate).toLocaleDateString();
+                document.getElementById('tracking-start-date-display').textContent = new Date(this.data.trackingStartDate).toLocaleDateString();
+                document.getElementById('battery-install-date-display').textContent = new Date(this.data.batteryInstallDate).toLocaleDateString();
 
-                const installDateStr = new Date(this.data.batteryInstallDate).toLocaleDateString();
-                document.getElementById('battery-install-date-display').textContent = installDateStr;
-
-                // Update dashboard cards
                 document.getElementById('battery-level-display').textContent = `${this.data.batteryLevel.toFixed(0)}%`;
                 document.getElementById('battery-level-value').textContent = this.data.batteryLevel.toFixed(0);
                 document.getElementById('battery-level-slider').value = this.data.batteryLevel;
-                
-                const remainingAh = (currentCapacity * (this.data.batteryLevel / 100)).toFixed(1);
-                document.getElementById('battery-detail').textContent = 
-                    `${remainingAh} Ah remaining (${currentCapacity.toFixed(0)} Ah capacity)`;
+                document.getElementById('battery-detail').textContent = `${(currentCapacity * (this.data.batteryLevel / 100)).toFixed(1)} Ah remaining (${currentCapacity.toFixed(0)} Ah capacity)`;
 
                 document.getElementById('sun-hours-display').textContent = `${this.data.directSunHours}h`;
                 document.getElementById('direct-sun-hours-value').textContent = this.data.directSunHours;
                 document.getElementById('direct-sun-hours-slider').value = this.data.directSunHours;
                 document.getElementById('non-direct-sun-hours-value').textContent = this.data.nonDirectSunHours;
                 document.getElementById('non-direct-sun-hours-slider').value = this.data.nonDirectSunHours;
-                
-                const solarGainAh = (this.data.solarActive ? this.data.directSunHours * this.constants.solarGainAhPerHourDirect + this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect : 0).toFixed(2);
-                document.getElementById('solar-detail').textContent = 
-                    `+${solarGainAh} Ah/day`;
 
-                document.getElementById('remote-starts-display').textContent = 
-                    `${this.data.consecutiveStarts}/2`;
-                
-                document.getElementById('fuel-detail').textContent = 
-                    `Fuel: ${this.data.fuelLevel.toFixed(1)} gal`;
+                const solarGainAh = (this.data.solarActive ? this.data.directSunHours * this.constants.solarGainAhPerHourDirect + this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect : 0).toFixed(2);
+                document.getElementById('solar-detail').textContent = `+${solarGainAh} Ah/day`;
+
+                document.getElementById('remote-starts-display').textContent = `${this.data.consecutiveStarts}/2`;
+                document.getElementById('fuel-detail').textContent = `Fuel: ${this.data.fuelLevel.toFixed(1)} gal`;
                 document.getElementById('fuel-level-input').value = this.data.fuelLevel;
 
-                // Update days remaining
                 const netAh = this.calculateNetAhPerDay();
                 let daysRemaining = '∞';
                 let daysDetail = 'Self-sustaining';
@@ -1052,31 +990,22 @@
                 document.getElementById('days-remaining-display').textContent = daysRemaining;
                 document.getElementById('days-detail').textContent = daysDetail;
 
-                // Update solar toggle
                 document.getElementById('solar-toggle').checked = this.data.solarActive;
 
-                // Set default datetime to now
-                const nowLocal = new Date().toISOString().slice(0, 16);
+                const now = new Date();
+                const pad = n => String(n).padStart(2, '0');
+                const nowLocal = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
                 document.getElementById('voltage-datetime-input').value = nowLocal;
 
-                // Update remote starts list (show last 10)
                 this.updateRemoteStartsList();
-
-                // Update voltage measurements list (show last 10)
                 this.updateVoltageMeasurementsList();
-
-                // Update activity log (show last 20)
                 this.updateActivityLog();
-
-                // Update dynamic texts
                 this.updateDynamicTexts();
 
-                // Update specs
                 const percentOriginal = ((currentCapacity / this.constants.originalCapacityAh) * 100).toFixed(0);
                 document.getElementById('current-capacity-spec').textContent = `${currentCapacity.toFixed(0)} Ah (${percentOriginal}%)`;
                 document.getElementById('usable-capacity-spec').textContent = `${(currentCapacity * 0.5).toFixed(0)} Ah`;
 
-                // Update insights
                 const degradationStatus = batteryAge < 2 ? 'minimal degradation' : batteryAge < 4 ? 'normal degradation' : 'advanced degradation';
                 document.getElementById('battery-insight').innerHTML = `
                     <div>• <strong>Capacity:</strong> ${currentCapacity.toFixed(0)} Ah (${percentOriginal}% of original 60 Ah)</div>
@@ -1086,7 +1015,6 @@
                 `;
             }
 
-            // Update dynamic analysis texts
             updateDynamicTexts() {
                 const batteryAge = this.calculateBatteryAge();
                 const currentCapacity = this.calculateCurrentCapacity();
@@ -1099,32 +1027,28 @@
                 const usablePercent = this.data.batteryLevel - this.constants.criticalSocPercent;
                 const zeroSunDays = Math.max(0, Math.floor(usablePercent / dailyPercentLoss));
                 const winterDirectSunHours = 0.4;
-                const winterNonDirectSunHours = this.data.nonDirectSunHours; // Assume same non-direct
+                const winterNonDirectSunHours = this.data.nonDirectSunHours;
                 const winterNet = winterDirectSunHours * this.constants.solarGainAhPerHourDirect + winterNonDirectSunHours * this.constants.solarGainAhPerHourNonDirect - this.constants.parasiticDrainAhPerDay;
                 const winterDays = winterNet >= 0 ? '∞' : Math.max(0, Math.floor(usablePercent / (Math.abs(winterNet) / currentCapacity * 100))).toString();
 
-                // Projection analysis
                 document.getElementById('projection-analysis').innerHTML = `
                     <strong>Analysis:</strong> With ${this.data.directSunHours} direct and ${this.data.nonDirectSunHours} non-direct hours of daily sun and 5W solar panel, the system ${netAh >= 0 ? 'maintains a positive' : 'has a negative'} energy balance. 
                     Battery remains at sustainable levels ${netAh >= 0 ? 'indefinitely' : 'for a limited time'} with current configuration. 
                     Net daily: ${netAh >= 0 ? '+' : ''}${netAh.toFixed(2)} Ah/day.
                 `;
 
-                // Zero-sun analysis
                 document.getElementById('zerosun-analysis').innerHTML = `
                     <strong>Analysis:</strong> Without solar charging, battery reaches critical level (${this.constants.criticalSocPercent}% SOC) in approximately ${zeroSunDays} days. 
                     This provides sufficient buffer for typical cloudy periods in your region. 
                     Worst-case winter scenario (${winterDirectSunHours} direct sun-hours/day) extends survival to ~${winterDays} days.
                 `;
 
-                // Solar analysis
                 document.getElementById('solar-analysis').innerHTML = `
                     <strong>Analysis:</strong> Solar break-even point occurs at ${breakEvenDirect.toFixed(1)} direct hours of daily sun. 
                     Current region average of ${this.data.directSunHours} direct and ${this.data.nonDirectSunHours} non-direct hours provides comfortable ${netAh >= 0 ? '+' : ''}${netAh.toFixed(2)} Ah/day ${netAh >= 0 ? 'surplus' : 'deficit'}. 
                     Even during poor sun conditions (1-2 hours), battery depletion is gradual with weeks of survival time.
                 `;
 
-                // Fuel analysis
                 const possibleStarts = Math.floor(this.data.fuelLevel / this.constants.remoteStartFuelGal);
                 const monthsAt2PerMonth = (possibleStarts / 2).toFixed(1);
                 const years = (monthsAt2PerMonth / 12).toFixed(1);
@@ -1134,7 +1058,6 @@
                     Fuel consumption is minimal concern compared to battery maintenance requirements.
                 `;
 
-                // Solar insight
                 document.getElementById('solar-insight').innerHTML = `
                     <div>• <strong>Panel:</strong> 5W (0.30 A peak direct, 0.09 A non-direct)</div>
                     <div>• <strong>Daily Harvest:</strong> ${totalSolarGain.toFixed(1)} Ah @ ${this.data.directSunHours} direct + ${this.data.nonDirectSunHours} non-direct hours</div>
@@ -1142,7 +1065,6 @@
                     <div>• <strong>Net Gain:</strong> ${netAh >= 0 ? '+' : ''}${netAh.toFixed(2)} Ah/day current</div>
                 `;
 
-                // Maintenance recs
                 let status = 'OPTIMAL';
                 let additional = '';
                 if (this.data.batteryLevel < 60) {
@@ -1152,12 +1074,8 @@
                     status = 'CAUTION';
                     additional = '<li>Consider increasing sun exposure or reducing drain</li>';
                 }
-                if (this.data.fuelLevel < 1) {
-                    additional += '<li>Refuel soon</li>';
-                }
-                if (batteryAge > 3) {
-                    additional += '<li>Consider battery replacement soon</li>';
-                }
+                if (this.data.fuelLevel < 1) additional += '<li>Refuel soon</li>';
+                if (batteryAge > 3) additional += '<li>Consider battery replacement soon</li>';
                 document.getElementById('maintenance-recs').innerHTML = `
                     <p><strong>Current Status: ${status}</strong> - ${netAh >= 0 ? 'System is self-sustaining' : 'System has net loss'} with current configuration.</p>
                     <ul class="list-disc list-inside ml-2 space-y-1">
@@ -1170,18 +1088,14 @@
                 `;
             }
 
-            // Update remote starts list in history tab (show last 10)
             updateRemoteStartsList() {
                 const container = document.getElementById('remote-starts-list');
                 container.innerHTML = '';
-
                 const recentStarts = [...this.data.remoteStarts].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
-
                 if (recentStarts.length === 0) {
                     container.innerHTML = '<div class="text-center text-gray-400 py-4">No remote starts recorded</div>';
                     return;
                 }
-
                 recentStarts.forEach(start => {
                     const element = document.createElement('div');
                     element.className = 'flex justify-between items-center p-2 rounded bg-gray-700';
@@ -1191,15 +1105,11 @@
                             <div class="text-xs text-gray-400">+${start.batteryChange} Ah, -${start.fuelChange} gal</div>
                         </div>
                         <button class="text-red-500 hover:text-red-700 delete-remote-start" data-timestamp="${start.timestamp}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     `;
                     container.appendChild(element);
                 });
-
-                // Add event listeners to delete buttons
                 document.querySelectorAll('.delete-remote-start').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const timestamp = e.target.closest('button').getAttribute('data-timestamp');
@@ -1208,7 +1118,6 @@
                 });
             }
 
-            // Delete a remote start entry
             deleteRemoteStart(timestamp) {
                 this.data.remoteStarts = this.data.remoteStarts.filter(start => start.timestamp !== timestamp);
                 this.addActivityLog(`Deleted remote start entry from ${new Date(timestamp).toLocaleString()}`, "system");
@@ -1217,18 +1126,14 @@
                 this.updateCharts();
             }
 
-            // Update voltage measurements list in history tab (show last 10)
             updateVoltageMeasurementsList() {
                 const container = document.getElementById('voltage-measurements-list');
                 container.innerHTML = '';
-
                 const recentMeasurements = [...this.data.voltageHistory].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
-
                 if (recentMeasurements.length === 0) {
                     container.innerHTML = '<div class="text-center text-gray-400 py-4">No voltage measurements recorded</div>';
                     return;
                 }
-
                 recentMeasurements.forEach(entry => {
                     const element = document.createElement('div');
                     element.className = 'flex justify-between items-center p-2 rounded bg-gray-700';
@@ -1238,15 +1143,11 @@
                             <div class="text-xs text-gray-400">${entry.voltage} V</div>
                         </div>
                         <button class="text-red-500 hover:text-red-700 delete-voltage-measurement" data-timestamp="${entry.timestamp}">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     `;
                     container.appendChild(element);
                 });
-
-                // Add event listeners to delete buttons
                 document.querySelectorAll('.delete-voltage-measurement').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const timestamp = e.target.closest('button').getAttribute('data-timestamp');
@@ -1255,25 +1156,21 @@
                 });
             }
 
-            // Update activity log in history tab (show last 20)
             updateActivityLog() {
                 const container = document.getElementById('activity-log');
                 container.innerHTML = '';
-
                 const recentActivities = this.data.activityLog.slice(0, 20);
-                
                 recentActivities.forEach(entry => {
                     const element = document.createElement('div');
-                    element.className = 'p-2 rounded bg-gray-700';
+                    element.className = 'bg-gray-800/50 rounded-lg p-3';
                     element.innerHTML = `
-                        <div class="text-xs text-gray-400">${new Date(entry.timestamp).toLocaleString()}</div>
-                        <div class="text-sm text-gray-200">${entry.message}</div>
+                        <div class="text-xs text-gray-400 mb-1">${new Date(entry.timestamp).toLocaleString()}</div>
+                        <div class="log-message">${entry.message}</div>
                     `;
                     container.appendChild(element);
                 });
             }
 
-            // Initialize charts
             initCharts() {
                 this.createBatteryProjectionChart();
                 this.createZeroSunChart();
@@ -1284,28 +1181,17 @@
                 this.createVoltageHistoryChart();
             }
 
-            // Update charts
             updateCharts() {
-                Object.values(this.charts).forEach(chart => {
-                    if (chart) chart.destroy();
-                });
+                Object.values(this.charts).forEach(chart => { if (chart) chart.destroy(); });
                 this.initCharts();
             }
 
-            // Chart configuration
             getChartOptions() {
                 return {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { 
-                            labels: { 
-                                color: '#e2e8f0', 
-                                font: { size: 12 },
-                                usePointStyle: true
-                            },
-                            position: 'top'
-                        },
+                        legend: { labels: { color: '#e2e8f0', font: { size: 12 }, usePointStyle: true }, position: 'top' },
                         tooltip: {
                             backgroundColor: 'rgba(15, 23, 42, 0.9)',
                             titleColor: '#e2e8f0',
@@ -1314,47 +1200,17 @@
                             borderWidth: 1,
                             cornerRadius: 8,
                             displayColors: true,
-                            callbacks: {
-                                label: function(context) {
-                                    return `${context.dataset.label}: ${context.parsed.y.toFixed(2)}${context.dataset.unit || ''}`;
-                                }
-                            }
+                            callbacks: { label: context => `${context.dataset.label}: ${context.parsed.y.toFixed(2)}${context.dataset.unit || ''}` }
                         }
                     },
                     scales: {
-                        x: { 
-                            ticks: { color: '#94a3b8' }, 
-                            grid: { color: '#334155' },
-                            title: {
-                                display: true,
-                                color: '#94a3b8',
-                                font: { size: 12 }
-                            }
-                        },
-                        y: { 
-                            ticks: { color: '#94a3b8' }, 
-                            grid: { color: '#334155' },
-                            title: {
-                                display: true,
-                                color: '#94a3b8',
-                                font: { size: 12 }
-                            }
-                        }
+                        x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, color: '#94a3b8', font: { size: 12 } } },
+                        y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' }, title: { display: true, color: '#94a3b8', font: { size: 12 } } }
                     },
-                    elements: {
-                        line: {
-                            tension: 0.4,
-                            borderWidth: 2
-                        },
-                        point: {
-                            radius: 3,
-                            hoverRadius: 6
-                        }
-                    }
+                    elements: { line: { tension: 0.4, borderWidth: 2 }, point: { radius: 3, hoverRadius: 6 } }
                 };
             }
 
-            // Simulate historical and projected data from tracking start date
             simulateBatteryHistory(zeroSun = false) {
                 const dailyPercentGain = zeroSun ? -(this.constants.parasiticDrainAhPerDay / this.calculateCurrentCapacity()) * 100 : (this.calculateNetAhPerDay() / this.calculateCurrentCapacity()) * 100;
                 const sortedHistory = [...this.data.voltageHistory].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
@@ -1407,413 +1263,166 @@
                     currentSoc = Math.max(0, Math.min(100, currentSoc));
                     currentDate.setDate(currentDate.getDate() + 1);
                 }
-
                 return dataPoints;
             }
 
-            // Create Battery Projection Chart
             createBatteryProjectionChart() {
                 const ctx = document.getElementById('batteryProjectionChart').getContext('2d');
                 const simulatedData = this.simulateBatteryHistory();
-
                 this.charts.batteryProjection = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: simulatedData.map(d => d.date.toLocaleDateString()),
                         datasets: [
-                            {
-                                label: 'Battery Level',
-                                data: simulatedData.map(d => d.soc),
-                                borderColor: '#3b82f6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                fill: true,
-                                unit: '%'
-                            },
-                            {
-                                label: 'Measured Points',
-                                data: simulatedData.map(d => d.isMeasured ? d.soc : null),
-                                borderColor: '#10b981',
-                                backgroundColor: '#10b981',
-                                pointRadius: 5,
-                                showLine: false,
-                                unit: '%'
-                            },
-                            {
-                                label: 'Sustainable Level',
-                                data: simulatedData.map(() => 100),
-                                borderColor: '#10b981',
-                                borderDash: [5, 5],
-                                borderWidth: 1,
-                                pointRadius: 0,
-                                fill: false
-                            },
-                            {
-                                label: 'Critical Level',
-                                data: simulatedData.map(() => this.constants.criticalSocPercent),
-                                borderColor: '#ef4444',
-                                borderDash: [5, 5],
-                                borderWidth: 1,
-                                pointRadius: 0,
-                                fill: false
-                            }
+                            { label: 'Battery Level', data: simulatedData.map(d => d.soc), border: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, unit: '%' },
+                            { label: 'Measured Points', data: simulatedData.map(d => d.isMeasured ? d.soc : null), borderColor: '#10b981', backgroundColor: '#10b981', pointRadius: 5, showLine: false, unit: '%' },
+                            { label: 'Sustainable Level', data: simulatedData.map(() => 100), borderColor: '#10b981', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false },
+                            { label: 'Critical Level', data: simulatedData.map(() => this.constants.criticalSocPercent), borderColor: '#ef4444', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false }
                         ]
                     },
                     options: {
                         ...this.getChartOptions(),
-                        plugins: {
-                            ...this.getChartOptions().plugins,
-                            title: {
-                                display: true,
-                                text: 'Battery Level Projection from Tracking Start',
-                                color: '#3b82f6',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
+                        plugins: { ...this.getChartOptions().plugins, title: { display: true, text: 'Battery Level Projection from Tracking Start', color: '#3b82f6', font: { size: 14, weight: 'bold' } } },
                         scales: {
                             ...this.getChartOptions().scales,
-                            x: {
-                                ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Date', color: '#94a3b8' }
-                            },
-                            y: {
-                                ...this.getChartOptions().scales.y,
-                                title: { display: true, text: 'Battery Level (%)', color: '#94a3b8' },
-                                min: this.constants.criticalSocPercent - 10,
-                                max: 100
-                            }
+                            y: { ...this.getChartOptions().scales.y, title: { display: true, text: 'Battery Level (%)' }, min: this.constants.criticalSocPercent - 10, max: 100 }
                         }
                     }
                 });
             }
 
-            // Create Zero-Sun Survival Chart
             createZeroSunChart() {
                 const ctx = document.getElementById('zeroSunChart').getContext('2d');
                 const simulatedData = this.simulateBatteryHistory(true);
-
                 this.charts.zeroSun = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: simulatedData.map(d => d.date.toLocaleDateString()),
                         datasets: [
-                            {
-                                label: 'Battery SOC (Zero Sun)',
-                                data: simulatedData.map(d => d.soc),
-                                borderColor: '#8b5cf6',
-                                backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                                fill: true,
-                                unit: '%'
-                            },
-                            {
-                                label: 'Critical Threshold',
-                                data: simulatedData.map(() => this.constants.criticalSocPercent),
-                                borderColor: '#ef4444',
-                                borderDash: [5, 5],
-                                borderWidth: 2,
-                                pointRadius: 0,
-                                fill: false
-                            }
+                            { label: 'Battery SOC (Zero Sun)', data: simulatedData.map(d => d.soc), borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, unit: '%' },
+                            { label: 'Critical Threshold', data: simulatedData.map(() => this.constants.criticalSocPercent), borderColor: '#ef4444', borderDash: [5, 5], borderWidth: 2, pointRadius: 0, fill: false }
                         ]
                     },
                     options: {
                         ...this.getChartOptions(),
-                        plugins: {
-                            ...this.getChartOptions().plugins,
-                            title: {
-                                display: true,
-                                text: 'Zero-Sun Scenario from Tracking Start',
-                                color: '#8b5cf6',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
+                        plugins: { ...this.getChartOptions().plugins, title: { display: true, text: 'Zero-Sun Scenario from Tracking Start', color: '#8b5cf6', font: { size: 14, weight: 'bold' } } },
                         scales: {
                             ...this.getChartOptions().scales,
-                            x: {
-                                ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Date', color: '#94a3b8' }
-                            },
-                            y: {
-                                ...this.getChartOptions().scales.y,
-                                title: { display: true, text: 'State of Charge (%)', color: '#94a3b8' },
-                                min: 0,
-                                max: 100
-                            }
+                            y: { ...this.getChartOptions().scales.y, title: { display: true, text: 'State of Charge (%)' }, min: 0, max: 100 }
                         }
                     }
                 });
             }
 
-            // Create Solar Analysis Chart
             createSolarAnalysisChart() {
                 const ctx = document.getElementById('solarAnalysisChart').getContext('2d');
                 const breakEven = (this.constants.parasiticDrainAhPerDay / this.constants.solarGainAhPerHourDirect).toFixed(1);
-                
                 this.charts.solarAnalysis = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: ['0', '1', '2', '3', '4', '5', '6', '7', '8'],
                         datasets: [
-                            {
-                                label: 'Direct Gain',
-                                data: [0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4],
-                                backgroundColor: 'rgba(34, 197, 94, 0.7)',
-                                borderColor: '#22c55e',
-                                borderWidth: 1,
-                                unit: ' Ah/day'
-                            },
-                            {
-                                label: 'Non-Direct Gain',
-                                data: Array(9).fill(this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect), // Show fixed non-direct
-                                type: 'line',
-                                borderColor: '#fbbf24',
-                                borderWidth: 2,
-                                pointRadius: 0,
-                                fill: false,
-                                unit: ' Ah/day'
-                            },
-                            {
-                                label: 'Parasitic Loss',
-                                data: Array(9).fill(this.constants.parasiticDrainAhPerDay),
-                                type: 'line',
-                                borderColor: '#ef4444',
-                                borderWidth: 2,
-                                borderDash: [5, 5],
-                                pointRadius: 0,
-                                fill: false,
-                                unit: ' Ah/day'
-                            },
-                            {
-                                label: 'Net Balance (Direct + Non-Direct)',
-                                data: [0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4].map(gain => gain + this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect - this.constants.parasiticDrainAhPerDay),
-                                type: 'line',
-                                borderColor: '#3b82f6',
-                                borderWidth: 3,
-                                pointRadius: 4,
-                                pointBackgroundColor: '#3b82f6',
-                                fill: false,
-                                unit: ' Ah/day'
-                            }
+                            { label: 'Direct Gain', data: [0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4], backgroundColor: 'rgba(34, 197, 94, 0.7)', borderColor: '#22c55e', borderWidth: 1, unit: ' Ah/day' },
+                            { label: 'Non-Direct Gain', data: Array(9).fill(this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect), type: 'line', borderColor: '#fbbf24', borderWidth: 2, pointRadius: 0, fill: false, unit: ' Ah/day' },
+                            { label: 'Parasitic Loss', data: Array(9).fill(this.constants.parasiticDrainAhPerDay), type: 'line', borderColor: '#ef4444', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, fill: false, unit: ' Ah/day' },
+                            { label: 'Net Balance (Direct + Non-Direct)', data: [0, 0.3, 0.6, 0.9, 1.2, 1.5, 1.8, 2.1, 2.4].map(gain => gain + this.data.nonDirectSunHours * this.constants.solarGainAhPerHourNonDirect - this.constants.parasiticDrainAhPerDay), type: 'line', borderColor: '#3b82f6', borderWidth: 3, pointRadius: 4, pointBackgroundColor: '#3b82f6', fill: false, unit: ' Ah/day' }
                         ]
                     },
                     options: {
                         ...this.getChartOptions(),
-                        plugins: {
-                            ...this.getChartOptions().plugins,
-                            title: {
-                                display: true,
-                                text: `Break-even (Direct): ${breakEven} hours | Current: ${this.data.directSunHours} direct + ${this.data.nonDirectSunHours} non-direct`,
-                                color: '#22c55e',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
+                        plugins: { ...this.getChartOptions().plugins, title: { display: true, text: `Break-even (Direct): ${breakEven} hours | Current: ${this.data.directSunHours} direct + ${this.data.nonDirectSunHours} non-direct`, color: '#22c55e', font: { size: 14, weight: 'bold' } } },
                         scales: {
                             ...this.getChartOptions().scales,
-                            x: {
-                                ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Direct Sun Hours per Day', color: '#94a3b8' }
-                            },
-                            y: {
-                                ...this.getChartOptions().scales.y,
-                                title: { display: true, text: 'Energy (Ah/day)', color: '#94a3b8' }
-                            }
+                            x: { ...this.getChartOptions().scales.x, title: { display: true, text: 'Direct Sun Hours per Day' } },
+                            y: { ...this.getChartOptions().scales.y, title: { display: true, text: 'Energy (Ah/day)' } }
                         }
                     }
                 });
             }
 
-            // Create Fuel Analysis Chart
             createFuelAnalysisChart() {
                 const ctx = document.getElementById('fuelAnalysisChart').getContext('2d');
                 const currentStarts = Math.floor(this.data.fuelLevel / this.constants.remoteStartFuelGal);
-                
                 this.charts.fuelAnalysis = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: ['Quarter Tank', 'Half Tank', 'Full Tank', 'Current'],
-                        datasets: [
-                            {
-                                label: 'Remote Starts Possible',
-                                data: [140, 280, 520, currentStarts], // Full tank 13 gal
-                                backgroundColor: [
-                                    'rgba(239, 68, 68, 0.7)',
-                                    'rgba(251, 191, 36, 0.7)',
-                                    'rgba(34, 197, 94, 0.7)',
-                                    'rgba(59, 130, 246, 0.7)'
-                                ],
-                                borderColor: [
-                                    '#ef4444',
-                                    '#fbbf24',
-                                    '#22c55e',
-                                    '#3b82f6'
-                                ],
-                                borderWidth: 1,
-                                unit: ' starts'
-                            }
-                        ]
+                        datasets: [{
+                            label: 'Remote Starts Possible',
+                            data: [140, 280, 520, currentStarts],
+                            backgroundColor: ['rgba(239, 68, 68, 0.7)', 'rgba(251, 191, 36, 0.7)', 'rgba(34, 197, 94, 0.7)', 'rgba(59, 130, 246, 0.7)'],
+                            borderColor: ['#ef4444', '#fbbf24', '#22c55e', '#3b82f6'],
+                            borderWidth: 1,
+                            unit: ' starts'
+                        }]
                     },
                     options: {
                         ...this.getChartOptions(),
-                        plugins: {
-                            ...this.getChartOptions().plugins,
-                            title: {
-                                display: true,
-                                text: `Fuel Endurance | Current: ${this.data.fuelLevel.toFixed(1)} gal (${currentStarts} starts)`,
-                                color: '#fbbf24',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
+                        plugins: { ...this.getChartOptions().plugins, title: { display: true, text: `Fuel Endurance | Current: ${this.data.fuelLevel.toFixed(1)} gal (${currentStarts} starts)`, color: '#fbbf24', font: { size: 14, weight: 'bold' } } },
                         scales: {
                             ...this.getChartOptions().scales,
-                            x: {
-                                ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Fuel Level', color: '#94a3b8' }
-                            },
-                            y: {
-                                ...this.getChartOptions().scales.y,
-                                title: { display: true, text: 'Remote Starts', color: '#94a3b8' },
-                                beginAtZero: true
-                            }
+                            y: { ...this.getChartOptions().scales.y, beginAtZero: true }
                         }
                     }
                 });
             }
 
-            // Create Year Projection Chart
             createYearProjectionChart() {
                 const ctx = document.getElementById('yearProjectionChart').getContext('2d');
                 const currentCapacity = this.calculateCurrentCapacity();
                 const dailyPercentGain = (this.calculateNetAhPerDay() / currentCapacity) * 100;
-                
                 this.charts.yearProjection = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
                         datasets: [
-                            {
-                                label: 'Battery Level',
-                                data: Array.from({length: 12}, (_, i) => {
-                                    const level = this.data.batteryLevel + (dailyPercentGain * 30 * i);
-                                    return Math.min(100, Math.max(0, level));
-                                }),
-                                borderColor: '#3b82f6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                fill: true,
-                                unit: '%'
-                            },
-                            {
-                                label: 'Critical Level',
-                                data: Array(12).fill(this.constants.criticalSocPercent),
-                                borderColor: '#ef4444',
-                                borderDash: [5, 5],
-                                borderWidth: 1,
-                                pointRadius: 0,
-                                fill: false
-                            }
+                            { label: 'Battery Level', data: Array.from({length: 12}, (_, i) => Math.min(100, Math.max(0, this.data.batteryLevel + (dailyPercentGain * 30 * i)))), borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, unit: '%' },
+                            { label: 'Critical Level', data: Array(12).fill(this.constants.criticalSocPercent), borderColor: '#ef4444', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false }
                         ]
                     },
                     options: {
                         ...this.getChartOptions(),
-                        plugins: {
-                            ...this.getChartOptions().plugins,
-                            title: {
-                                display: true,
-                                text: '12-Month Projection | Sustainable Operation',
-                                color: '#3b82f6',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
+                        plugins: { ...this.getChartOptions().plugins, title: { display: true, text: '12-Month Projection | Sustainable Operation', color: '#3b82f6', font: { size: 14, weight: 'bold' } } },
                         scales: {
                             ...this.getChartOptions().scales,
-                            x: {
-                                ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Month', color: '#94a3b8' }
-                            },
-                            y: {
-                                ...this.getChartOptions().scales.y,
-                                title: { display: true, text: 'Battery Level (%)', color: '#94a3b8' },
-                                min: this.constants.criticalSocPercent - 10,
-                                max: 100
-                            }
+                            y: { ...this.getChartOptions().scales.y, min: this.constants.criticalSocPercent - 10, max: 100 }
                         }
                     }
                 });
             }
 
-            // Create Monthly Summary Chart
             createMonthlySummaryChart() {
                 const ctx = document.getElementById('monthlySummaryChart').getContext('2d');
-                
-                // Get current month data
                 const now = new Date();
                 const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
                 const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString();
-                
                 const monthlyStarts = this.data.remoteStarts.filter(start => start.timestamp >= monthStart && start.timestamp <= monthEnd);
                 const monthlyFuelUsed = monthlyStarts.reduce((sum, start) => sum + start.fuelChange, 0);
                 const monthlyBatteryFromStarts = monthlyStarts.reduce((sum, start) => sum + start.batteryChange, 0);
-                
-                // Approximate days in month
                 const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
                 const approxDirectSolarHoursTotal = this.data.directSunHours * daysInMonth;
                 const approxBatteryGain = (this.calculateNetAhPerDay() * daysInMonth) + monthlyBatteryFromStarts;
-                
+
                 this.charts.monthlySummary = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: ['Remote Starts', 'Direct Solar Hours (Total)', 'Fuel Used', 'Battery Gain (Ah)'],
-                        datasets: [
-                            {
-                                label: 'Current Month',
-                                data: [
-                                    monthlyStarts.length,
-                                    approxDirectSolarHoursTotal,
-                                    monthlyFuelUsed,
-                                    approxBatteryGain
-                                ],
-                                backgroundColor: [
-                                    'rgba(59, 130, 246, 0.7)',
-                                    'rgba(34, 197, 94, 0.7)',
-                                    'rgba(239, 68, 68, 0.7)',
-                                    'rgba(139, 92, 246, 0.7)'
-                                ],
-                                borderColor: [
-                                    '#3b82f6',
-                                    '#22c55e',
-                                    '#ef4444',
-                                    '#8b5cf6'
-                                ],
-                                borderWidth: 1
-                            }
-                        ]
+                        datasets: [{
+                            label: 'Current Month',
+                            data: [monthlyStarts.length, approxDirectSolarHoursTotal, monthlyFuelUsed, approxBatteryGain],
+                            backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(34, 197, 94, 0.7)', 'rgba(239, 68, 68, 0.7)', 'rgba(139, 92, 246, 0.7)'],
+                            borderColor: ['#3b82f6', '#22c55e', '#ef4444', '#8b5cf6'],
+                            borderWidth: 1
+                        }]
                     },
                     options: {
                         ...this.getChartOptions(),
-                        plugins: {
-                            ...this.getChartOptions().plugins,
-                            title: {
-                                display: true,
-                                text: 'Monthly Summary | All Metrics Normal',
-                                color: '#3b82f6',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
-                        scales: {
-                            ...this.getChartOptions().scales,
-                            x: {
-                                ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Metrics', color: '#94a3b8' }
-                            },
-                            y: {
-                                ...this.getChartOptions().scales.y,
-                                title: { display: true, text: 'Values', color: '#94a3b8' },
-                                beginAtZero: true
-                            }
-                        }
+                        plugins: { ...this.getChartOptions().plugins, title: { display: true, text: 'Monthly Summary | All Metrics Normal', color: '#3b82f6', font: { size: 14, weight: 'bold' } } },
+                        scales: { ...this.getChartOptions().scales, y: { ...this.getChartOptions().scales.y, beginAtZero: true } }
                     }
                 });
             }
 
-            // Create Voltage History Chart
             createVoltageHistoryChart() {
                 const ctx = document.getElementById('voltageHistoryChart').getContext('2d');
                 const simulatedData = this.simulateBatteryHistory();
@@ -1833,18 +1442,12 @@
                         monthlyData.push(sumVoltage / count);
                         monthlyLabels.push(new Date(d.date.getFullYear(), currentMonth, 1).toLocaleString('default', { month: 'short' }));
                         monthlyMeasuredVoltages.push(measuredCount > 0 ? measuredSum / measuredCount : null);
-                        sumVoltage = 0;
-                        count = 0;
-                        measuredSum = 0;
-                        measuredCount = 0;
+                        sumVoltage = 0; count = 0; measuredSum = 0; measuredCount = 0;
                         currentMonth = month;
                     }
                     sumVoltage += d.voltage;
                     count++;
-                    if (d.isMeasured) {
-                        measuredSum += d.voltage;
-                        measuredCount++;
-                    }
+                    if (d.isMeasured) { measuredSum += d.voltage; measuredCount++; }
                 });
                 if (count > 0) {
                     monthlyData.push(sumVoltage / count);
@@ -1857,93 +1460,36 @@
                     data: {
                         labels: monthlyLabels,
                         datasets: [
-                            {
-                                label: 'Average Monthly Voltage',
-                                data: monthlyData,
-                                borderColor: '#3b82f6',
-                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                                fill: true,
-                                unit: 'V'
-                            },
-                            {
-                                label: 'Measured Voltage (Avg)',
-                                data: monthlyMeasuredVoltages,
-                                borderColor: '#10b981',
-                                backgroundColor: '#10b981',
-                                pointRadius: 5,
-                                showLine: false,
-                                unit: 'V'
-                            },
-                            {
-                                label: 'Critical Voltage (~50% SOC)',
-                                data: Array(monthlyLabels.length).fill(this.getVoltageFromSoc(this.constants.criticalSocPercent)),
-                                borderColor: '#ef4444',
-                                borderDash: [5, 5],
-                                borderWidth: 1,
-                                pointRadius: 0,
-                                fill: false,
-                                unit: 'V'
-                            }
+                            { label: 'Average Monthly Voltage', data: monthlyData, borderColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.1)', fill: true, unit: 'V' },
+                            { label: 'Measured Voltage (Avg)', data: monthlyMeasuredVoltages, borderColor: '#10b981', backgroundColor: '#10b981', pointRadius: 5, showLine: false, unit: 'V' },
+                            { label: 'Critical Voltage (~50% SOC)', data: Array(monthlyLabels.length).fill(this.getVoltageFromSoc(this.constants.criticalSocPercent)), borderColor: '#ef4444', borderDash: [5, 5], borderWidth: 1, pointRadius: 0, fill: false, unit: 'V' }
                         ]
                     },
                     options: {
                         ...this.getChartOptions(),
-                        plugins: {
-                            ...this.getChartOptions().plugins,
-                            title: {
-                                display: true,
-                                text: 'Voltage History and Projection from Tracking Start',
-                                color: '#3b82f6',
-                                font: { size: 14, weight: 'bold' }
-                            }
-                        },
+                        plugins: { ...this.getChartOptions().plugins, title: { display: true, text: 'Voltage History and Projection from Tracking Start', color: '#3b82f6', font: { size: 14, weight: 'bold' } } },
                         scales: {
                             ...this.getChartOptions().scales,
-                            x: {
-                                ...this.getChartOptions().scales.x,
-                                title: { display: true, text: 'Month', color: '#94a3b8' }
-                            },
-                            y: {
-                                ...this.getChartOptions().scales.y,
-                                title: { display: true, text: 'Voltage (V)', color: '#94a3b8' },
-                                min: 10,
-                                max: 13
-                            }
+                            y: { ...this.getChartOptions().scales.y, min: 10, max: 13 }
                         }
                     }
                 });
             }
 
-            // Set up event listeners
             setupEventListeners() {
-                // Tab switching
                 document.querySelectorAll('.tab-button').forEach(button => {
                     button.addEventListener('click', function() {
-                        const tabId = this.getAttribute('data-tab');
-                        
-                        // Remove active class from all buttons and contents
-                        document.querySelectorAll('.tab-button').forEach(btn => {
-                            btn.classList.remove('active', 'text-white');
-                            btn.classList.add('text-gray-400', 'hover:text-gray-200');
-                        });
-                        
-                        document.querySelectorAll('.tab-content').forEach(content => {
-                            content.classList.remove('active');
-                        });
-                        
-                        // Add active class to clicked button and corresponding content
+                        document.querySelectorAll('.tab-button').forEach(btn => { btn.classList.remove('active', 'text-white'); btn.classList.add('text-gray-400', 'hover:text-gray-200'); });
+                        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
                         this.classList.add('active', 'text-white');
                         this.classList.remove('text-gray-400', 'hover:text-gray-200');
-                        
-                        document.getElementById(`tab-${tabId}`).classList.add('active');
+                        document.getElementById(`tab-${this.getAttribute('data-tab')}`).classList.add('active');
                     });
                 });
 
-                // Settings controls with validation
                 document.getElementById('battery-level-slider').addEventListener('input', (e) => {
                     this.data.batteryLevel = parseInt(e.target.value);
                     document.getElementById('battery-level-value').textContent = this.data.batteryLevel;
-                    // Update last measurement if it's the only one or something, but to keep simple, manual slider doesn't add measurement
                     this.scheduleAutosave();
                     this.updateUI();
                     this.updateCharts();
@@ -1957,24 +1503,40 @@
                         return;
                     }
                     if (!datetimeInput) {
-                        alert('Please enter a valid date/time.');
+                        alert('Please select a date and time.');
                         return;
                     }
-                    const timestamp = new Date(datetimeInput).toISOString();
+
+                    const [datePart, timePart] = datetimeInput.split('T');
+                    const [year, month, day] = datePart.split('-').map(Number);
+                    const [hour, minute] = timePart.split(':').map(Number);
+                    const measurementDate = new Date(year, month - 1, day, hour, minute);
+
+                    if (measurementDate > new Date()) {
+                        alert('Measurement time cannot be in the future.');
+                        return;
+                    }
+
+                    const timestamp = measurementDate.toISOString();
+                    const oldLevel = this.data.batteryLevel.toFixed(1);
+
                     this.addVoltageMeasurement(voltage, timestamp);
-                    this.data.batteryLevel = this.calculateCurrentBatteryLevel();
-                    const newSoc = this.getSocFromVoltage(voltage);
-                    this.addActivityLog(`Updated battery level from voltage ${voltage}V to ${newSoc.toFixed(1)}% SOC at ${new Date(timestamp).toLocaleString()}`, "system");
+                    const newLevel = this.data.batteryLevel.toFixed(1);
+                    const measuredSoc = this.getSocFromVoltage(voltage).toFixed(1);
+
+                    this.addActivityLog(`Voltage measurement recorded: ${voltage.toFixed(2)}V\nTime: ${new Date(timestamp).toLocaleString()}\n\nBattery SOC Update:\nBefore: ${oldLevel}%\nAfter:  ${newLevel}%\n(Measured ${measuredSoc}% at that time)`, "voltage-measurement");
+
                     this.scheduleAutosave();
                     this.updateUI();
                     this.updateCharts();
-                    alert(`Battery level updated based on ${voltage}V resting voltage at ${new Date(timestamp).toLocaleString()}. Current estimated SOC: ${this.data.batteryLevel.toFixed(1)}%`);
+
+                    alert(`Battery level updated from ${oldLevel}% → ${newLevel}%\nbased on ${voltage}V resting voltage measured at\n${new Date(timestamp).toLocaleString()}`);
                 });
 
                 document.getElementById('direct-sun-hours-slider').addEventListener('input', (e) => {
                     this.data.directSunHours = parseFloat(e.target.value);
                     document.getElementById('direct-sun-hours-value').textContent = this.data.directSunHours;
-                    this.data.batteryLevel = this.calculateCurrentBatteryLevel(); // Recalc since net changed
+                    this.data.batteryLevel = this.calculateCurrentBatteryLevel();
                     this.scheduleAutosave();
                     this.updateUI();
                     this.updateCharts();
@@ -2008,43 +1570,16 @@
                     this.updateCharts();
                 });
 
-                // Action buttons
-                document.getElementById('remote-start-btn').addEventListener('click', () => {
-                    this.addRemoteStart();
-                });
-
-                document.getElementById('physical-start-btn').addEventListener('click', () => {
-                    this.addPhysicalStart();
-                });
-
-                document.getElementById('reset-data-btn').addEventListener('click', () => {
-                    this.resetData();
-                });
-
-                document.getElementById('update-start-date-btn').addEventListener('click', () => {
-                    this.updateTrackingStartDate();
-                });
-
-                document.getElementById('update-install-date-btn').addEventListener('click', () => {
-                    this.updateBatteryInstallDate();
-                });
-
-                document.getElementById('export-data-btn').addEventListener('click', () => {
-                    this.exportData();
-                });
-
-                document.getElementById('import-data-btn').addEventListener('click', () => {
-                    document.getElementById('import-data-input').click();
-                });
-
-                document.getElementById('import-data-input').addEventListener('change', (e) => {
-                    if (e.target.files.length > 0) {
-                        this.importData(e.target.files[0]);
-                    }
-                });
+                document.getElementById('remote-start-btn').addEventListener('click', () => this.addRemoteStart());
+                document.getElementById('physical-start-btn').addEventListener('click', () => this.addPhysicalStart());
+                document.getElementById('reset-data-btn').addEventListener('click', () => this.resetData());
+                document.getElementById('update-start-date-btn').addEventListener('click', () => this.updateTrackingStartDate());
+                document.getElementById('update-install-date-btn').addEventListener('click', () => this.updateBatteryInstallDate());
+                document.getElementById('export-data-btn').addEventListener('click', () => this.exportData());
+                document.getElementById('import-data-btn').addEventListener('click', () => document.getElementById('import-data-input').click());
+                document.getElementById('import-data-input').addEventListener('change', (e) => { if (e.target.files.length > 0) this.importData(e.target.files[0]); });
             }
 
-            // Initialize the application
             init() {
                 this.setupEventListeners();
                 this.updateUI();
@@ -2053,7 +1588,6 @@
             }
         }
 
-        // Initialize the application when the page loads
         document.addEventListener('DOMContentLoaded', () => {
             window.cruzeTracker = new CruzeBatteryTracker();
         });
