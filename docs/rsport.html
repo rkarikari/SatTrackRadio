@@ -308,7 +308,7 @@
             </div>
             <div style="margin-top: 60px;">
                 <div class="version-box">
-                    <strong>Version 2.1 — 2025 (Upgraded with Satellite Communications)</strong>
+                    <strong>Version 2.2 — 2025 (Upgraded with Drone Integration)</strong>
                 </div>
             </div>
         </div>
@@ -338,24 +338,28 @@
                     <span class="page-number">9</span>
                 </div>
                 <div class="toc-item">
-                    <span>6. Artificial Intelligence</span>
+                    <span>6. Drone Integration with DJI Drones</span>
                     <span class="page-number">11</span>
                 </div>
                 <div class="toc-item">
-                    <span>7. Advanced Coding: C++ & Python</span>
+                    <span>7. Artificial Intelligence</span>
                     <span class="page-number">13</span>
                 </div>
                 <div class="toc-item">
-                    <span>8. Hands-On Projects</span>
+                    <span>8. Advanced Coding: C++ & Python</span>
                     <span class="page-number">15</span>
                 </div>
                 <div class="toc-item">
-                    <span>9. Field Operations</span>
+                    <span>9. Hands-On Projects</span>
                     <span class="page-number">17</span>
                 </div>
                 <div class="toc-item">
-                    <span>10. Awards & Budget</span>
+                    <span>10. Field Operations</span>
                     <span class="page-number">19</span>
+                </div>
+                <div class="toc-item">
+                    <span>11. Awards & Budget</span>
+                    <span class="page-number">21</span>
                 </div>
             </div>
         </div>
@@ -449,7 +453,8 @@
                 <li>VHF/UHF/HF propagation modes</li>
                 <li>Digital modes: AFSK, D-STAR, C4FM, PSK31</li>
                 <li>SDR reception and signal analysis</li>
-                <li>Satellite communications (new addition for advanced operations)</li>
+                <li>Satellite communications</li>
+                <li>Drone-integrated radio operations (new)</li>
             </ul>
 
             <h3>Coding & Software Engineering</h3>
@@ -459,6 +464,7 @@
                 <li>RF propagation simulators</li>
                 <li>Signal processing and demodulation tools</li>
                 <li>AI prediction models</li>
+                <li>Drone SDK programming for DJI models</li>
             </ul>
 
             <h2>Participant Requirements</h2>
@@ -494,8 +500,12 @@
                     <td>DSP algorithms, SDR applications, automation</td>
                 </tr>
                 <tr>
-                    <td>Satellite Operations (New)</td>
+                    <td>Satellite Operations</td>
                     <td>Satellite tracking, Doppler correction, circular polarized antennas</td>
+                </tr>
+                <tr>
+                    <td>Drone Operations (New)</td>
+                    <td>Drone flight programming, aerial signal mapping, antenna inspections using DJI drones</td>
                 </tr>
             </table>
         </div>
@@ -971,9 +981,106 @@
             </ul>
         </div>
 
+        <!-- DRONE INTEGRATION -->
+        <div class="content-page">
+            <h1>6. Drone Integration with DJI Drones</h1>
+
+            <p><strong>Integrating DJI drones such as the Phantom 4 and Mavic Pro enhances the RadioSport program by enabling aerial perspectives for antenna inspections, signal mapping, and field operations. This section covers basics, equipment, regulations, and practical exercises.</strong></p>
+
+            <h2>Introduction to Drone Use in HAM Radio</h2>
+
+            <p>Drones provide unique capabilities for amateur radio enthusiasts, including lifting antennas into trees, inspecting high installations, and mapping signal strength across areas. Models like DJI Phantom 4 and Mavic Pro are suitable due to their stability, camera quality, and programmability. Note: Comply with FAA regulations; recreational use under 250g may not require registration, but Part 107 certification is recommended for educational activities. FCC rules apply for radio transmissions on drones—amateur license required for HAM frequencies.</p>
+
+            <ul>
+                <li><strong>Applications:</strong> Antenna deployment, visual inspections, RF signal heatmapping using SDR payloads.</li>
+                <li><strong>Models:</strong> DJI Phantom 4 (RTK for precise mapping), Mavic Pro (portable for field use).</li>
+                <li><strong>Challenges:</strong> Battery life, payload weight limits, interference from drone electronics, regulatory compliance.</li>
+            </ul>
+
+            <div class="diagram">
+                <h4>DJI Phantom 4 in Operations</h4>
+                <img src="https://rippingitoutdoors.com/cdn/shop/products/01_46b6334d-18d8-472f-8308-423ec71fc090.png?v=1661867819&width=1445" alt="DJI Phantom 4 RTK Compact Drone" class="diagram-img">
+                <p>DJI Phantom 4 used in surveying and mapping operations.</p>
+            </div>
+
+            <div class="diagram">
+                <h4>DJI Mavic Pro for Antenna Inspection</h4>
+                <img src="https://i.ytimg.com/vi/awuClSl_OOk/maxresdefault.jpg" alt="Antenna inspection with a mini drone" class="diagram-img">
+                <p>DJI drone inspecting HAM radio antennas.</p>
+            </div>
+
+            <div class="diagram">
+                <h4>Drone-Mounted RF Direction Finder</h4>
+                <img src="https://i.ytimg.com/vi/9kibfNAJu6Y/maxresdefault.jpg" alt="Drone Mounted RF Direction Finder" class="diagram-img">
+                <p>Demo of drone for RF interference detection.</p>
+            </div>
+
+            <h2>Drone Specifications and Setup</h2>
+
+            <table>
+                <tr>
+                    <th>Model</th>
+                    <th>Flight Time</th>
+                    <th>Payload Capacity</th>
+                    <th>Key Features</th>
+                </tr>
+                <tr>
+                    <td>DJI Phantom 4</td>
+                    <td>28 min</td>
+                    <td>Up to 1kg</td>
+                    <td>RTK GPS, 4K camera, stable hover</td>
+                </tr>
+                <tr>
+                    <td>DJI Mavic Pro</td>
+                    <td>27 min</td>
+                    <td>Up to 0.5kg</td>
+                    <td>Foldable, portable, OcuSync transmission</td>
+                </tr>
+            </table>
+
+            <h2>Regulatory Considerations</h2>
+
+            <ul>
+                <li><strong>FAA Rules:</strong> Register drones over 250g; obtain Part 107 for non-recreational use. Fly below 400ft, line-of-sight.</li>
+                <li><strong>FCC Rules:</strong> Amateur license required for HAM radio on drones; no commercial use without proper certification.</li>
+                <li><strong>Safety:</strong> Avoid interference with aircraft; use spotters for operations.</li>
+            </ul>
+
+            <h2>Practical Drone Exercises</h2>
+
+            <h3>Exercise 1: Antenna Inspection</h3>
+            <ul>
+                <li>Fly DJI Mavic Pro around antenna installations.</li>
+                <li>Capture video for damage assessment.</li>
+                <li>Log findings and compare with ground observations.</li>
+            </ul>
+
+            <h3>Exercise 2: Signal Mapping</h3>
+            <ul>
+                <li>Mount lightweight SDR on Phantom 4.</li>
+                <li>Program autonomous flight path using DJI SDK.</li>
+                <li>Collect signal strength data; analyze with Python for heatmaps.</li>
+            </ul>
+
+            <h3>Exercise 3: Aerial Antenna Deployment</h3>
+            <ul>
+                <li>Use drone to lift wire antennas into trees.</li>
+                <li>Ensure safe payload attachment.</li>
+                <li>Test deployed antenna performance.</li>
+            </ul>
+
+            <h2>Integration with Other Modules</h2>
+
+            <ul>
+                <li><strong>AI:</strong> Use ML for drone path optimization in signal mapping.</li>
+                <li><strong>Coding:</strong> Develop scripts for DJI SDK in Python.</li>
+                <li><strong>Field Ops:</strong> Incorporate drones in challenges.</li>
+            </ul>
+        </div>
+
         <!-- AI APPLICATIONS -->
         <div class="content-page">
-            <h1>6. Artificial Intelligence Applications</h1>
+            <h1>7. Artificial Intelligence Applications</h1>
 
             <h2>Propagation Prediction AI</h2>
 
@@ -1049,11 +1156,18 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 <li><strong>Fitness:</strong> Weighted sum of gain, F/B ratio, SWR</li>
                 <li><strong>Evolution:</strong> Genetic algorithm over 100+ generations</li>
             </ul>
+
+            <h2>AI for Drone Operations (New)</h2>
+
+            <ul>
+                <li><strong>Path Planning:</strong> Use AI to optimize drone flights for signal mapping.</li>
+                <li><strong>Image Analysis:</strong> ML models to detect antenna damage from drone footage.</li>
+            </ul>
         </div>
 
         <!-- CODING -->
         <div class="content-page">
-            <h1>7. Advanced Coding: C++ & Python</h1>
+            <h1>8. Advanced Coding: C++ & Python</h1>
 
             <h2>Python for RF Applications</h2>
 
@@ -1082,6 +1196,7 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 <li><strong>SciPy:</strong> Signal processing, filter design</li>
                 <li><strong>Matplotlib:</strong> Plotting and visualization</li>
                 <li><strong>PySDR:</strong> Software-defined radio interfacing</li>
+                <li><strong>DJI SDK:</strong> For drone control and integration (new)</li>
             </ul>
 
             <h2>C++ for Real-Time DSP</h2>
@@ -1139,11 +1254,19 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                     <li><strong>Features:</strong> Multiple demodulation modes, waterfall</li>
                 </ul>
             </div>
+
+            <div class="highlight-box">
+                <h3>🚀 New: Drone Flight Control for Signal Mapping</h3>
+                <ul>
+                    <li><strong>Python with DJI SDK:</strong> Program autonomous flights, integrate SDR data collection.</li>
+                    <li><strong>Features:</strong> Waypoint navigation, real-time signal logging.</li>
+                </ul>
+            </div>
         </div>
 
         <!-- HANDS-ON PROJECTS -->
         <div class="content-page">
-            <h1>8. Hands-On Practical Projects</h1>
+            <h1>9. Hands-On Practical Projects</h1>
 
             <h2>Antenna Construction</h2>
 
@@ -1185,12 +1308,19 @@ probability = model.<span class="function">predict_proba</span>([conditions])
             </table>
             <p><strong>Expected:</strong> 10-12 dBi gain, 20 dB F/B ratio</p>
 
-            <h3>Project 3: Circular Polarized Yagi for Satellites (New)</h3>
+            <h3>Project 3: Circular Polarized Yagi for Satellites</h3>
             <ul>
                 <li><strong>Materials:</strong> Aluminum elements, boom, phasing lines for RHCP/LHCP switching.</li>
                 <li><strong>Dimensions:</strong> Optimized for 145 MHz uplink and 435 MHz downlink.</li>
                 <li><strong>Steps:</strong> Assemble crossed elements, add relay for polarization switch, test with rotator.</li>
                 <li><strong>Goal:</strong> Minimize fading during satellite passes.</li>
+            </ul>
+
+            <h3>Project 4: Drone-Mounted SDR Setup (New)</h3>
+            <ul>
+                <li><strong>Materials:</strong> DJI Phantom 4 or Mavic Pro, lightweight SDR, mounting hardware.</li>
+                <li><strong>Steps:</strong> Secure SDR to drone, integrate with solar battery if needed, test flight stability.</li>
+                <li><strong>Goal:</strong> Collect airborne signal data without interference.</li>
             </ul>
 
             <h2>RF Filter Construction</h2>
@@ -1236,7 +1366,7 @@ probability = model.<span class="function">predict_proba</span>([conditions])
 
         <!-- FIELD OPERATIONS -->
         <div class="content-page">
-            <h1>9. Field Operations & Challenges</h1>
+            <h1>10. Field Operations & Challenges</h1>
 
             <h2>Monthly Field Day Structure</h2>
 
@@ -1299,11 +1429,18 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 <li>Points for number of contacts</li>
             </ul>
 
-            <h3>Satellite Contact Challenge (New)</h3>
+            <h3>Satellite Contact Challenge</h3>
             <ul>
                 <li>Make QSOs via LEO satellites like AO-91.</li>
                 <li>Score based on number of contacts and distance.</li>
                 <li>Use portable setups with tracking.</li>
+            </ul>
+
+            <h3>Drone-Assisted Signal Mapping Challenge (New)</h3>
+            <ul>
+                <li>Use DJI drone with SDR to map signal coverage.</li>
+                <li>Score based on map accuracy and coverage area.</li>
+                <li>Integrate AI for data analysis.</li>
             </ul>
 
             <h2>Annual RadioSport Games</h2>
@@ -1319,6 +1456,9 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 
                 <h4>Fox Hunt (Direction Finding)</h4>
                 <p>Locate hidden transmitters using signal analysis</p>
+
+                <h4>Drone Integration Challenge (New)</h4>
+                <p>Use drones for aerial tasks in radio ops.</p>
             </div>
 
             <h2>Safety Protocols</h2>
@@ -1336,11 +1476,18 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 <li>Battery terminals covered when not in use</li>
                 <li>Fire extinguisher accessible</li>
             </ul>
+
+            <h3>Drone Safety (New)</h3>
+            <ul>
+                <li>Follow FAA guidelines; pre-flight checks.</li>
+                <li>Avoid populated areas; use visual observers.</li>
+                <li>Monitor for RF interference with drone controls.</li>
+            </ul>
         </div>
 
         <!-- AWARDS & BUDGET -->
         <div class="content-page">
-            <h1>10. Awards System & Budget</h1>
+            <h1>11. Awards System & Budget</h1>
 
             <h2>Performance-Based Awards</h2>
 
@@ -1357,6 +1504,7 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 <li>RTL-SDR receivers with antennas</li>
                 <li>SWR meters / RF power meters</li>
                 <li>Antenna construction kits</li>
+                <li>Drone accessories (batteries, mounts) (new)</li>
             </ul>
 
             <h3>Tier 3 – Apex Awards</h3>
@@ -1365,6 +1513,7 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 <li>HF QRP transceivers</li>
                 <li>Solar panel + charge controller kits</li>
                 <li>Advanced antenna analyzers</li>
+                <li>DJI Mavic Pro drone kit (new)</li>
             </ul>
 
             <h2>Program Budget</h2>
@@ -1395,6 +1544,10 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                     <td>$1,500</td>
                 </tr>
                 <tr>
+                    <td>Drones & Accessories (New)</td>
+                    <td>$5,000</td>
+                </tr>
+                <tr>
                     <td>Venue (9 months)</td>
                     <td>$1,800</td>
                 </tr>
@@ -1412,19 +1565,19 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 </tr>
                 <tr>
                     <td>Contingency (10%)</td>
-                    <td>$3,075</td>
+                    <td>$3,575</td>
                 </tr>
                 <tr style="background: #667eea; color: white; font-weight: bold;">
                     <td>TOTAL</td>
-                    <td>$33,825</td>
+                    <td>$38,825</td>
                 </tr>
                 <tr style="background: #2ecc71; color: white;">
                     <td>Per Student (50)</td>
-                    <td>$677</td>
+                    <td>$777</td>
                 </tr>
                 <tr style="background: #3498db; color: white;">
                     <td>Monthly (÷ 9 months)</td>
-                    <td>$75/student</td>
+                    <td>$86/student</td>
                 </tr>
             </table>
 
@@ -1433,7 +1586,7 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 <ul>
                     <li><strong>Minimum ($15/month):</strong> Basic operations</li>
                     <li><strong>Standard ($40/month):</strong> Equipment loans + awards</li>
-                    <li><strong>Full ($75/month):</strong> Complete program access</li>
+                    <li><strong>Full ($86/month):</strong> Complete program access including drones</li>
                 </ul>
             </div>
 
@@ -1487,7 +1640,7 @@ probability = model.<span class="function">predict_proba</span>([conditions])
                 <div style="font-size: 80px; margin-bottom: 20px;">📡</div>
                 <h2 style="color: #1e3c72;">RADIOSPORT</h2>
                 <p style="font-size: 20px; color: #2a5298; font-weight: bold;">Building Tomorrow's Engineers Today</p>
-                <p style="margin-top: 30px; color: #666;">Version 2.1 — 2025</p>
+                <p style="margin-top: 30px; color: #666;">Version 2.2 — 2025</p>
             </div>
         </div>
 
