@@ -1,0 +1,1804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RadioSport STEM Handbook 2025</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+        
+        .page-container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
+        }
+        
+        @media screen {
+            .page-container {
+                max-width: 90%;
+            }
+        }
+        
+        .cover-page {
+            height: 297mm;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e8ba3 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.3;
+            background: repeating-linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0.1) 10px, transparent 10px, transparent 20px);
+        }
+        
+        .logo-section {
+            margin-bottom: 40px;
+            z-index: 1;
+        }
+        
+        .radio-icon {
+            font-size: 120px;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        
+        .cover-title {
+            font-size: 52px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+            z-index: 1;
+        }
+        
+        .cover-subtitle {
+            font-size: 28px;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            z-index: 1;
+        }
+        
+        .cover-description {
+            font-size: 18px;
+            max-width: 600px;
+            line-height: 1.8;
+            margin-bottom: 50px;
+            opacity: 0.9;
+            z-index: 1;
+        }
+        
+        .version-box {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 30px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+        
+        .content-page {
+            padding: 40px;
+            min-height: 297mm;
+            page-break-after: always;
+        }
+        
+        h1 {
+            color: #1e3c72;
+            font-size: 36px;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 4px solid #667eea;
+        }
+        
+        h2 {
+            color: #2a5298;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid #667eea;
+        }
+        
+        h3 {
+            color: #34495e;
+            font-size: 22px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #34495e;
+            font-size: 18px;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 5px;
+        }
+        
+        .stem-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .icon-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .icon-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .icon-symbol {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .diagram {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .diagram-container {
+            width: 100%;
+            height: 300px;
+            background: #f8f9fa;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .illustration {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: center;
+            border: 2px solid #dee2e6;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: bold;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        ul, ol {
+            margin: 20px 0 20px 30px;
+        }
+        
+        li {
+            margin-bottom: 10px;
+        }
+        
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .keyword { color: #e74c3c; }
+        .string { color: #2ecc71; }
+        .comment { color: #95a5a6; font-style: italic; }
+        .function { color: #3498db; }
+        
+        .toc {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .toc-item {
+            padding: 10px 0;
+            border-bottom: 1px dotted #ccc;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .page-number {
+            color: #667eea;
+            font-weight: bold;
+        }
+        
+        /* SVG Diagram Styles */
+        .diagram-svg {
+            width: 100%;
+            height: 250px;
+            background: white;
+        }
+        
+        .diagram-element {
+            stroke-width: 2;
+            stroke: #2c3e50;
+            fill: #e9ecef;
+        }
+        
+        .diagram-text {
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+            fill: #2c3e50;
+        }
+        
+        .diagram-arrow {
+            stroke: #667eea;
+            stroke-width: 3;
+            fill: none;
+            marker-end: url(#arrowhead);
+        }
+        
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .visual-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .flowchart {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #3498db;
+        }
+        
+        .antenna-diagram {
+            width: 100%;
+            height: 200px;
+            background: 
+                linear-gradient(180deg, #e9ecef 0%, #f8f9fa 100%);
+            position: relative;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .propagation-visual {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(180deg, #667eea10 0%, #764ba210 100%);
+            border: 1px solid #667eea30;
+            border-radius: 8px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            .page-container {
+                box-shadow: none;
+            }
+            .content-page {
+                page-break-after: always;
+            }
+            #downloadBtn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <!-- COVER PAGE -->
+        <div class="cover-page">
+            <div class="logo-section">
+                <div class="radio-icon">📡</div>
+            </div>
+            <h1 class="cover-title">RADIOSPORT</h1>
+            <h2 class="cover-subtitle">Advanced STEM Education Program</h2>
+            <p class="cover-description">
+                Self-Sustaining Offline Technology & Non-Commercial Electronic Communication Education
+                <br><br>
+                Empowering Youth Through Amateur Radio, AI, Coding, and Field Science
+            </p>
+            <div>
+                <span class="stem-badge">🔬 SCIENCE</span>
+                <span class="stem-badge">💻 TECHNOLOGY</span>
+                <span class="stem-badge">⚙️ ENGINEERING</span>
+                <span class="stem-badge">📐 MATHEMATICS</span>
+            </div>
+            <div style="margin-top: 60px;">
+                <div class="version-box">
+                    <strong>Version 3.0 — 2025</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABLE OF CONTENTS -->
+        <div class="content-page">
+            <h1>📋 Table of Contents</h1>
+            <div class="toc">
+                <div class="toc-item">
+                    <span>1. Mission Statement & STEM Excellence</span>
+                    <span class="page-number">3</span>
+                </div>
+                <div class="toc-item">
+                    <span>2. Program Structure</span>
+                    <span class="page-number">4</span>
+                </div>
+                <div class="toc-item">
+                    <span>3. Solar & Battery Power Systems</span>
+                    <span class="page-number">5</span>
+                </div>
+                <div class="toc-item">
+                    <span>4. HF/VHF/UHF Communications</span>
+                    <span class="page-number">7</span>
+                </div>
+                <div class="toc-item">
+                    <span>5. Artificial Intelligence</span>
+                    <span class="page-number">9</span>
+                </div>
+                <div class="toc-item">
+                    <span>6. Advanced Coding: C++ & Python</span>
+                    <span class="page-number">11</span>
+                </div>
+                <div class="toc-item">
+                    <span>7. Hands-On Projects</span>
+                    <span class="page-number">13</span>
+                </div>
+                <div class="toc-item">
+                    <span>8. Field Operations</span>
+                    <span class="page-number">15</span>
+                </div>
+                <div class="toc-item">
+                    <span>9. Awards & Budget</span>
+                    <span class="page-number">17</span>
+                </div>
+            </div>
+            
+            <div class="illustration">
+                <h3>Program Overview</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 200">
+                    <defs>
+                        <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+                                refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#667eea"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Radio Tower (upgraded with waves) -->
+                    <rect x="50" y="100" width="20" height="80" fill="#95a5a6"/>
+                    <rect x="40" y="180" width="40" height="10" fill="#7f8c8d"/>
+                    <rect x="55" y="60" width="10" height="40" fill="#667eea"/>
+                    <circle cx="60" cy="50" r="15" fill="#3498db"/>
+                    <path d="M60,185 C80,175 100,185 120,175" stroke="#667eea" stroke-width="2" fill="none"/>
+                    <path d="M60,195 C80,185 100,195 120,185" stroke="#667eea" stroke-width="2" fill="none"/>
+                    <path d="M60,205 C80,195 100,205 120,195" stroke="#667eea" stroke-width="2" fill="none"/>
+                    
+                    <!-- AI Brain (upgraded with more neurons) -->
+                    <circle cx="200" cy="100" r="40" fill="#9b59b6"/>
+                    <path d="M190,80 C200,70 220,70 230,80 C240,90 240,110 230,120 C220,130 200,130 190,120 C180,110 180,90 190,80" 
+                          fill="white" opacity="0.3"/>
+                    <circle cx="180" cy="90" r="5" fill="white" opacity="0.6"/>
+                    <circle cx="220" cy="110" r="5" fill="white" opacity="0.6"/>
+                    <circle cx="190" cy="110" r="5" fill="white" opacity="0.6"/>
+                    <circle cx="210" cy="90" r="5" fill="white" opacity="0.6"/>
+                    
+                    <!-- Solar Panel (upgraded with more grid lines) -->
+                    <rect x="350" y="80" width="60" height="40" fill="#2c3e50"/>
+                    <rect x="355" y="85" width="50" height="30" fill="#f1c40f"/>
+                    <line x1="360" y1="85" x2="400" y2="85" stroke="#34495e" stroke-width="1"/>
+                    <line x1="360" y1="95" x2="400" y2="95" stroke="#34495e" stroke-width="1"/>
+                    <line x1="360" y1="105" x2="400" y2="105" stroke="#34495e" stroke-width="1"/>
+                    <line x1="360" y1="115" x2="400" y2="115" stroke="#34495e" stroke-width="1"/>
+                    
+                    <!-- Code Brackets (upgraded with more code symbols) -->
+                    <rect x="500" y="80" width="60" height="40" fill="#2c3e50" rx="5"/>
+                    <text x="515" y="95" fill="white" font-family="monospace" font-size="20">{</text>
+                    <text x="515" y="105" fill="white" font-family="monospace" font-size="10">code</text>
+                    <text x="545" y="105" fill="white" font-family="monospace" font-size="20">}</text>
+                    
+                    <!-- Arrows connecting elements -->
+                    <path d="M75,100 C125,100 150,100 160,100" class="diagram-arrow"/>
+                    <path d="M240,100 C290,100 320,100 340,100" class="diagram-arrow"/>
+                    <path d="M410,100 C460,100 490,100 500,100" class="diagram-arrow"/>
+                    
+                    <!-- Labels -->
+                    <text x="60" y="195" class="diagram-text" text-anchor="middle">Radio</text>
+                    <text x="200" y="195" class="diagram-text" text-anchor="middle">AI</text>
+                    <text x="380" y="195" class="diagram-text" text-anchor="middle">Solar</text>
+                    <text x="530" y="195" class="diagram-text" text-anchor="middle">Code</text>
+                </svg>
+                <p style="margin-top: 10px; font-size: 14px; color: #666;">
+                    Integrated STEM Components: Radio Communications, Artificial Intelligence, Renewable Energy, and Programming
+                </p>
+            </div>
+        </div>
+
+        <!-- MISSION STATEMENT -->
+        <div class="content-page">
+            <h1>1. Mission Statement & STEM Excellence</h1>
+            
+            <div class="highlight-box">
+                <h3>🎯 Our Mission</h3>
+                <p><strong>RadioSport develops advanced offline youth competence in cutting-edge technologies that bridge theoretical knowledge with real-world applications.</strong></p>
+            </div>
+
+            <h2>Core Competencies</h2>
+            <div class="icon-grid">
+                <div class="icon-item">
+                    <div class="icon-symbol">🤖</div>
+                    <strong>Artificial Intelligence</strong>
+                    <p>Offline AI & algorithms</p>
+                </div>
+                <div class="icon-item">
+                    <div class="icon-symbol">📻</div>
+                    <strong>Radio Communication</strong>
+                    <p>HF/VHF/UHF operations</p>
+                </div>
+                <div class="icon-item">
+                    <div class="icon-symbol">💻</div>
+                    <strong>Software Development</strong>
+                    <p>C++/Python for RF</p>
+                </div>
+                <div class="icon-item">
+                    <div class="icon-symbol">⚡</div>
+                    <strong>Renewable Energy</strong>
+                    <p>Solar/battery systems</p>
+                </div>
+            </div>
+
+            <h2>Why RadioSport is Exceptional STEM</h2>
+            
+            <div class="visual-grid">
+                <div class="visual-item">
+                    <div style="font-size: 48px; color: #e74c3c;">📊</div>
+                    <h4>Real-World Physics</h4>
+                    <p>Direct observation of electromagnetic wave propagation</p>
+                </div>
+                <div class="visual-item">
+                    <div style="font-size: 48px; color: #3498db;">📐</div>
+                    <h4>Applied Mathematics</h4>
+                    <p>Calculate wavelengths, optimize antenna designs</p>
+                </div>
+                <div class="visual-item">
+                    <div style="font-size: 48px; color: #2ecc71;">⚙️</div>
+                    <h4>Practical Engineering</h4>
+                    <p>Design, build, test complete systems</p>
+                </div>
+                <div class="visual-item">
+                    <div style="font-size: 48px; color: #9b59b6;">💻</div>
+                    <h4>Computer Science</h4>
+                    <p>Develop AI algorithms and signal processing</p>
+                </div>
+            </div>
+
+            <div class="illustration">
+                <h3>STEM Integration Diagram</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 250">
+                    <defs>
+                        <linearGradient id="stemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#667eea"/>
+                            <stop offset="100%" stop-color="#764ba2"/>
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- Central RadioSport Circle -->
+                    <circle cx="400" cy="125" r="60" fill="url(#stemGrad)"/>
+                    <text x="400" y="130" text-anchor="middle" fill="white" font-size="20" font-weight="bold">
+                        RadioSport
+                    </text>
+                    
+                    <!-- STEM Branches -->
+                    <g id="science">
+                        <path d="M400,65 L400,40 L300,40 Q250,40 250,80" stroke="#e74c3c" stroke-width="3" fill="none"/>
+                        <circle cx="250" cy="80" r="40" fill="#e74c3c" opacity="0.8"/>
+                        <text x="250" y="85" text-anchor="middle" fill="white" font-size="16">Science</text>
+                        <text x="250" y="105" text-anchor="middle" fill="white" font-size="12">Physics</text>
+                    </g>
+                    
+                    <g id="technology">
+                        <path d="M460,125 L510,125 Q560,125 560,80" stroke="#3498db" stroke-width="3" fill="none"/>
+                        <circle cx="560" cy="80" r="40" fill="#3498db" opacity="0.8"/>
+                        <text x="560" y="85" text-anchor="middle" fill="white" font-size="16">Technology</text>
+                        <text x="560" y="105" text-anchor="middle" fill="white" font-size="12">Radio/AI</text>
+                    </g>
+                    
+                    <g id="engineering">
+                        <path d="M460,185 L510,185 Q560,185 560,220" stroke="#2ecc71" stroke-width="3" fill="none"/>
+                        <circle cx="560" cy="220" r="40" fill="#2ecc71" opacity="0.8"/>
+                        <text x="560" y="225" text-anchor="middle" fill="white" font-size="16">Engineering</text>
+                        <text x="560" y="245" text-anchor="middle" fill="white" font-size="12">Systems</text>
+                    </g>
+                    
+                    <g id="mathematics">
+                        <path d="M400,185 L400,210 L300,210 Q250,210 250,170" stroke="#f39c12" stroke-width="3" fill="none"/>
+                        <circle cx="250" cy="170" r="40" fill="#f39c12" opacity="0.8"/>
+                        <text x="250" y="175" text-anchor="middle" fill="white" font-size="16">Mathematics</text>
+                        <text x="250" y="195" text-anchor="middle" fill="white" font-size="12">Calculations</text>
+                    </g>
+                </svg>
+            </div>
+
+            <h2>Program Duration & Structure</h2>
+            <table>
+                <tr>
+                    <th>Component</th>
+                    <th>Details</th>
+                </tr>
+                <tr>
+                    <td>Duration</td>
+                    <td>9 months per cohort</td>
+                </tr>
+                <tr>
+                    <td>Weekly Sessions</td>
+                    <td>3 hours ( theory + coding + hands-on)</td>
+                </tr>
+                <tr>
+                    <td>Monthly Field Days</td>
+                    <td>8 hours outdoor deployment</td>
+                </tr>
+                <tr>
+                    <td>Donation</td>
+                    <td>$15/month minimum</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- PROGRAM STRUCTURE -->
+        <div class="content-page">
+            <h1>2. Program Structure</h1>
+
+            <div class="flowchart">
+                <h3>📚 Learning Path Flowchart</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 300">
+                    <defs>
+                        <marker id="flowArrow" markerWidth="10" markerHeight="7" 
+                                refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#34495e"/>
+                        </marker>
+                    </defs>
+                    
+                    <!-- Level 1 -->
+                    <rect x="100" y="50" width="120" height="60" rx="10" fill="#3498db" opacity="0.9"/>
+                    <text x="160" y="85" text-anchor="middle" fill="white" font-size="14">Fundamentals</text>
+                    <text x="160" y="100" text-anchor="middle" fill="white" font-size="12">Months 1-2</text>
+                    
+                    <!-- Level 2 -->
+                    <rect x="50" y="150" width="120" height="60" rx="10" fill="#2ecc71" opacity="0.9"/>
+                    <text x="110" y="180" text-anchor="middle" fill="white" font-size="12">RF Theory</text>
+                    
+                    <rect x="200" y="150" width="120" height="60" rx="10" fill="#9b59b6" opacity="0.9"/>
+                    <text x="260" y="180" text-anchor="middle" fill="white" font-size="12">Coding Basics</text>
+                    
+                    <!-- Level 3 -->
+                    <rect x="350" y="150" width="120" height="60" rx="10" fill="#e74c3c" opacity="0.9"/>
+                    <text x="410" y="180" text-anchor="middle" fill="white" font-size="12">Solar Power</text>
+                    
+                    <!-- Level 4 -->
+                    <rect x="100" y="250" width="120" height="60" rx="10" fill="#f39c12" opacity="0.9"/>
+                    <text x="160" y="280" text-anchor="middle" fill="white" font-size="12">AI Integration</text>
+                    
+                    <rect x="300" y="250" width="120" height="60" rx="10" fill="#1abc9c" opacity="0.9"/>
+                    <text x="360" y="280" text-anchor="middle" fill="white" font-size="12">Field Ops</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M160,110 C160,130 160,140 160,150" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#flowArrow)"/>
+                    <path d="M160,150 L110,150" stroke="#34495e" stroke-width="2" fill="none"/>
+                    <path d="M160,150 L210,150" stroke="#34495e" stroke-width="2" fill="none"/>
+                    <path d="M280,150 L350,150" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#flowArrow)"/>
+                    <path d="M110,210 C110,230 110,240 110,250" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#flowArrow)"/>
+                    <path d="M410,210 C410,230 410,240 410,250" stroke="#34495e" stroke-width="2" fill="none" marker-end="url(#flowArrow)"/>
+                    
+                    <!-- Labels -->
+                    <text x="400" y="40" text-anchor="middle" font-size="16" fill="#2c3e50">Learning Progression</text>
+                </svg>
+            </div>
+
+            <h2>Knowledge Streams</h2>
+
+            <div class="visual-grid">
+                <div class="visual-item">
+                    <h4>🤖 Offline AI</h4>
+                    <ul style="font-size: 14px; text-align: left;">
+                        <li>Classical AI algorithms</li>
+                        <li>Machine learning models</li>
+                        <li>Radio optimization</li>
+                    </ul>
+                </div>
+                <div class="visual-item">
+                    <h4>📻 RF Theory</h4>
+                    <ul style="font-size: 14px; text-align: left;">
+                        <li>Antenna design</li>
+                        <li>Propagation modes</li>
+                        <li>Digital modes</li>
+                    </ul>
+                </div>
+                <div class="visual-item">
+                    <h4>💻 Coding</h4>
+                    <ul style="font-size: 14px; text-align: left;">
+                        <li>Python prototyping</li>
+                        <li>C++ DSP</li>
+                        <li>SDR applications</li>
+                    </ul>
+                </div>
+                <div class="visual-item">
+                    <h4>⚡ Solar Power</h4>
+                    <ul style="font-size: 14px; text-align: left;">
+                        <li>System design</li>
+                        <li>Battery management</li>
+                        <li>Field deployment</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h2>Specialization Tracks</h2>
+
+            <div class="illustration">
+                <h3>Track Specialization Diagram</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 200">
+                    <!-- RF Engineering Track -->
+                    <circle cx="150" cy="100" r="40" fill="#3498db" opacity="0.8"/>
+                    <text x="150" y="100" text-anchor="middle" fill="white" font-size="14">RF</text>
+                    <text x="150" y="120" text-anchor="middle" fill="white" font-size="12">Engineering</text>
+                    
+                    <!-- AI Track -->
+                    <circle cx="300" cy="100" r="40" fill="#9b59b6" opacity="0.8"/>
+                    <text x="300" y="100" text-anchor="middle" fill="white" font-size="14">AI</text>
+                    <text x="300" y="120" text-anchor="middle" fill="white" font-size="12">Signal Intel</text>
+                    
+                    <!-- Communications Track -->
+                    <circle cx="450" cy="100" r="40" fill="#2ecc71" opacity="0.8"/>
+                    <text x="450" y="100" text-anchor="middle" fill="white" font-size="14">Field</text>
+                    <text x="450" y="120" text-anchor="middle" fill="white" font-size="12">Comms</text>
+                    
+                    <!-- Software Track -->
+                    <circle cx="600" cy="100" r="40" fill="#e74c3c" opacity="0.8"/>
+                    <text x="600" y="100" text-anchor="middle" fill="white" font-size="14">Software</text>
+                    <text x="600" y="120" text-anchor="middle" fill="white" font-size="12">Dev</text>
+                    
+                    <!-- Connecting lines to center -->
+                    <line x1="150" y1="100" x2="300" y2="100" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5"/>
+                    <line x1="300" y1="100" x2="450" y2="100" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5"/>
+                    <line x1="450" y1="100" x2="600" y2="100" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5"/>
+                </svg>
+                <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                    Students can specialize in one track while gaining exposure to all four domains
+                </p>
+            </div>
+        </div>
+
+        <!-- SOLAR & BATTERY SYSTEMS -->
+        <div class="content-page">
+            <h1>3. Solar & Battery Power Systems</h1>
+
+            <p><strong>Renewable energy systems enable completely off-grid field operations and teach sustainable engineering principles.</strong></p>
+
+            <div class="illustration">
+                <h3>Complete Solar Power System Diagram</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 250">
+                    <!-- Solar Panel -->
+                    <rect x="50" y="50" width="100" height="60" fill="#f1c40f" stroke="#34495e" stroke-width="2"/>
+                    <rect x="55" y="55" width="90" height="50" fill="#f39c12"/>
+                    <line x1="60" y1="65" x2="140" y2="65" stroke="#34495e" stroke-width="1"/>
+                    <line x1="60" y1="75" x2="140" y2="75" stroke="#34495e" stroke-width="1"/>
+                    <line x1="60" y1="85" x2="140" y2="85" stroke="#34495e" stroke-width="1"/>
+                    <line x1="60" y1="95" x2="140" y2="95" stroke="#34495e" stroke-width="1"/>
+                    <text x="100" y="130" text-anchor="middle" font-size="12">100W Solar Panel</text>
+                    
+                    <!-- Charge Controller -->
+                    <rect x="200" y="70" width="80" height="40" fill="#3498db" rx="5"/>
+                    <text x="240" y="95" text-anchor="middle" fill="white" font-size="14">MPPT</text>
+                    <text x="240" y="110" text-anchor="middle" fill="white" font-size="10">Controller</text>
+                    
+                    <!-- Battery -->
+                    <rect x="350" y="60" width="60" height="70" fill="#2c3e50" rx="5"/>
+                    <rect x="355" y="65" width="50" height="60" fill="#34495e"/>
+                    <text x="380" y="95" text-anchor="middle" fill="white" font-size="12">+</text>
+                    <text x="380" y="110" text-anchor="middle" fill="white" font-size="12">-</text>
+                    <text x="380" y="140" text-anchor="middle" font-size="12">35Ah LiFePO₄</text>
+                    
+                    <!-- Radio Equipment -->
+                    <rect x="500" y="70" width="80" height="40" fill="#e74c3c" rx="5"/>
+                    <polygon points="510,80 530,80 520,70" fill="white"/>
+                    <polygon points="510,100 530,100 520,110" fill="white"/>
+                    <text x="540" y="95" text-anchor="middle" fill="white" font-size="14">Radio</text>
+                    
+                    <!-- Wires/Connections -->
+                    <path d="M150,80 L200,80" stroke="#95a5a6" stroke-width="3" fill="none"/>
+                    <path d="M280,80 L350,80" stroke="#95a5a6" stroke-width="3" fill="none"/>
+                    <path d="M410,80 L500,80" stroke="#95a5a6" stroke-width="3" fill="none"/>
+                    
+                    <!-- Sun -->
+                    <circle cx="30" cy="30" r="20" fill="#f1c40f"/>
+                    <line x1="30" y1="10" x2="30" y2="5" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="50" y1="30" x2="55" y2="30" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="30" y1="50" x2="30" y2="55" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="10" y1="30" x2="5" y2="30" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="15" y1="15" x2="10" y2="10" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="45" y1="15" x2="50" y2="10" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="45" y1="45" x2="50" y2="50" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="15" y1="45" x2="10" y2="50" stroke="#f39c12" stroke-width="2"/>
+                    
+                    <!-- Arrows -->
+                    <path d="M50,80 L60,80" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M150,80 L160,80" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M280,80 L290,80" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M410,80 L420,80" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                </svg>
+                <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                    Energy Flow: Sun → Solar Panel → Charge Controller → Battery → Radio Equipment
+                </p>
+            </div>
+
+            <h2>Solar Power Fundamentals</h2>
+
+            <div class="highlight-box">
+                <h3>☀️ Complete Solar System Components</h3>
+                <p><strong>Solar Panel → Charge Controller → Battery → Radio Equipment</strong></p>
+                <ul>
+                    <li>100W solar panel produces ~400Wh in 4 peak sun hours</li>
+                    <li>MPPT charge controller optimizes energy harvest</li>
+                    <li>35Ah LiFePO4 battery stores energy for night operations</li>
+                    <li>Anderson Powerpole connectors for reliable connections</li>
+                </ul>
+            </div>
+
+            <div class="illustration">
+                <h3>Photovoltaic Effect Diagram</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 180">
+                    <!-- Sun -->
+                    <circle cx="100" cy="90" r="30" fill="#f1c40f"/>
+                    
+                    <!-- Photons -->
+                    <line x1="130" y1="90" x2="200" y2="90" stroke="#f39c12" stroke-width="2" stroke-dasharray="5,5"/>
+                    <text x="165" y="85" text-anchor="middle" font-size="12">Photons</text>
+                    
+                    <!-- Solar Cell -->
+                    <rect x="250" y="40" width="200" height="100" fill="#34495e"/>
+                    <rect x="255" y="45" width="190" height="90" fill="#2c3e50"/>
+                    
+                    <!-- N-Type Layer -->
+                    <rect x="260" y="50" width="180" height="30" fill="#3498db" opacity="0.7">
+                        <title>N-Type Semiconductor (excess electrons)</title>
+                    </rect>
+                    <text x="350" y="70" text-anchor="middle" fill="white" font-size="12">N-Type</text>
+                    
+                    <!-- P-Type Layer -->
+                    <rect x="260" y="85" width="180" height="30" fill="#e74c3c" opacity="0.7">
+                        <title>P-Type Semiconductor (excess holes)</title>
+                    </rect>
+                    <text x="350" y="105" text-anchor="middle" fill="white" font-size="12">P-Type</text>
+                    </text>
+                    
+                    <!-- Depletion Zone -->
+                    <line x1="260" y1="80" x2="440" y2="80" stroke="#2ecc71" stroke-width="3"/>
+                    <text x="350" y="75" text-anchor="middle" fill="#2ecc71" font-size="10">Depletion Zone</text>
+                    
+                    <!-- Electron Flow -->
+                    <path d="M450,70 L500,70 L500,120 L550,120" stroke="#3498db" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <text x="525" y="115" text-anchor="middle" font-size="12">Electron Flow</text>
+                    
+                    <!-- Load -->
+                    <rect x="570" y="70" width="40" height="40" fill="#95a5a6" rx="5"/>
+                    <text x="590" y="90" text-anchor="middle" fill="white" font-size="12">Load</text>
+                    
+                    <!-- Complete Circuit -->
+                    <line x1="450" y1="120" x2="570" y2="120" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="610" y1="110" x2="610" y2="40" stroke="#f39c12" stroke-width="2"/>
+                    <line x1="610" y1="40" x2="450" y2="40" stroke="#f39c12" stroke-width="2"/>
+                </svg>
+                <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                    Photons knock electrons loose, creating current flow across the PN junction
+                </p>
+            </div>
+
+            <h2>Battery Technology Comparison</h2>
+
+            <div class="illustration">
+                <h3>Battery Performance Characteristics</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 250">
+                    <!-- X-axis -->
+                    <line x1="50" y1="200" x2="750" y2="200" stroke="#2c3e50" stroke-width="2"/>
+                    <!-- Y-axis -->
+                    <line x1="50" y1="200" x2="50" y2="50" stroke="#2c3e50" stroke-width="2"/>
+                    
+                    <!-- Grid lines -->
+                    <line x1="50" y1="170" x2="750" y2="170" stroke="#95a5a6" stroke-width="1" stroke-dasharray="5,5"/>
+                    <line x1="50" y1="140" x2="750" y2="140" stroke="#95a5a6" stroke-width="1" stroke-dasharray="5,5"/>
+                    <line x1="50" y1="110" x2="750" y2="110" stroke="#95a5a6" stroke-width="1" stroke-dasharray="5,5"/>
+                    <line x1="50" y1="80" x2="750" y2="80" stroke="#95a5a6" stroke-width="1" stroke-dasharray="5,5"/>
+                    
+                    <!-- Lead Acid -->
+                    <circle cx="150" cy="150" r="20" fill="#e74c3c" opacity="0.7"/>
+                    <text x="150" y="150" text-anchor="middle" fill="white" font-size="14">LA</text>
+                    
+                    <!-- LiFePO4 -->
+                    <circle cx="350" cy="100" r="30" fill="#2ecc71" opacity="0.7"/>
+                    <text x="350" y="100" text-anchor="middle" fill="white" font-size="16">LFP</text>
+                    
+                    <!-- Li-Ion -->
+                    <circle cx="550" cy="80" r="25" fill="#3498db" opacity="0.7"/>
+                    <text x="550" y="80" text-anchor="middle" fill="white" font-size="14">LI</text>
+                    
+                    <!-- Axes labels -->
+                    <text x="400" y="230" text-anchor="middle" font-size="14">Battery Type</text>
+                    <text x="20" y="125" text-anchor="middle" font-size="14" transform="rotate(-90,20,125)">Performance</text>
+                    
+                    <!-- Legend -->
+                    <rect x="600" y="50" width="150" height="90" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+                    <circle cx="615" cy="70" r="6" fill="#e74c3c"/>
+                    <text x="630" y="75" font-size="12">Lead Acid</text>
+                    
+                    <circle cx="615" cy="90" r="6" fill="#2ecc71"/>
+                    <text x="630" y="95" font-size="12">LiFePO₄</text>
+                    
+                    <circle cx="615" cy="110" r="6" fill="#3498db"/>
+                    <text x="630" y="115" font-size="12">Li-Ion</text>
+                    
+                    <!-- Performance indicators -->
+                    <text x="150" y="180" text-anchor="middle" font-size="12">Low Cost</text>
+                    <text x="350" y="180" text-anchor="middle" font-size="12">Best Value</text>
+                    <text x="550" y="180" text-anchor="middle" font-size="12">High Energy</text>
+                </svg>
+            </div>
+
+            <h2>Power Budget Calculations</h2>
+
+            <div class="highlight-box">
+                <h3>📐 Example: 8-Hour Field Deployment</h3>
+                <table>
+                    <tr>
+                        <th>Equipment</th>
+                        <th>Power</th>
+                        <th>Duration</th>
+                        <th>Energy</th>
+                    </tr>
+                    <tr>
+                        <td>VHF Radio (TX)</td>
+                        <td>50W</td>
+                        <td>1h</td>
+                        <td>50 Wh</td>
+                    </tr>
+                    <tr>
+                        <td>VHF Radio (RX)</td>
+                        <td>2W</td>
+                        <td>7h</td>
+                        <td>14 Wh</td>
+                    </tr>
+                    <tr>
+                        <td>Raspberry Pi + SDR</td>
+                        <td>15W</td>
+                        <td>8h</td>
+                        <td>120 Wh</td>
+                    </tr>
+                    <tr>
+                        <td>Laptop</td>
+                        <td>45W</td>
+                        <td>4h</td>
+                        <td>180 Wh</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><strong>Total</strong></td>
+                        <td><strong>364 Wh</strong></td>
+                    </tr>
+                </table>
+                <p style="margin-top: 15px;"><strong>System Requirements:</strong></p>
+                <ul>
+                    <li>Battery: 364Wh ÷ 12V = 30.3Ah → Use 35Ah battery</li>
+                    <li>Solar: 100W panel adequate for recharge</li>
+                    <li>Controller: 10A MPPT charge controller</li>
+                </ul>
+            </div>
+
+            <div class="illustration">
+                <h3>Energy Flow Diagram</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 200">
+                    <!-- Energy Sources -->
+                    <rect x="50" y="50" width="120" height="60" rx="10" fill="#f1c40f"/>
+                    <text x="110" y="85" text-anchor="middle" fill="#2c3e50" font-size="14">Solar Input</text>
+                    <text x="110" y="100" text-anchor="middle" fill="#2c3e50" font-size="12">400 Wh/day</text>
+                    
+                    <!-- Storage -->
+                    <rect x="220" y="50" width="120" height="60" rx="10" fill="#34495e"/>
+                    <text x="280" y="85" text-anchor="middle" fill="white" font-size="14">Battery Storage</text>
+                    <text x="280" y="100" text-anchor="middle" fill="white" font-size="12">420 Wh</text>
+                    
+                    <!-- Consumption -->
+                    <rect x="390" y="50" width="120" height="60" rx="10" fill="#e74c3c"/>
+                    <text x="450" y="85" text-anchor="middle" fill="white" font-size="14">Daily Usage</text>
+                    <text x="450" y="100" text-anchor="middle" fill="white" font-size="12">364 Wh</text>
+                    
+                    <!-- Surplus -->
+                    <rect x="560" y="50" width="120" height="60" rx="10" fill="#2ecc71"/>
+                    <text x="620" y="85" text-anchor="middle" fill="white" font-size="14">Surplus</text>
+                    <text x="620" y="100" text-anchor="middle" fill="white" font-size="12">36 Wh</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M170,80 L220,80" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M340,80 L390,80" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M510,80 L560,80" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Balance Line -->
+                    <line x1="50" y1="150" x2="750" y2="150" stroke="#95a5a6" stroke-width="2"/>
+                    <text x="400" y="170" text-anchor="middle" font-size="14" fill="#666">Energy Balance: 400 Wh IN = 364 Wh OUT + 36 Wh SURPLUS</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- HF/VHF/UHF COMMUNICATIONS -->
+        <div class="content-page">
+            <h1>4. HF/VHF/UHF Communications</h1>
+
+            <div class="illustration">
+                <h3>Radio Spectrum Allocation</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 200">
+                    <!-- Spectrum Bar -->
+                    <rect x="50" y="80" width="700" height="40" fill="url(#spectrumGradient)"/>
+                    
+                    <!-- HF Band -->
+                    <rect x="50" y="80" width="100" height="40" fill="#3498db" opacity="0.7"/>
+                    <text x="100" y="105" text-anchor="middle" fill="white" font-size="12">HF</text>
+                    <text x="100" y="125" text-anchor="middle" font-size="10">3-30 MHz</text>
+                    
+                    <!-- VHF Band -->
+                    <rect x="200" y="80" width="150" height="40" fill="#2ecc71" opacity="0.7"/>
+                    <text x="275" y="105" text-anchor="middle" fill="white" font-size="12">VHF</text>
+                    <text x="275" y="125" text-anchor="middle" font-size="10">30-300 MHz</text>
+                    
+                    <!-- UHF Band -->...(truncated 55704 characters)...  </svg>
+            </div>
+
+            <h2>SDR Station Setup</h2>
+
+            <div class="highlight-box">
+                <h3>Complete RTL-SDR Station</h3>
+                <div class="visual-grid">
+                    <div class="visual-item">
+                        <div style="font-size: 36px;">📡</div>
+                        <h4>RTL-SDR Dongle</h4>
+                        <p>R820T2 tuner</p>
+                    </div>
+                    <div class="visual-item">
+                        <div style="font-size: 36px;">📶</div>
+                        <h4>Antenna</h4>
+                        <p>Wideband design</p>
+                    </div>
+                    <div class="visual-item">
+                        <div style="font-size: 36px;">🔋</div>
+                        <h4>LNA</h4>
+                        <p>Low noise amplifier</p>
+                    </div>
+                    <div class="visual-item">
+                        <div style="font-size: 36px;">💻</div>
+                        <h4>Computer</h4>
+                        <p>Raspberry Pi 4</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Solar Power Station</h2>
+
+            <div class="illustration">
+                <h3>Field Deployment Setup</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 250">
+                    <!-- Solar Panel -->
+                    <rect x="50" y="50" width="100" height="80" fill="#f1c40f" stroke="#34495e" stroke-width="2"/>
+                    <line x1="55" y1="60" x2="145" y2="60" stroke="#34495e" stroke-width="1"/>
+                    <line x1="55" y1="70" x2="145" y2="70" stroke="#34495e" stroke-width="1"/>
+                    <line x1="55" y1="80" x2="145" y2="80" stroke="#34495e" stroke-width="1"/>
+                    <line x1="55" y1="90" x2="145" y2="90" stroke="#34495e" stroke-width="1"/>
+                    <line x1="55" y1="100" x2="145" y2="100" stroke="#34495e" stroke-width="1"/>
+                    <line x1="55" y1="110" x2="145" y2="110" stroke="#34495e" stroke-width="1"/>
+                    <line x1="55" y1="120" x2="145" y2="120" stroke="#34495e" stroke-width="1"/>
+                    
+                    <!-- Charge Controller -->
+                    <rect x="200" y="80" width="60" height="50" fill="#3498db" rx="5"/>
+                    <text x="230" y="110" text-anchor="middle" fill="white" font-size="12">MPPT</text>
+                    
+                    <!-- Battery -->
+                    <rect x="300" y="70" width="50" height="70" fill="#2c3e50" rx="5"/>
+                    <rect x="305" y="75" width="40" height="60" fill="#34495e"/>
+                    <text x="325" y="105" text-anchor="middle" fill="white" font-size="12">+</text>
+                    <text x="325" y="120" text-anchor="middle" fill="white" font-size="12">-</text>
+                    
+                    <!-- Power Distribution -->
+                    <rect x="400" y="80" width="80" height="50" fill="#e74c3c" rx="5"/>
+                    <text x="440" y="105" text-anchor="middle" fill="white" font-size="12">PowerPole</text>
+                    <text x="440" y="120" text-anchor="middle" fill="white" font-size="10">Distribution</text>
+                    
+                    <!-- Radio Equipment -->
+                    <rect x="520" y="50" width="60" height="40" fill="#9b59b6" rx="5"/>
+                    <text x="550" y="75" text-anchor="middle" fill="white" font-size="12">VHF</text>
+                    
+                    <rect x="520" y="100" width="60" height="40" fill="#2ecc71" rx="5"/>
+                    <text x="550" y="125" text-anchor="middle" fill="white" font-size="12">HF</text>
+                    
+                    <!-- Computer -->
+                    <rect x="620" y="70" width="80" height="60" fill="#34495e" rx="10"/>
+                    <text x="660" y="105" text-anchor="middle" fill="white" font-size="14">Laptop</text>
+                    
+                    <!-- Antenna -->
+                    <path d="M700,150 L720,130 L720,170 Z" fill="#2c3e50"/>
+                    <text x="710" y="190" text-anchor="middle" font-size="12">Antenna</text>
+                    
+                    <!-- Connections -->
+                    <path d="M150,90 L200,105" stroke="#95a5a6" stroke-width="3"/>
+                    <path d="M260,105 L300,105" stroke="#95a5a6" stroke-width="3"/>
+                    <path d="M350,105 L400,105" stroke="#95a5a6" stroke-width="3"/>
+                    <path d="M480,70 L520,70" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M480,120 L520,120" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M480,105 L520,105" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M580,70 L620,100" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M580,120 L620,100" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M700,150 L620,130" stroke="#95a5a6" stroke-width="2"/>
+                    
+                    <!-- Power Flow Arrows -->
+                    <path d="M125,90 L135,90" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M230,105 L240,105" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowhead)"/>
+                    <path d="M330,105 L340,105" stroke="#f39c12" stroke-width="2" marker-end="url(#arrowhead)"/>
+                </svg>
+            </div>
+        </div>
+
+        <!-- FIELD OPERATIONS -->
+        <div class="content-page">
+            <h1>8. Field Operations & Challenges</h1>
+
+            <div class="illustration">
+                <h3>Field Day Site Layout</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 300">
+                    <!-- Operating Tent -->
+                    <rect x="100" y="100" width="120" height="80" fill="#3498db" opacity="0.8"/>
+                    <text x="160" y="140" text-anchor="middle" fill="white" font-size="14">Ops Center</text>
+                    
+                    <!-- Solar Array -->
+                    <rect x="50" y="200" width="80" height="60" fill="#f1c40f"/>
+                    <text x="90" y="235" text-anchor="middle" font-size="12">Solar</text>
+                    
+                    <!-- Antenna Field -->
+                    <path d="M300,50 L320,30 L320,70 Z" fill="#2c3e50"/>
+                    <path d="M400,50 L420,30 L420,70 Z" fill="#2c3e50"/>
+                    <path d="M500,50 L520,30 L520,70 Z" fill="#2c3e50"/>
+                    <text x="410" y="90" text-anchor="middle" font-size="14">Antenna Farm</text>
+                    
+                    <!-- HF Station -->
+                    <rect x="300" y="150" width="80" height="60" fill="#9b59b6" rx="5"/>
+                    <text x="340" y="185" text-anchor="middle" fill="white" font-size="12">HF</text>
+                    
+                    <!-- VHF Station -->
+                    <rect x="400" y="150" width="80" height="60" fill="#2ecc71" rx="5"/>
+                    <text x="440" y="185" text-anchor="middle" fill="white" font-size="12">VHF</text>
+                    
+                    <!-- Digital Station -->
+                    <rect x="500" y="150" width="80" height="60" fill="#e74c3c" rx="5"/>
+                    <text x="540" y="185" text-anchor="middle" fill="white" font-size="12">Digital</text>
+                    
+                    <!-- Battery Bank -->
+                    <rect x="650" y="200" width="60" height="40" fill="#34495e" rx="5"/>
+                    <text x="680" y="225" text-anchor="middle" fill="white" font-size="12">Battery</text>
+                    
+                    <!-- Paths -->
+                    <path d="M220,140 L300,180" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5"/>
+                    <path d="M220,140 L440,180" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5"/>
+                    <path d="M220,140 L540,180" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5"/>
+                    <path d="M130,200 L650,220" stroke="#95a5a6" stroke-width="2" stroke-dasharray="5,5"/>
+                    
+                    <!-- Coax Runs -->
+                    <path d="M340,50 L340,150" stroke="#f39c12" stroke-width="2"/>
+                    <path d="M440,50 L440,150" stroke="#f39c12" stroke-width="2"/>
+                    <path d="M540,50 L540,150" stroke="#f39c12" stroke-width="2"/>
+                    
+                    <!-- Power Lines -->
+                    <path d="M90,230 L650,220" stroke="#34495e" stroke-width="3"/>
+                    
+                    <!-- Legend -->
+                    <rect x="600" y="50" width="180" height="120" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+                    <rect x="610" y="60" width="20" height="10" fill="#3498db"/>
+                    <text x="640" y="70" font-size="12">Operations</text>
+                    
+                    <rect x="610" y="80" width="20" height="10" fill="#f1c40f"/>
+                    <text x="640" y="90" font-size="12">Solar Power</text>
+                    
+                    <rect x="610" y="100" width="20" height="10" fill="#f39c12"/>
+                    <text x="640" y="110" font-size="12">Coax Cables</text>
+                    
+                    <rect x="610" y="120" width="20" height="10" fill="#34495e"/>
+                    <text x="640" y="130" font-size="12">Power Lines</text>
+                    
+                    <rect x="610" y="140" width="20" height="10" fill="#95a5a6" stroke-dasharray="5,5" stroke="#95a5a6"/>
+                    <text x="640" y="150" font-size="12">Access Paths</text>
+                </svg>
+            </div>
+
+            <h2>Monthly Field Day Structure</h2>
+
+            <div class="illustration">
+                <h3>Field Day Timeline</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 200">
+                    <!-- Timeline -->
+                    <line x1="50" y1="100" x2="750" y2="100" stroke="#2c3e50" stroke-width="3"/>
+                    
+                    <!-- Time Blocks -->
+                    <rect x="60" y="60" width="80" height="30" fill="#3498db" rx="5"/>
+                    <text x="100" y="80" text-anchor="middle" fill="white" font-size="12">08:00</text>
+                    <text x="100" y="95" text-anchor="middle" fill="white" font-size="10">Setup</text>
+                    
+                    <rect x="160" y="60" width="80" height="30" fill="#2ecc71" rx="5"/>
+                    <text x="200" y="80" text-anchor="middle" fill="white" font-size="12">09:30</text>
+                    <text x="200" y="95" text-anchor="middle" fill="white" font-size="10">Testing</text>
+                    
+                    <rect x="260" y="60" width="80" height="30" fill="#9b59b6" rx="5"/>
+                    <text x="300" y="80" text-anchor="middle" fill="white" font-size="12">10:00</text>
+                    <text x="300" y="95" text-anchor="middle" fill="white" font-size="10">VHF/UHF</text>
+                    
+                    <rect x="360" y="120" width="80" height="30" fill="#e74c3c" rx="5"/>
+                    <text x="400" y="140" text-anchor="middle" fill="white" font-size="12">12:00</text>
+                    <text x="400" y="155" text-anchor="middle" fill="white" font-size="10">Lunch</text>
+                    
+                    <rect x="460" y="60" width="80" height="30" fill="#f39c12" rx="5"/>
+                    <text x="500" y="80" text-anchor="middle" fill="white" font-size="12">13:00</text>
+                    <text x="500" y="95" text-anchor="middle" fill="white" font-size="10">HF</text>
+                    
+                    <rect x="560" y="120" width="80" height="30" fill="#1abc9c" rx="5"/>
+                    <text x="600" y="140" text-anchor="middle" fill="white" font-size="12">15:00</text>
+                    <text x="600" y="155" text-anchor="middle" fill="white" font-size="10">Analysis</text>
+                    
+                    <rect x="660" y="60" width="80" height="30" fill="#34495e" rx="5"/>
+                    <text x="700" y="80" text-anchor="middle" fill="white" font-size="12">16:00</text>
+                    <text x="700" y="95" text-anchor="middle" fill="white" font-size="10">Teardown</text>
+                    
+                    <!-- Time markers -->
+                    <circle cx="100" cy="100" r="5" fill="#2c3e50"/>
+                    <circle cx="200" cy="100" r="5" fill="#2c3e50"/>
+                    <circle cx="300" cy="100" r="5" fill="#2c3e50"/>
+                    <circle cx="400" cy="100" r="5" fill="#2c3e50"/>
+                    <circle cx="500" cy="100" r="5" fill="#2c3e50"/>
+                    <circle cx="600" cy="100" r="5" fill="#2c3e50"/>
+                    <circle cx="700" cy="100" r="5" fill="#2c3e50"/>
+                    
+                    <!-- Duration indicators -->
+                    <path d="M100,110 L100,130 L200,130 L200,110" stroke="#95a5a6" stroke-width="1" fill="none"/>
+                    <text x="150" y="125" text-anchor="middle" font-size="10">1.5h</text>
+                    
+                    <path d="M200,110 L200,130 L300,130 L300,110" stroke="#95a5a6" stroke-width="1" fill="none"/>
+                    <text x="250" y="125" text-anchor="middle" font-size="10">0.5h</text>
+                    
+                    <path d="M300,110 L300,130 L400,130 L400,110" stroke="#95a5a6" stroke-width="1" fill="none"/>
+                    <text x="350" y="125" text-anchor="middle" font-size="10">2h</text>
+                    
+                    <path d="M400,70 L400,90 L500,90 L500,70" stroke="#95a5a6" stroke-width="1" fill="none"/>
+                    <text x="450" y="85" text-anchor="middle" font-size="10">2h</text>
+                    
+                    <path d="M500,110 L500,130 L600,130 L600,110" stroke="#95a5a6" stroke-width="1" fill="none"/>
+                    <text x="550" y="125" text-anchor="middle" font-size="10">1h</text>
+                    
+                    <path d="M600,70 L600,90 L700,90 L700,70" stroke="#95a5a6" stroke-width="1" fill="none"/>
+                    <text x="650" y="85" text-anchor="middle" font-size="10">1h</text>
+                </svg>
+            </div>
+
+            <h2>Challenge Categories</h2>
+
+            <div class="visual-grid">
+                <div class="visual-item">
+                    <h4>🏆 Distance Challenge</h4>
+                    <p>Maximize contact distance with power limits</p>
+                    <div style="font-size: 24px; color: #3498db;">📡</div>
+                </div>
+                <div class="visual-item">
+                    <h4>🔄 Relay Race</h4>
+                    <p>Multi-hop message delivery against time</p>
+                    <div style="font-size: 24px; color: #2ecc71;">↔️</div>
+                </div>
+                <div class="visual-item">
+                    <h4>☀️ Solar-Only Ops</h4>
+                    <p>Operation using only solar power</p>
+                    <div style="font-size: 24px; color: #f39c12;">⚡</div>
+                </div>
+                <div class="visual-item">
+                    <h4>🦊 Fox Hunt</h4>
+                    <p>Direction finding competition</p>
+                    <div style="font-size: 24px; color: #e74c3c;">🎯</div>
+                </div>
+            </div>
+
+            <h2>Annual RadioSport Games</h2>
+
+            <div class="highlight-box">
+                <h3>🏆 Championship Events</h3>
+                <div class="visual-grid">
+                    <div class="visual-item">
+                        <h4>24-Hour Marathon</h4>
+                        <p>Continuous operations with rotations</p>
+                    </div>
+                    <div class="visual-item">
+                        <h4>Antenna Building</h4>
+                        <p>2-hour build competition</p>
+                    </div>
+                    <div class="visual-item">
+                        <h4>Emergency Comms</h4>
+                        <p>Simulated disaster response</p>
+                    </div>
+                    <div class="visual-item">
+                        <h4>AI Optimization</h4>
+                        <p>AI-driven system optimization</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="illustration">
+                <h3>Fox Hunt Challenge</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 300">
+                    <!-- Search Area -->
+                    <rect x="50" y="50" width="700" height="200" fill="#f8f9fa" stroke="#dee2e6" stroke-width="2"/>
+                    
+                    <!-- Hidden Transmitter -->
+                    <circle cx="400" cy="150" r="10" fill="#e74c3c">
+                        <animate attributeName="r" values="10;15;10" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    <text x="400" y="140" text-anchor="middle" font-size="12">Fox</text>
+                    
+                    <!-- Searchers -->
+                    <circle cx="200" cy="100" r="8" fill="#3498db"/>
+                    <text x="200" y="115" text-anchor="middle" font-size="10">Team A</text>
+                    
+                    <circle cx="600" cy="100" r="8" fill="#2ecc71"/>
+                    <text x="600" y="115" text-anchor="middle" font-size="10">Team B</text>
+                    
+                    <circle cx="300" cy="200" r="8" fill="#9b59b6"/>
+                    <text x="300" y="215" text-anchor="middle" font-size="10">Team C</text>
+                    
+                    <!-- Signal Strength Contours -->
+                    <circle cx="400" cy="150" r="50" stroke="#e74c3c" stroke-width="1" fill="none" opacity="0.3"/>
+                    <circle cx="400" cy="150" r="100" stroke="#e74c3c" stroke-width="1" fill="none" opacity="0.2"/>
+                    <circle cx="400" cy="150" r="150" stroke="#e74c3c" stroke-width="1" fill="none" opacity="0.1"/>
+                    
+                    <!-- Signal Directions -->
+                    <line x1="200" y1="100" x2="250" y2="120" stroke="#3498db" stroke-width="2"/>
+                    <line x1="600" y1="100" x2="550" y2="120" stroke="#2ecc71" stroke-width="2"/>
+                    <line x1="300" y1="200" x2="350" y2="170" stroke="#9b59b6" stroke-width="2"/>
+                    
+                    <!-- Signal Strength Meter -->
+                    <rect x="650" y="220" width="80" height="20" fill="#2c3e50" rx="3"/>
+                    <rect x="652" y="222" width="30" height="16" fill="#2ecc71"/>
+                    <text x="690" y="235" text-anchor="middle" fill="white" font-size="10">Signal</text>
+                    
+                    <!-- Time -->
+                    <rect x="50" y="220" width="100" height="30" fill="#34495e" rx="5"/>
+                    <text x="100" y="240" text-anchor="middle" fill="white" font-size="14">Time: 15:23</text>
+                    
+                    <!-- Instructions -->
+                    <text x="400" y="270" text-anchor="middle" font-size="12">
+                        Teams use directional antennas and signal strength measurements to locate hidden transmitter
+                    </text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- AWARDS & BUDGET -->
+        <div class="content-page">
+            <h1>9. Awards & Budget</h1>
+            <div class="illustration">
+                <h3>Awards Pyramid</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 300">
+                    <!-- Tier 3 -->
+                    <rect x="300" y="50" width="200" height="60" rx="10" fill="#f39c12"/>
+                    <text x="400" y="85" text-anchor="middle" fill="white" font-size="18">Tier 3</text>
+                    <text x="400" y="105" text-anchor="middle" fill="white" font-size="14">Apex Awards</text>
+                    <text x="400" y="120" text-anchor="middle" fill="white" font-size="12">Complete Stations</text>
+                    
+                    <!-- Tier 2 -->
+                    <rect x="250" y="130" width="300" height="60" rx="10" fill="#e74c3c"/>
+                    <text x="400" y="165" text-anchor="middle" fill="white" font-size="18">Tier 2</text>
+                    <text x="400" y="185" text-anchor="middle" fill="white" font-size="14">Monthly Awards</text>
+                    <text x="400" y="200" text-anchor="middle" fill="white" font-size="12">Equipment Kits</text>
+                    
+                    <!-- Tier 1 -->
+                    <rect x="200" y="210" width="400" height="60" rx="10" fill="#3498db"/>
+                    <text x="400" y="245" text-anchor="middle" fill="white" font-size="18">Tier 1</text>
+                    <text x="400" y="265" text-anchor="middle" fill="white" font-size="14">Weekly Micro Awards</text>
+                    <text x="400" y="280" text-anchor="middle" fill="white" font-size="12">Components</text>
+                    
+                    <!-- Progression Arrows -->
+                    <path d="M400,110 L400,130" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M400,190 L400,210" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Achievement Indicators -->
+                    <text x="100" y="100" text-anchor="middle" font-size="12">Exceptional</text>
+                    <text x="100" y="115" text-anchor="middle" font-size="12">Performance</text>
+                    
+                    <text x="100" y="180" text-anchor="middle" font-size="12">Consistent</text>
+                    <text x="100" y="195" text-anchor="middle" font-size="12">Achievement</text>
+                    
+                    <text x="100" y="260" text-anchor="middle" font-size="12">Participation</text>
+                    <text x="100" y="275" text-anchor="middle" font-size="12">& Progress</text>
+                </svg>
+            </div>
+
+            <h2>Program Budget Breakdown</h2>
+
+            <div class="illustration">
+                <h3>Budget Allocation Chart</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 300">
+                    <!-- Pie Chart -->
+                    <circle cx="200" cy="150" r="100" fill="none" stroke="#f8f9fa" stroke-width="50"/>
+                    
+                    <!-- Radio Equipment -->
+                    <circle cx="200" cy="150" r="50" fill="#3498db" stroke="#f8f9fa" stroke-width="50"
+                            stroke-dasharray="314, 1884" transform="rotate(-90,200,150)"/>
+                    
+                    <!-- Computing -->
+                    <circle cx="200" cy="150" r="50" fill="#2ecc71" stroke="#f8f9fa" stroke-width="50"
+                            stroke-dasharray="314, 1884" stroke-dashoffset="314" transform="rotate(-90,200,150)"/>
+                    
+                    <!-- Power Systems -->
+                    <circle cx="200" cy="150" r="50" fill="#9b59b6" stroke="#f8f9fa" stroke-width="50"
+                            stroke-dasharray="283, 1884" stroke-dashoffset="628" transform="rotate(-90,200,150)"/>
+                    
+                    <!-- Antennas -->
+                    <circle cx="200" cy="150" r="50" fill="#e74c3c" stroke="#f8f9fa" stroke-width="50"
+                            stroke-dasharray="157, 1884" stroke-dashoffset="911" transform="rotate(-90,200,150)"/>
+                    
+                    <!-- Tools -->
+                    <circle cx="200" cy="150" r="50" fill="#f39c12" stroke="#f8f9fa" stroke-width="50"
+                            stroke-dasharray="135, 1884" stroke-dashoffset="1068" transform="rotate(-90,200,150)"/>
+                    
+                    <!-- Other (remaining slices) -->
+                    <circle cx="200" cy="150" r="50" fill="#95a5a6" stroke="#f8f9fa" stroke-width="50"
+                            stroke-dasharray="883, 1884" stroke-dashoffset="1203" transform="rotate(-90,200,150)"/>
+                    
+                    <!-- Legend -->
+                    <rect x="400" y="50" width="350" height="200" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+                    
+                    <!-- Legend Items -->
+                    <rect x="410" y="60" width="20" height="20" fill="#3498db"/>
+                    <text x="440" y="75" font-size="14">Radio Equipment: $3,300 (9.8%)</text>
+                    
+                    <rect x="410" y="90" width="20" height="20" fill="#2ecc71"/>
+                    <text x="440" y="105" font-size="14">Computing: $5,500 (16.3%)</text>
+                    
+                    <rect x="410" y="120" width="20" height="20" fill="#9b59b6"/>
+                    <text x="440" y="135" font-size="14">Power Systems: $4,700 (13.9%)</text>
+                    
+                    <rect x="410" y="150" width="20" height="20" fill="#e74c3c"/>
+                    <text x="440" y="165" font-size="14">Antennas: $1,750 (5.2%)</text>
+                    
+                    <rect x="410" y="180" width="20" height="20" fill="#f39c12"/>
+                    <text x="440" y="195" font-size="14">Tools: $1,500 (4.4%)</text>
+                    
+                    <rect x="410" y="210" width="20" height="20" fill="#95a5a6"/>
+                    <text x="440" y="225" font-size="14">Other: $17,075 (50.5%)</text>
+                    
+                    <!-- Total -->
+                    <text x="200" y="150" text-anchor="middle" fill="#2c3e50" font-size="20" font-weight="bold">
+                        $33,825
+                    </text>
+                    <text x="200" y="170" text-anchor="middle" fill="#2c3e50" font-size="14">
+                        Total Budget
+                    </text>
+                </svg>
+            </div>
+
+            <h2>Per Student Cost Analysis</h2>
+
+            <div class="illustration">
+                <h3>Cost Distribution Per Student</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 200">
+                    <!-- Full Cost -->
+                    <rect x="50" y="50" width="150" height="40" fill="#667eea" rx="5"/>
+                    <text x="125" y="75" text-anchor="middle" fill="white" font-size="16">Full Cost</text>
+                    <text x="125" y="95" text-anchor="middle" fill="white" font-size="14">$677/year</text>
+                    
+                    <!-- Monthly Equivalent -->
+                    <rect x="250" y="50" width="150" height="40" fill="#764ba2" rx="5"/>
+                    <text x="325" y="75" text-anchor="middle" fill="white" font-size="16">Monthly</text>
+                    <text x="325" y="95" text-anchor="middle" fill="white" font-size="14">$75/month</text>
+                    
+                    <!-- Donation Tiers -->
+                    <rect x="450" y="30" width="100" height="30" fill="#2ecc71" rx="5"/>
+                    <text x="500" y="50" text-anchor="middle" fill="white" font-size="14">Full</text>
+                    <text x="500" y="65" text-anchor="middle" fill="white" font-size="12">$75</text>
+                    
+                    <rect x="450" y="70" width="100" height="30" fill="#3498db" rx="5"/>
+                    <text x="500" y="90" text-anchor="middle" fill="white" font-size="14">Standard</text>
+                    <text x="500" y="105" text-anchor="middle" fill="white" font-size="12">$40</text>
+                    
+                    <rect x="450" y="110" width="100" height="30" fill="#e74c3c" rx="5"/>
+                    <text x="500" y="130" text-anchor="middle" fill="white" font-size="14">Minimum</text>
+                    <text x="500" y="145" text-anchor="middle" fill="white" font-size="12">$15</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M200,70 L250,70" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M400,70 L450,85" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Subsidy Explanation -->
+                    <text x="325" y="150" text-anchor="middle" font-size="14" fill="#666">
+                        Difference subsidized by donations, sponsorships, and equipment sharing
+                    </text>
+                    
+                    <!-- Cost Coverage -->
+                    <rect x="600" y="50" width="150" height="100" fill="#f8f9fa" stroke="#dee2e6" stroke-width="1"/>
+                    <text x="675" y="70" text-anchor="middle" font-size="14">Coverage</text>
+                    
+                    <rect x="610" y="80" width="130" height="20" fill="#95a5a6"/>
+                    <rect x="610" y="80" width="26" height="20" fill="#e74c3c"/>
+                    <text x="675" y="95" text-anchor="middle" fill="white" font-size="12">20% Donations</text>
+                    
+                    <rect x="610" y="105" width="130" height="20" fill="#95a5a6"/>
+                    <rect x="610" y="105" width="65" height="20" fill="#3498db"/>
+                    <text x="675" y="120" text-anchor="middle" fill="white" font-size="12">50% Sponsorships</text>
+                    
+                    <rect x="610" y="130" width="130" height="20" fill="#95a5a6"/>
+                    <rect x="610" y="130" width="39" height="20" fill="#2ecc71"/>
+                    <text x="675" y="145" text-anchor="middle" fill="white" font-size="12">30% Grants</text>
+                </svg>
+            </div>
+
+            <div class="highlight-box">
+                <h3>💰 Flexible Donation Model</h3>
+                <div class="visual-grid">
+                    <div class="visual-item">
+                        <h4>Minimum ($15/month)</h4>
+                        <p>Basic operations access</p>
+                        <div style="font-size: 24px; color: #e74c3c;">📻</div>
+                    </div>
+                    <div class="visual-item">
+                        <h4>Standard ($40/month)</h4>
+                        <p>Equipment loans + awards</p>
+                        <div style="font-size: 24px; color: #3498db;">🔧</div>
+                    </div>
+                    <div class="visual-item">
+                        <h4>Full ($75/month)</h4>
+                        <p>Complete program access</p>
+                        <div style="font-size: 24px; color: #2ecc71;">🏆</div>
+                    </div>
+                    <div class="visual-item">
+                        <h4>Sponsor ($150+)</h4>
+                        <p>Support other students</p>
+                        <div style="font-size: 24px; color: #9b59b6;">🌟</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Sustainability Model</h2>
+
+            <div class="illustration">
+                <h3>Program Sustainability Cycle</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 250">
+                    <!-- Center: Program -->
+                    <circle cx="400" cy="125" r="50" fill="#667eea"/>
+                    <text x="400" y="130" text-anchor="middle" fill="white" font-size="18">RadioSport</text>
+                    <text x="400" y="150" text-anchor="middle" fill="white" font-size="14">Program</text>
+                    
+                    <!-- Donations -->
+                    <circle cx="200" cy="75" r="40" fill="#2ecc71"/>
+                    <text x="200" y="80" text-anchor="middle" fill="white" font-size="14">Participant</text>
+                    <text x="200" y="95" text-anchor="middle" fill="white" font-size="12">Donations</text>
+                    
+                    <!-- Sponsorships -->
+                    <circle cx="600" cy="75" r="40" fill="#3498db"/>
+                    <text x="600" y="80" text-anchor="middle" fill="white" font-size="14">Corporate</text>
+                    <text x="600" y="95" text-anchor="middle" fill="white" font-size="12">Sponsorships</text>
+                    
+                    <!-- Grants -->
+                    <circle cx="200" cy="175" r="40" fill="#9b59b6"/>
+                    <text x="200" y="180" text-anchor="middle" fill="white" font-size="14">Educational</text>
+                    <text x="200" y="195" text-anchor="middle" fill="white" font-size="12">Grants</text>
+                    
+                    <!-- Equipment Sharing -->
+                    <circle cx="600" cy="175" r="40" fill="#f39c12"/>
+                    <text x="600" y="180" text-anchor="middle" fill="white" font-size="14">Equipment</text>
+                    <text x="600" y="195" text-anchor="middle" fill="white" font-size="12">Sharing</text>
+                    
+                    <!-- Arrows to center -->
+                    <path d="M240,85 L350,115" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M560,85 L450,115" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M240,165 L350,135" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M560,165 L450,135" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Output: Educated Students -->
+                    <rect x="350" y="210" width="100" height="40" fill="#e74c3c" rx="5"/>
+                    <text x="400" y="235" text-anchor="middle" fill="white" font-size="14">Educated</text>
+                    <text x="400" y="250" text-anchor="middle" fill="white" font-size="12">Students</text>
+                    
+                    <!-- Arrow from center to output -->
+                    <path d="M400,175 L400,210" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Community Feedback -->
+                    <path d="M400,250 Q400,280 300,280 Q300,230 240,215" 
+                          stroke="#95a5a6" stroke-width="2" fill="none" stroke-dasharray="5,5"/>
+                    <text x="350" y="270" text-anchor="middle" font-size="12" fill="#95a5a6">Community Growth</text>
+                </svg>
+            </div>
+        </div>
+
+        <!-- CONCLUSION -->
+        <div class="content-page">
+            <h1>Conclusion</h1>
+
+            <div class="illustration">
+                <h3>The Complete RadioSport Engineer</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 300">
+                    <!-- Central Engineer -->
+                    <circle cx="400" cy="150" r="60" fill="#667eea"/>
+                    <text x="400" y="155" text-anchor="middle" fill="white" font-size="20">Engineer</text>
+                    <text x="400" y="175" text-anchor="middle" fill="white" font-size="14">Graduate</text>
+                    
+                    <!-- Skills -->
+                    <rect x="50" y="50" width="120" height="40" fill="#3498db" rx="5"/>
+                    <text x="110" y="75" text-anchor="middle" fill="white" font-size="14">RF Engineering</text>
+                    
+                    <rect x="50" y="100" width="120" height="40" fill="#2ecc71" rx="5"/>
+                    <text x="110" y="125" text-anchor="middle" fill="white" font-size="14">AI Development</text>
+                    
+                    <rect x="50" y="150" width="120" height="40" fill="#9b59b6" rx="5"/>
+                    <text x="110" y="175" text-anchor="middle" fill="white" font-size="14">Coding Skills</text>
+                    
+                    <rect x="50" y="200" width="120" height="40" fill="#e74c3c" rx="5"/>
+                    <text x="110" y="225" text-anchor="middle" fill="white" font-size="14">Solar Power</text>
+                    
+                    <rect x="630" y="50" width="120" height="40" fill="#f39c12" rx="5"/>
+                    <text x="690" y="75" text-anchor="middle" fill="white" font-size="14">Problem Solving</text>
+                    
+                    <rect x="630" y="100" width="120" height="40" fill="#1abc9c" rx="5"/>
+                    <text x="690" y="125" text-anchor="middle" fill="white" font-size="14">Teamwork</text>
+                    
+                    <rect x="630" y="150" width="120" height="40" fill="#34495e" rx="5"/>
+                    <text x="690" y="175" text-anchor="middle" fill="white" font-size="14">Field Operations</text>
+                    
+                    <rect x="630" y="200" width="120" height="40" fill="#7d3c98" rx="5"/>
+                    <text x="690" y="225" text-anchor="middle" fill="white" font-size="14">Innovation</text>
+                    
+                    <!-- Connecting Lines -->
+                    <path d="M170,70 L330,130" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M170,120 L330,130" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M170,170 L330,130" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M170,220 L330,170" stroke="#95a5a6" stroke-width="2"/>
+                    
+                    <path d="M470,130 L630,70" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M470,130 L630,120" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M470,170 L630,170" stroke="#95a5a6" stroke-width="2"/>
+                    <path d="M470,170 L630,220" stroke="#95a5a6" stroke-width="2"/>
+                    
+                    <!-- Career Paths -->
+                    <text x="400" y="250" text-anchor="middle" font-size="16" fill="#2c3e50">
+                        Career Paths: Telecommunications • Aerospace • Renewable Energy • AI Development • Research
+                    </text>
+                </svg>
+            </div>
+
+            <p style="font-size: 18px; line-height: 1.8;">
+                <strong>RadioSport represents the future of STEM education</strong>—a comprehensive program that transforms theoretical knowledge into practical skills through hands-on radio communication, renewable energy, AI, and software development.
+            </p>
+
+            <div class="highlight-box" style="margin: 40px 0; padding: 30px;">
+                <h3 style="text-align: center; font-size: 24px;">📻 Join the RadioSport Revolution</h3>
+                <p style="text-align: center; font-size: 18px; margin-top: 20px;">
+                    <strong>The future of technology is in your hands. Build it. Test it. Perfect it.</strong>
+                </p>
+            </div>
+
+            <div class="illustration">
+                <h3>Program Completion Journey</h3>
+                <svg class="diagram-svg" viewBox="0 0 800 200">
+                    <!-- Start -->
+                    <circle cx="100" cy="100" r="30" fill="#e74c3c"/>
+                    <text x="100" y="105" text-anchor="middle" fill="white" font-size="16">Start</text>
+                    
+                    <!-- Months 1-3 -->
+                    <rect x="180" y="70" width="100" height="60" fill="#3498db" rx="5"/>
+                    <text x="230" y="100" text-anchor="middle" fill="white" font-size="14">Fundamentals</text>
+                    
+                    <!-- Months 4-6 -->
+                    <rect x="320" y="70" width="100" height="60" fill="#2ecc71" rx="5"/>
+                    <text x="370" y="100" text-anchor="middle" fill="white" font-size="14">Projects</text>
+                    
+                    <!-- Months 7-8 -->
+                    <rect x="460" y="70" width="100" height="60" fill="#9b59b6" rx="5"/>
+                    <text x="510" y="100" text-anchor="middle" fill="white" font-size="14">Integration</text>
+                    
+                    <!-- Capstone -->
+                    <rect x="600" y="70" width="100" height="60" fill="#f39c12" rx="5"/>
+                    <text x="650" y="100" text-anchor="middle" fill="white" font-size="14">Capstone</text>
+                    
+                    <!-- Finish -->
+                    <circle cx="750" cy="100" r="30" fill="#2ecc71"/>
+                    <text x="750" y="105" text-anchor="middle" fill="white" font-size="16">Finish</text>
+                    
+                    <!-- Arrows -->
+                    <path d="M130,100 L180,100" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M280,100 L320,100" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M420,100 L460,100" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M560,100 L600,100" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    <path d="M700,100 L720,100" stroke="#2c3e50" stroke-width="3" fill="none" marker-end="url(#arrowhead)"/>
+                    
+                    <!-- Requirements -->
+                    <text x="400" y="170" text-anchor="middle" font-size="14" fill="#666">
+                        Requirements: 80% Attendance • Complete Projects • Field Operations • Safe Operation
+                    </text>
+                </svg>
+            </div>
+
+            <hr style="margin: 50px 0; border: none; border-top: 3px solid #667eea;">
+
+            <div style="text-align: center; padding: 40px 0;">
+                <div style="font-size: 80px; margin-bottom: 20px;">📡</div>
+                <h2 style="color: #1e3c72;">RADIOSPORT</h2>
+                <p style="font-size: 20px; color: #2a5298; font-weight: bold;">Building Tomorrow's Engineers Today</p>
+                <p style="margin-top: 30px; color: #666;">Version 3.0 — 2025</p>
+            </div>
+        </div>
+
+        <!-- BACK COVER -->
+        <div class="cover-page" style="background: linear-gradient(135deg, #2a5298 0%, #1e3c72 50%, #0d1b2a 100%);">
+            <div style="max-width: 600px; text-align: center;">
+                <h2 style="font-size: 32px; margin-bottom: 30px;">Transform Your Future</h2>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 40px 0;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 48px;">📡</div>
+                        <strong>Communicate</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 48px;">☀️</div>
+                        <strong>Energize</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 48px;">🤖</div>
+                        <strong>Innovate</strong>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+                        <div style="font-size: 48px;">💻</div>
+                        <strong>Code</strong>
+                    </div>
+                </div>
+
+                <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.3);">
+                    <p style="font-size: 14px; opacity: 0.8;">
+                        © 2025 RadioSport Program<br>
+                        Non-Commercial Educational Use
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <button id="downloadBtn" style="
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        z-index: 1000;
+    " onclick="window.print()">
+        📥 Print/Save as PDF
+    </button>
+
+    <script>
+        // Add SVG definitions for arrowheads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add arrowhead definitions to all SVGs
+            const svgs = document.querySelectorAll('svg');
+            svgs.forEach(svg => {
+                if (!svg.querySelector('defs')) {
+                    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+                    const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
+                    marker.setAttribute('id', 'arrowhead');
+                    marker.setAttribute('markerWidth', '10');
+                    marker.setAttribute('markerHeight', '7');
+                    marker.setAttribute('refX', '9');
+                    marker.setAttribute('refY', '3.5');
+                    marker.setAttribute('orient', 'auto');
+                    
+                    const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                    polygon.setAttribute('points', '0 0, 10 3.5, 0 7');
+                    polygon.setAttribute('fill', '#667eea');
+                    
+                    marker.appendChild(polygon);
+                    defs.appendChild(marker);
+                    svg.insertBefore(defs, svg.firstChild);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
