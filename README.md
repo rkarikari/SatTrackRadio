@@ -1,6 +1,6 @@
 # SatTrackRadio
 
-A Satellite tracking application with integrated radio control and real-time Doppler correction for amateur radio satellite operations.
+A comprehensive satellite tracking application with integrated dual-radio control, real-time Doppler correction, advanced visualizations, and AI-powered frequency predictions for amateur radio satellite operations.
 
 ## Screenshots
 ![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio.gif)
@@ -13,29 +13,72 @@ A Satellite tracking application with integrated radio control and real-time Dop
 
 ### 🛰️ Satellite Tracking
 - **Real-time position tracking** with azimuth, elevation, range, and velocity
-- **SGP4 propagator** for accurate orbital calculations
-- **Pass prediction** with configurable minimum elevation
+- **SGP4 propagator** for accurate orbital calculations using official SGP4 library
+- **Pass prediction** with configurable minimum elevation (0-90°)
 - **Multi-satellite support** with easy selection and management
 - **GPS time synchronization** for atomic clock accuracy
-- **TLE age warnings** - alerts when orbital data is older than 30 days
+- **TLE age warnings** - alerts when orbital data is older than 30 days with visual indicators
+- **Altitude and velocity display** for each tracked satellite
+- **Range rate tracking** for precise Doppler calculations
 
-### 📡 Radio Control
-- **Supported Radios:**
+### 📡 Dual Radio Control
+
+#### Supported Radios
+- **Radio 1 & Radio 2 Support**:
   - Yaesu FT-818 (CAT control via Bluetooth)
   - Kenwood TH-D74 (ASCII commands via Bluetooth)
+  - Kenwood TH-D75 (Compatible with D74 protocol)
+  - Independent control of two radios simultaneously
+
+#### Radio Assignment
+- **Flexible Radio Routing**:
+  - Assign uplink to Radio 1 or Radio 2
+  - Assign downlink to Radio 1 or Radio 2
+  - Full duplex operation with two radios
+  - Simplex operation with single radio
+  - Mix and match radio types (e.g., FT-818 for uplink, TH-D74 for downlink)
+
+#### Radio Control Features
 - **Automatic Doppler correction** for uplink and downlink frequencies
 - **Real-time frequency updates** during satellite passes
 - **Multiple update modes:**
   - RX Only (Downlink/Simplex)
   - TX Only (Uplink/Simplex)
+  - Both (Full Duplex)
 - **Manual frequency adjustment** with frequency locking
 - **Mode selection** (FM, NFM, AM, LSB, USB, CW, CWR, DV)
 - **Sync from radio** to read current frequencies
 - **Frequency calibration integration** - uses your learned frequencies automatically
+- **Independent connection status** for each radio
+- **Auto-reconnect on connection loss**
+
+#### Radio Setup Guide
+
+**Single Radio Setup (Simplex)**:
+1. Select your radio type in Radio 1 dropdown
+2. Select paired Bluetooth device
+3. Leave Radio 2 as "---"
+4. Assign Radio 1 to both uplink and downlink selectors
+5. Click Connect
+
+**Dual Radio Setup (Full Duplex)**:
+1. Select first radio type in Radio 1 dropdown
+2. Select first Bluetooth device
+3. Select second radio type in Radio 2 dropdown
+4. Select second Bluetooth device
+5. Assign Radio 2 to uplink, Radio 1 to downlink (or vice versa)
+6. Click Connect
+7. Both radios connect independently
+
+**Connection Status**:
+- Each radio shows independent connection status
+- Green = Connected and ready
+- Red = Disconnected
+- Yellow = Connecting
 
 ### 🎯 Smart Frequency Calibration System
 
-The app now learns from your actual operating experience to predict the best frequencies for future passes!
+The app learns from your actual operating experience to predict the best frequencies for future passes using machine learning!
 
 #### What It Does
 - **Saves Your Successful Frequencies**: After making a contact, save the frequencies that actually worked
@@ -45,6 +88,7 @@ The app now learns from your actual operating experience to predict the best fre
 - **Historical Analysis**: Maintains complete history of all your syncs with statistics
 - **Quality Assessment**: Rates calibration quality (Excellent/Good/Fair/Poor)
 - **Per-Transponder Tracking**: Individual calibration for each satellite mode
+- **Confidence Scoring**: Shows prediction reliability (0-100%)
 
 #### How Frequency Calibration Works
 
@@ -97,57 +141,182 @@ The calibration system compensates for:
 - Check sync count and age for each satellite/mode
 - View quality ratings at a glance
 - Monitor which calibrations need updating
+- Sort by satellite, sync count, or age
 
 #### Import/Export
 - **Export**: Backup your calibration database to a file
 - **Import**: Restore calibrations from backup
 - **Share**: Transfer calibrations between devices
 - Data saved in portable JSON format
+- Preserves complete history and statistics
 
 #### Clear Options
 - **Clear Current**: Remove calibration for selected satellite/mode
 - **Clear All**: Delete entire calibration database (with confirmation)
 - Useful for starting fresh or removing bad data
 
+### 💾 Frequency Memory System
+
+Quick access to your favorite frequency pairs for instant recall during operations.
+
+#### Features
+- **15 Memory Slots** per satellite/transponder combination
+- **Store Current Frequencies**: Save uplink/downlink pairs with one click
+- **Load Saved Frequencies**: Recall stored frequencies instantly
+- **Persistent Storage**: Frequencies saved across app sessions
+- **Auto-Advance**: Automatically moves to next available slot
+- **Per-Transponder Memory**: Separate memory banks for each satellite mode
+- **Visual Indicators**: See which slots are occupied
+
+#### How to Use Memory Slots
+
+**Storing Frequencies**:
+1. Set your desired uplink and downlink frequencies
+2. Select a memory slot (0-14) using the Store selector
+3. Click "Store" button
+4. Frequencies are saved to that slot
+5. Slot counter automatically advances to next available position
+
+**Loading Frequencies**:
+1. Select a memory slot (0-14) using the Load selector
+2. Click "Load" button
+3. Frequencies are loaded into uplink/downlink fields
+4. Doppler correction applies if enabled
+5. Slot counter advances to next occupied slot for quick scanning
+
+**Memory Management**:
+- Each satellite/transponder has its own 15-slot memory bank
+- Switch satellites to access different memory banks
+- Overwrite slots by storing to occupied positions
+- Memory persists when app is closed
+- Data is device-specific, not synced to cloud
+
+### 🗺️ Advanced Map & Visualization Features
+
+#### Interactive OpenStreetMap Display
+- **Real-time satellite tracking** on world map
+- **Zoom and pan** with touch/mouse controls
+- **Tile caching** for offline operation
+- **Multi-satellite display** - track multiple satellites simultaneously
+- **Observer location marker** - shows your position on the map
+- **Satellite footprint visualization** - shows coverage area
+- **Ground track display** - satellite path across Earth's surface
+
+#### Satellite Footprint Features
+- **Real-time footprint calculation** based on satellite altitude
+- **Geographic coordinate system** projection
+- **Horizon visibility circle** showing coverage area
+- **Color-coded footprints** for different satellites
+- **Toggle footprint visibility** for each satellite
+- **Footprint follows satellite** in real-time
+- **Handles date line wrapping** for global tracking
+
+#### Ground Track Display
+- **Future path prediction** - see where satellite will travel
+- **Historical track** - where satellite has been
+- **Configurable track length** - adjust how much path to display
+- **Color-coded by elevation** - shows when satellite is visible
+- **Smoothly updated** as satellite moves
+- **Works in both real-time and visualization modes**
+
+#### Visualization Timeline Mode
+- **Predict future pass geometry** - see satellite path at any future time
+- **Set custom time** - jump to specific date/time to preview pass
+- **TCA (Time of Closest Approach) viewing** - center on best contact time
+- **Coverage area preview** - see footprint at selected time
+- **Multi-satellite comparison** - view overlapping coverage zones
+- **Reset to real-time** - return to live tracking instantly
+
+#### Polar Plot (Sky View)
+- **Azimuth/Elevation display** in polar coordinates
+- **Real-time satellite position** on sky plot
+- **Pass prediction overlay** - see entire pass trajectory
+- **Horizon markers** for 0° elevation
+- **Cardinal direction indicators** (N, E, S, W)
+- **Elevation rings** at 30° and 60°
+- **Visual pass quality assessment** - high elevation = better passes
+
+#### Using Visualizations
+
+**Real-Time Tracking**:
+1. Go to Visualizations tab
+2. Map shows your location and tracked satellite
+3. Satellite footprint and ground track update automatically
+4. Polar plot shows satellite position in sky
+5. All views synchronized with current time
+
+**Future Pass Visualization**:
+1. Go to Visualizations tab
+2. Select target date/time
+3. Click "Show at Selected Time"
+4. Map displays satellite position at that time
+5. Footprint shows coverage at selected moment
+6. Click "Clear Viz" to return to real-time
+
+**Multi-Satellite Tracking**:
+1. Add multiple satellites to tracking list
+2. All satellites appear on map with different colors
+3. Toggle individual footprints on/off
+4. Each satellite has distinct marker and footprint
+5. Track up to 10 satellites simultaneously
+
 ### 🗄️ Data Management
 - **TLE (Two-Line Element) management**
   - Automatic updates from Celestrak
   - Import/export TLE files
-  - Multiple TLE sources (Amateur, Weather, CubeSats, Space Stations)
+  - Multiple TLE sources (Amateur, Weather, CubeSats, Space Stations, Starlink)
   - **Age warnings** for TLEs older than 30 days
   - Visual indicators showing TLE freshness
+  - Last update timestamp display
 - **Transponder database integration**
   - Automatic download from SatNOGS database
   - Support for multiple transponders per satellite
   - Uplink/downlink frequency pairs
+  - Mode information (FM, SSB, CW, etc.)
   - Cached offline access
+  - Per-transponder calibration support
 
 ### 📍 Location Services
 - **GPS integration** (Android)
   - Automatic location acquisition
   - GPS time synchronization for sub-second accuracy
   - Altitude detection
+  - Fix quality indicators
+  - Horizontal and vertical accuracy display
+  - Auto-update location on first fix
 - **Manual location entry** with validation
-- **Observer location caching**
+- **Observer location caching** - saves across sessions
+- **Named locations** - assign custom names to positions
+- **Geodetic coordinate support** with WGS-84 ellipsoid
 
 ### 🎨 User Interface
 - **Modern dark theme** optimized for night operations
 - **Tabbed interface** for easy navigation:
-  - Tracking view with real-time data
-  - Radio control panel with calibration status
-  - Pass predictions table
-  - Satellite management
-  - Location settings
-  - Application settings with calibration management
+  - **Tracking** - Real-time satellite position and velocity
+  - **Visualizations** - Map, footprint, ground track, and sky view
+  - **Radio Control** - Dual radio management with calibration status
+  - **Passes** - Upcoming pass predictions table
+  - **Satellites** - Satellite list with TLE management
+  - **Location** - GPS and manual position entry
+  - **Settings** - Calibration management and app configuration
 - **Visual Lookahead Dial** - Scrollable circular dial to set prediction period (1-30 days)
 - **Calibration Status Indicators** - See sync count and quality on Radio and Satellites tabs
 - **Status indicators** and countdown timers
 - **Color-coded pass predictions** based on elevation
 - **Enhanced information display** with emoji indicators for quick recognition
+- **Connection status for each radio** with color coding
+- **Screen always-on during tracking** - prevents timeout during passes
 
 ## Installation
 
-Install on your Android phone. 
+Install on your Android phone (APK available in releases).
+
+### System Requirements
+- Android 7.0 (Nougat) or higher
+- Bluetooth capability for radio control
+- GPS for location services (optional)
+- Internet connection for TLE/transponder updates
+- ~50MB storage space
 
 #### Permissions Required
 - `BLUETOOTH` - For radio control
@@ -162,30 +331,110 @@ Install on your Android phone.
 1. **Set Your Location**
    - Navigate to the Location tab
    - Enter coordinates manually or use GPS (Android)
+   - Click "Get GPS Location & Time" for automatic setup
+   - Optionally name your location
    - Save your location
 
 2. **Add Satellites**
    - Go to Satellites tab
-   - Click "Add" to download from catalog
-   - Select satellites you want to track
-   - TLEs and transponders are automatically downloaded
+   - Click "Update TLEs" to download latest orbital data
+   - Select TLE source (Amateur, Weather, etc.)
+   - Satellites and their transponders are automatically downloaded
+   - Check TLE age indicators for data freshness
 
 3. **Track a Satellite**
    - Select a satellite from the list
    - Click "Start Tracking"
-   - View real-time position and Doppler data
+   - View real-time position, velocity, and Doppler data
+   - Azimuth, elevation, range, and range rate update every second
 
-4. **Connect Radio** (Optional)
+4. **Connect Radio(s)**
    - Go to Radio Control tab
-   - Select radio type (FT-818 or TH-D74)
-   - Choose Bluetooth device (Previously paired devices)
-   - Click "Connect"
+   - **For Single Radio**:
+     - Select radio type in Radio 1 dropdown
+     - Choose Bluetooth device
+     - Leave Radio 2 as "---"
+     - Click "Connect"
+   - **For Dual Radio**:
+     - Select first radio type in Radio 1
+     - Choose first Bluetooth device
+     - Select second radio type in Radio 2
+     - Choose second Bluetooth device
+     - Assign radios to uplink/downlink
+     - Click "Connect"
 
 5. **Enable Auto-Tracking**
    - Check "Enable Doppler Correction"
    - Check "Auto Update Radio"
-   - Select update mode (RX or TX)
-   - Radio will automatically adjust frequency during passes
+   - Select update mode (RX Only, TX Only, or Both)
+   - Choose which radio handles uplink and downlink
+   - Radio(s) will automatically adjust frequency during passes
+
+### Using Dual Radio Mode
+
+#### Full Duplex Operation
+For linear transponder satellites (e.g., AO-91, AO-92):
+
+1. **Connect Two Radios**:
+   - Radio 1: Receive radio (e.g., TH-D74 for 145.880 MHz downlink)
+   - Radio 2: Transmit radio (e.g., FT-818 for 435.190 MHz uplink)
+
+2. **Assign Radio Functions**:
+   - Uplink Radio Selector: Choose "Radio2"
+   - Downlink Radio Selector: Choose "Radio1"
+
+3. **Enable Auto-Tracking**:
+   - Check "Enable Doppler Correction"
+   - Check "Auto Update Radio"
+   - Both radios update independently with correct Doppler
+
+4. **During Pass**:
+   - Radio 1 tracks downlink frequency
+   - Radio 2 tracks uplink frequency
+   - Full duplex communication maintained
+   - Monitor both connection status indicators
+
+#### Simplex Operation
+For FM satellites (e.g., ISS, SO-50):
+
+1. **Use Single Radio**:
+   - Set Radio 1 to your transceiver
+   - Leave Radio 2 as "---"
+
+2. **Assign to Both Functions**:
+   - Uplink Radio Selector: "Radio1"
+   - Downlink Radio Selector: "Radio1"
+
+3. **Auto-Tracking**:
+   - Select "RX Only" for receive
+   - Or "TX Only" for transmit
+   - Radio switches between as needed
+
+### Using Map Visualizations
+
+#### Real-Time Tracking
+1. Go to Visualizations tab
+2. Your location appears as a marker
+3. Tracked satellite shows with footprint
+4. Ground track displays satellite path
+5. Footprint shows coverage area
+6. Polar plot shows satellite in sky
+
+#### Predicting Future Passes
+1. In Visualizations tab, use date/time picker
+2. Select target date and time
+3. Click "Show at Selected Time"
+4. Map displays satellite position at that moment
+5. See footprint coverage for planning
+6. Click "Clear Viz" to return to real-time
+
+#### Multi-Satellite Display
+1. Track multiple satellites simultaneously
+2. Each has unique color marker
+3. Toggle individual footprints on/off
+4. View overlapping coverage areas
+5. Compare pass geometries
+6. Plan coordination windows
 
 ### Using Smart Frequency Calibration
 
@@ -195,14 +444,16 @@ Install on your Android phone.
 2. The app shows nominal frequencies from the database
 3. Enable Doppler correction
 4. Make your contact
+5. Note actual working frequencies
 
 #### Saving Your First Calibration
 
-1. After a successful contact, stay on the Radio Control tab
+1. After a successful contact, stay on Radio Control tab
 2. Your current frequencies are shown in the frequency displays
 3. Click the **"Sync Radio"** button
 4. A confirmation appears showing what was saved
 5. The calibration status updates to show "1 sync"
+6. Frequency memory automatically stores successful frequencies
 
 #### Building Your Calibration Database
 
@@ -211,12 +462,14 @@ Install on your Android phone.
 - Try to sync at different elevations (low, medium, high passes)
 - Sync at different times of day
 - The more variety in conditions, the better the predictions
+- Use GPS time for accurate timestamps
 
 **What Happens:**
 - Each sync is added to the history
 - The app calculates average frequencies
 - Standard deviation shows frequency consistency
 - Drift rate tracks changes over time
+- Quality rating improves with more syncs
 
 #### Using AI Predictions (After 5+ Syncs)
 
@@ -224,63 +477,67 @@ Install on your Android phone.
    - Appears in Radio Control tab calibration status
    - Shows "LSTM Model: Active" with confidence percentage
    - Displays predicted uplink and downlink frequencies
+   - Shows when prediction was calculated
 
 2. **Automatic Frequency Loading**
    - When you select a satellite with LSTM predictions
    - Predicted frequencies automatically load
    - Doppler correction applies on top of predictions
-   - Manual adjustment still available
+   - No manual adjustment needed for start
 
-3. **Interpreting Confidence Levels**
-   - 80-100%: Very reliable, trust the predictions
-   - 60-79%: Good, but watch for drift
-   - 40-59%: Use as starting point, expect to adjust
-   - Below 40%: More data needed, predictions less reliable
+3. **Monitor Confidence**
+   - 80%+ confidence = Very reliable, use as-is
+   - 60-80% confidence = Good starting point, minor tuning may be needed
+   - Below 60% = Use with caution, manual adjustment likely needed
 
-#### Managing Your Calibrations
+4. **Fine-Tune During Pass**
+   - If signal is weak, adjust manually
+   - Note the working frequency
+   - Sync again after pass to improve model
+   - Each sync refines predictions
 
-**View All Calibrations:**
-1. Go to Settings tab
-2. Scroll to "📡 Frequency Calibration Database" section
-3. Click "📊 View All"
-4. See table with all satellites, sync counts, ages, quality ratings
+### Using Frequency Memory Slots
 
-**Export Your Data:**
-1. Settings tab → Calibration section
-2. Click "💾 Export"
-3. Choose location to save file
-4. File contains all calibrations in JSON format
+#### Quick Store for Later Use
 
-**Import Calibrations:**
-1. Settings tab → Calibration section
-2. Click "📥 Import"
-3. Select your backup file
-4. Calibrations are merged with existing data
+1. **During a Pass**:
+   - Dial in your working frequencies
+   - Note which slot number is shown (0-14)
+   - Click "Store" button
+   - Frequencies saved to that slot
+   - Display advances to next empty slot
 
-**Clear Calibrations:**
-- **Clear Current**: Removes calibration for currently selected satellite/mode only
-- **Clear All**: Deletes entire database (requires confirmation)
+2. **Recalling Frequencies**:
+   - Click "Load" button
+   - Frequencies from selected slot load
+   - Load button cycles through occupied slots
+   - Instant frequency recall for repeated satellites
 
-### Radio Control Modes
+3. **Memory Organization**:
+   - Each satellite/transponder has separate memory bank
+   - 15 slots per configuration
+   - Switch satellites to access different banks
+   - Store multiple working frequency pairs
+   - Great for different pass elevations or modes
 
-#### RX Only Mode
-Updates only the receive frequency (downlink). Ideal for monitoring satellites.
+#### Memory Best Practices
 
-#### TX Only Mode
-Updates only the transmit frequency (uplink). For simplex operations.
+- **Store successful frequencies** immediately after contact
+- **Label your approach**: low slot numbers for low passes, high for high passes
+- **Overwrite old data** when conditions change
+- **Use with calibration**: Memory complements, doesn't replace calibration
+- **Quick recall**: Perfect for rapid frequency changes during crowded passes
 
-### Pass Predictions
+### Predicting Passes
 
-1. Navigate to Passes tab
-2. Select satellite (or "All Satellites")
-3. **Adjust lookahead using the visual dial**
-   - Scroll on the circular dial
-   - Range: 1 to 30 days
-   - Current value shown in center
+1. Go to Passes tab
+2. Set minimum elevation (default 5°)
+3. Set prediction period using lookahead dial (1-30 days)
 4. Click "Predict Passes"
 5. View upcoming passes sorted by AOS time
 6. Passes with high elevation are highlighted
 7. **Calibration status shown for each satellite**
+8. Click on a pass to see detailed information
 
 ### GPS Time Synchronization
 
@@ -288,9 +545,12 @@ For maximum accuracy in Doppler calculations:
 
 1. Go to Location tab
 2. Click "Get GPS Location & Time"
-3. Wait for GPS fix
-4. Check "Use GPS Time"
-5. GPS provides atomic clock accuracy for time-sensitive operations
+3. Wait for GPS fix (indicated by status)
+4. Fix quality shown (Excellent/Good/Fair/Poor)
+5. Check "Use GPS Time"
+6. GPS provides atomic clock accuracy for time-sensitive operations
+7. Time source indicator shows "GPS (Atomic Clock Accuracy)"
+8. System offset displayed for reference
 
 ## Configuration
 
@@ -301,8 +561,19 @@ For maximum accuracy in Doppler calculations:
 - **Prediction Period**: Use visual lookahead dial (1-30 days)
 - **Update Interval**: Position update frequency (1-60 seconds)
 - **Auto-update TLEs**: Automatically refresh TLEs on startup
-- **TLE Source**: Choose Celestrak category
+- **TLE Source**: Choose Celestrak category (Amateur, Weather, CubeSats, etc.)
 - **Auto-connect Radio**: Connect to last used radio on startup
+- **Use GPS Time**: Enable GPS-based time synchronization
+
+#### Radio Settings
+- **Radio 1 Type**: Select Yaesu FT-818, Kenwood TH-D74/D75, or ---
+- **Radio 2 Type**: Select second radio type or ---
+- **Radio 1 Device**: Choose paired Bluetooth device
+- **Radio 2 Device**: Choose second Bluetooth device
+- **Uplink Assignment**: Assign uplink to Radio 1 or Radio 2
+- **Downlink Assignment**: Assign downlink to Radio 1 or Radio 2
+- **Update Mode**: RX Only, TX Only, or Both
+- **Auto Doppler**: Enable/disable automatic Doppler correction
 
 #### Frequency Calibration Settings
 - **View All Calibrations**: See complete calibration database
@@ -311,19 +582,31 @@ For maximum accuracy in Doppler calculations:
 - **Clear Current**: Remove calibration for selected satellite
 - **Clear All**: Delete entire calibration database
 
+#### Display Settings
+- **Show All Footprints**: Toggle footprint display for all satellites
+- **Ground Track Length**: Adjust how much satellite path to display
+- **Map Zoom Level**: Default zoom for map view
+- **Theme**: Dark mode (optimized for night use)
+
 ## Technical Details
 
 ### Orbital Mechanics
-- **SGP4 propagator** with full perturbation theory
+- **Official SGP4 propagator** with full perturbation theory
 - **Geodetic coordinate conversion** with WGS-84 ellipsoid
 - **Look angle calculations** in SEZ (South-East-Zenith) frame
 - **Greenwich Sidereal Time** calculations for ECI to ECEF conversion
+- **Range rate computation** for accurate Doppler prediction
+- **Footprint calculation** using geometric horizon formula
+- **Ground track projection** on geodetic coordinates
 
 ### Doppler Correction
+- **Relativistic Doppler formula** for satellite velocities
 - Corrects for satellite velocity along line of sight
 - Separate calculations for uplink and downlink
 - Real-time updates based on range rate
 - **Integrates with frequency calibration** for improved accuracy
+- Pre-compensation for uplink transmission
+- Direct correction for downlink reception
 
 ### AI Prediction System
 
@@ -333,6 +616,7 @@ For maximum accuracy in Doppler calculations:
 - **Multi-Factor Analysis**: Considers elevation, range, time, temperature drift
 - **Recursive Predictions**: Each prediction improves based on previous accuracy
 - **Confidence Scoring**: Provides reliability estimate (0-100%)
+- **Adaptive Learning**: Model updates with each new sync
 
 #### Statistical Analysis
 For each calibration, the system calculates:
@@ -343,7 +627,7 @@ For each calibration, the system calculates:
 - **Prediction Accuracy**: R² score showing model fit quality
 
 #### Data Tracked Per Sync
-- Timestamp (UTC)
+- Timestamp (UTC with GPS accuracy)
 - Uplink frequency used
 - Downlink frequency used
 - Satellite elevation at time of sync
@@ -357,51 +641,99 @@ For each calibration, the system calculates:
 #### FT-818
 - Binary CAT commands
 - BCD frequency encoding
-- Frequency resolution: Hardware Specs
+- Frequency resolution: 10 Hz
 - 9600 baud rate
+- Mode selection support
+- Read/Write frequency operations
 
-#### TH-D74
+#### TH-D74/D75
 - ASCII command protocol
 - Dual-band operation (Band A/B)
-- Frequency resolution: Hardware Specs
+- Frequency resolution: 5 kHz (VHF), 6.25 kHz (UHF)
 - Extended receive coverage on Band B
+- Mode and power level control
+- Status query support
+
+### Map Technology
+- **OpenStreetMap** tile integration
+- **Tile caching** for offline use
+- **Mercator projection** for world display
+- **Geodetic to screen coordinate** conversion
+- **Multi-satellite rendering** with color coding
+- **Footprint calculation** using spherical geometry
+- **Ground track smoothing** for visual clarity
 
 ## Default Satellites
 
 Includes sample pre-configured TLEs and transponders for:
-- AO-92 (FOX-1D) - Fox-1D
-- Always download the Latest
+- AO-92 (FOX-1D) - FM transponder
+- ISS (ZARYA) - Voice and APRS
+- Always download the latest TLEs for best accuracy
 
 ## Data Sources
 
 - **TLEs**: Celestrak (https://celestrak.org)
+  - Amateur Radio satellites
+  - Weather satellites
+  - CubeSats
+  - Space Stations
+  - Starlink constellation
 - **Transponders**: SatNOGS Database (https://db.satnogs.org)
-- **Calibration Data**: Locally stored on device
+- **Calibration Data**: Locally stored on device in JSON format
+- **Frequency Memory**: Device-local persistent storage
+- **Map Tiles**: OpenStreetMap contributors
 
 ## Troubleshooting
 
 ### TLE Updates Fail
 - Check internet connection
 - Verify HTTPS connectivity
+- Try different TLE source
 - Look for TLE age warnings (>30 days indicator)
+- Manual import option available
 
 ### Radio Connection Issues
-- Verify Bluetooth pairing
-- The app only lists devices from bluetooth "paired" in android settings
+- Verify Bluetooth pairing in Android settings
+- The app only lists devices from Bluetooth "paired" list
 - Check radio is in CAT control mode
 - For FT-818: Ensure correct baud rate (9600)
+- For TH-D74/D75: Verify data band selection
+- Ensure radio is powered on
+- Check battery levels on both radio and phone
+- Try forgetting and re-pairing Bluetooth device
+
+### Dual Radio Issues
+- **Both radios not connecting**: Check each is paired separately
+- **Wrong radio responding**: Verify radio assignments in selectors
+- **Interference between radios**: Ensure adequate separation
+- **One radio disconnects**: Check battery, Bluetooth range
+- **Frequency not updating**: Verify update mode includes that radio
+- **Connection status unclear**: Each radio has independent status indicator
 
 ### GPS Not Working (Android)
-- Grant location permissions
-- Enable location services
+- Grant location permissions in Android settings
+- Enable location services system-wide
 - Ensure clear sky view
 - Wait 30-60 seconds for initial fix
+- Check GPS status indicator for fix quality
+- Move away from buildings/obstacles
+- Restart app if GPS fix stalls
 
 ### Doppler Correction Inaccurate
 - Update TLEs (older than 7 days may be inaccurate)
-- Use GPS time synchronization
+- Use GPS time synchronization for precise timing
 - Verify observer location is correct
 - **Build frequency calibration database** for personalized accuracy
+- Check satellite is in view (elevation > 0°)
+- Ensure tracking is active
+- Verify radio is connected and responding
+
+### Map/Visualization Issues
+- **Map not loading**: Check internet connection for tile download
+- **Ground track missing**: Verify tracking is active
+- **Satellite not on map**: Check satellite elevation > 0°
+- **Visualization stuck**: Click "Clear" to reset to real-time
+
 
 ### Frequency Calibration Issues
 
@@ -410,30 +742,44 @@ Includes sample pre-configured TLEs and transponders for:
 - Select a transponder mode first
 - Check that frequencies are displayed
 - Verify you're on the Radio Control tab
+- Confirm radio is connected
 
 #### No LSTM Predictions Appearing
 - Need at least 5 syncs before LSTM activates
 - Check calibration age (expires after 30 days)
 - Verify same transponder mode is selected
 - Look at calibration status indicator for details
+- Ensure syncs have varied elevation/conditions
 
 #### Low Prediction Confidence
 - More syncs needed (aim for 10+ for best results)
 - Try syncing at different elevations
 - Ensure GPS time is accurate during syncs
 - Check for consistency in your synced frequencies
+- Verify TLEs are current
+- Review and clear any bad sync data
 
 #### Predictions Seem Wrong
 - Verify TLEs are current (update if old)
 - Check that you're using the correct transponder
 - Ensure location is accurate
 - Consider clearing and rebuilding calibration
+- Compare with nominal frequencies
+- Check if satellite frequencies have changed
 
 #### Calibrations Lost
 - Uninstalling app removes all local data
 - Export calibrations regularly as backup
 - Import to restore from backup file
 - Data is device-specific, not cloud-synced
+- Use file manager to locate backup files
+
+### Frequency Memory Issues
+- **Slot shows wrong frequency**: Verify correct satellite/transponder selected
+- **Can't overwrite slot**: Simply store to same slot number
+- **Memory cleared**: Each satellite/transponder has separate bank
+- **Load not working**: Ensure slot is occupied (check slot counter)
+- **Lost memory**: Uninstalling app clears memory, export calibrations includes memory
 
 ## Tips for Best Results
 
@@ -449,36 +795,101 @@ Includes sample pre-configured TLEs and transponders for:
 8. **Be Patient**: LSTM needs 5+ syncs to activate
 9. **Trust High Confidence**: 80%+ predictions are very reliable
 10. **Fine-Tune as Needed**: Predictions are starting points, adjust during pass
+11. **Use Memory Slots**: Store successful frequencies for quick recall
+12. **Review Statistics**: Check calibration details to identify patterns
+
+### Dual Radio Operating Tips
+
+1. **Pre-Pass Checklist**:
+   - Verify both radios are fully charged
+   - Check both Bluetooth connections are stable
+   - Confirm radio assignments match your setup
+   - Test frequency updates on both radios
+   - Verify correct antennas connected
+
+2. **During Full Duplex Pass**:
+   - Monitor both connection status indicators
+   - Watch for frequency updates on both radios
+   - Listen to downlink while transmitting on uplink
+   - Note any connection drops for troubleshooting
+   - Use memory slots to store working frequencies
+
+3. **Simplex Operation**:
+   - Set single radio for both uplink and downlink
+   - Use RX Only mode for listening
+   - Switch to TX Only when transmitting
+   - Let Doppler adjust frequency for you
+   - Store successful frequencies to memory
 
 ### Operating Tips
 
 1. **Pre-Pass Setup**
    - Start tracking 5-10 minutes before AOS
    - Check calibration status for selected satellite
-   - Verify TLE age is recent
+   - Verify TLE age is recent (< 7 days ideal)
    - Enable Doppler correction and auto-tracking
+   - Load frequency memory or use calibration predictions
+   - Check both radios connected (if using dual radio)
+   - Verify GPS time sync is active
+   - Set correct transponder mode
 
 2. **During the Pass**
-   - Let auto-tracking update your radio
-   - Watch for signal strength
+   - Let auto-tracking update your radio(s)
+   - Watch for signal strength and clarity
    - Fine-tune manually if needed
    - Note actual frequencies that work best
+   - Monitor elevation and range indicators
+   - Check footprint on map for coverage
+   - Use polar plot to track satellite position in sky
 
 3. **Post-Pass**
    - Sync frequencies after successful contacts
+   - Store working frequencies to memory slots
    - Check prediction confidence levels
    - Monitor calibration quality rating
    - Export calibrations if many updates made
+   - Review pass on map visualization
+   - Note any issues for troubleshooting
 
 4. **Maintenance**
-   - Update TLEs weekly
+   - Update TLEs weekly (or when age indicator warns)
    - Export calibrations monthly
    - Review calibration database quarterly
    - Clear old/bad calibrations as needed
+   - Clean up unused frequency memory slots
+   - Check Bluetooth pairing status periodically
+   - Update transponder database monthly
+
+### Map and Visualization Tips
+
+1. **Learning the Footprint**:
+   - Zoom in to see your local coverage
+   - Note how footprint size changes with altitude
+   - Higher satellites = larger footprints
+   - Plan operations when footprint covers your area
+
+2. **Ground Track Planning**:
+   - View future track to predict visibility
+   - Look for passes that cross your region
+   - Note direction of travel (ascending/descending)
+   - Compare tracks for multiple satellites
+
+3. **Using Timeline Mode**:
+   - Set time to peak elevation for best view
+   - Check footprint coverage at TCA
+   - Preview overlapping satellite coverage
+   - Plan coordinated multi-satellite operations
+
+4. **Multi-Satellite Coordination**:
+   - Track multiple satellites simultaneously
+   - Compare footprints for overlap
+   - Plan relay operations
+   - Identify mutual visibility windows
 
 ## Contributing
 
 Contributions are welcome! 
+
 
 ## License
 
@@ -492,20 +903,24 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ### Acknowledgments
 - Celestrak for TLE data
 - SatNOGS for transponder database
-- Qt framework
+- OpenStreetMap contributors for map tiles
+- Qt framework and community
+- Official SGP4 library developers
 - Special thanks to Travis Goodspeed (KK4VCZ), LA3QMA, WM8S, M1HOG, AG6IE, and DG6OBE for their pioneering work in reverse-engineering the Kenwood TH-D74 CAT protocol
-- Amateur radio satellite community
+- Amateur radio satellite community for feedback and testing
 
 ## Support
 
-For issues, questions:
+For issues, questions, or feature requests:
 - Open an issue on GitHub
-- Contact: 9G5AR 
+- Contact: 9G5AR
+- Amateur radio forums and satellite communities
 
 ## Disclaimer
 
-This software is provided "as is" without warranty. Use at your own risk. Always verify satellite pass times and frequencies before operations. The developer is not responsible for any damage to equipment or regulatory violations.
+This software is provided "as is" without warranty. Use at your own risk. Always verify satellite pass times and frequencies before operations. The developer is not responsible for any damage to equipment or regulatory violations. Ensure compliance with local amateur radio regulations when operating.
 
 ---
 
 **73 de 9G5AR** 🛰️📡
+
