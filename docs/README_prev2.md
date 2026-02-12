@@ -25,7 +25,6 @@ A comprehensive satellite tracking application with integrated dual-radio contro
 
 #### Supported Radios
 - **Radio 1 & Radio 2 Support**:
-  - Icom IC-705 (CI-V protocol via Bluetooth)
   - Yaesu FT-818 (CAT control via Bluetooth)
   - Kenwood TH-D74 (ASCII commands via Bluetooth)
   - Kenwood TH-D75 (Compatible with D74 protocol)
@@ -37,7 +36,7 @@ A comprehensive satellite tracking application with integrated dual-radio contro
   - Assign downlink to Radio 1 or Radio 2
   - Full duplex operation with two radios
   - Simplex operation with single radio
-  - Mix and match radio types (e.g., IC-705 for uplink, TH-D74 for downlink)
+  - Mix and match radio types (e.g., FT-818 for uplink, TH-D74 for downlink)
 
 #### Radio Control Features
 - **Automatic Doppler correction** for uplink and downlink frequencies
@@ -47,7 +46,7 @@ A comprehensive satellite tracking application with integrated dual-radio contro
   - TX Only (Uplink/Simplex)
   - Both (Full Duplex)
 - **Manual frequency adjustment** with frequency locking
-- **Mode selection** (FM, NFM, WFM, AM, LSB, USB, CW, CWR, RTTY, DV/D-STAR)
+- **Mode selection** (FM, NFM, AM, LSB, USB, CW, CWR, DV)
 - **Sync from radio** to read current frequencies
 - **Frequency calibration integration** - uses your learned frequencies automatically
 - **Independent connection status** for each radio
@@ -70,18 +69,6 @@ A comprehensive satellite tracking application with integrated dual-radio contro
 5. Assign Radio 2 to uplink, Radio 1 to downlink (or vice versa)
 6. Click Connect
 7. Both radios connect independently
-
-**IC-705 Satellite Mode Setup**:
-1. Select "Icom IC-705" in Radio 1 (or Radio 2) dropdown
-2. Select paired Bluetooth device (the IC-705 must be paired as an SPP/serial device)
-3. Assign Radio 1 to uplink and/or downlink as needed
-4. Click Connect — the app communicates using Icom's CI-V protocol
-5. For full-duplex satellite operation, the app automatically:
-   - Switches VFO-A to the downlink frequency
-   - Switches VFO-B to the uplink frequency
-   - Enables Split mode
-   - Enables Dual Watch (satellite mode) on the IC-705
-6. Doppler updates are applied to the active VFO only — no unnecessary CI-V traffic during passes
 
 **Connection Status**:
 - Each radio shows independent connection status
@@ -389,8 +376,8 @@ Install on your Android phone (APK available in releases).
 For linear transponder satellites (e.g., AO-91, AO-92):
 
 1. **Connect Two Radios**:
-   - Radio 1: Receive radio (e.g., IC-705 or TH-D74 for 145.880 MHz downlink)
-   - Radio 2: Transmit radio (e.g., FT-818 or IC-705 for 435.190 MHz uplink)
+   - Radio 1: Receive radio (e.g., TH-D74 for 145.880 MHz downlink)
+   - Radio 2: Transmit radio (e.g., FT-818 for 435.190 MHz uplink)
 
 2. **Assign Radio Functions**:
    - Uplink Radio Selector: Choose "Radio2"
@@ -711,17 +698,9 @@ Includes sample pre-configured TLEs and transponders for:
 - Check radio is in CAT control mode
 - For FT-818: Ensure correct baud rate (9600)
 - For TH-D74/D75: Verify data band selection
-- For IC-705: Ensure the radio's Bluetooth SPP (Serial Port Profile) is enabled and the device is paired before launching the app
 - Ensure radio is powered on
 - Check battery levels on both radio and phone
 - Try forgetting and re-pairing Bluetooth device
-
-### IC-705 Specific Issues
-- **Split or Dual Watch not activating**: The app sets these automatically on connection — if they don't engage, try disconnecting and reconnecting
-- **CI-V errors or no response**: Confirm the IC-705 Bluetooth is set to SPP mode (not just audio); check the CI-V address in the radio's menu matches the default (0xA4)
-- **Frequency not updating during pass**: Verify the IC-705 is the selected radio for the uplink/downlink you want to update
-- **Wrong VFO being updated**: The app uses VFO-A for the main frequency and VFO-B for split — do not manually switch VFOs during a tracked pass
-- **Mode not changing**: All IC-705 modes are supported (LSB, USB, AM, FM, NFM, WFM, CW, CWR, RTTY, DV/D-STAR); if a mode from the transponder database isn't recognized, the radio defaults to USB
 
 ### Dual Radio Issues
 - **Both radios not connecting**: Check each is paired separately
@@ -827,7 +806,6 @@ Includes sample pre-configured TLEs and transponders for:
    - Confirm radio assignments match your setup
    - Test frequency updates on both radios
    - Verify correct antennas connected
-   - **IC-705 users**: Confirm the IC-705 is in Bluetooth SPP mode before connecting
 
 2. **During Full Duplex Pass**:
    - Monitor both connection status indicators
@@ -928,7 +906,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - OpenStreetMap contributors for map tiles
 - Qt framework and community
 - Official SGP4 library developers
-- Icom for their published CI-V protocol documentation enabling IC-705 integration
 - Special thanks to Travis Goodspeed (KK4VCZ), LA3QMA, WM8S, M1HOG, AG6IE, and DG6OBE for their pioneering work in reverse-engineering the Kenwood TH-D74 CAT protocol
 - Amateur radio satellite community for feedback and testing
 
