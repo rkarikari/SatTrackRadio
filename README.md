@@ -76,12 +76,7 @@ A comprehensive satellite tracking application with integrated dual-radio contro
 2. Select paired Bluetooth device (the IC-705 must be paired as an SPP/serial device)
 3. Assign Radio 1 to uplink and/or downlink as needed
 4. Click Connect — the app communicates using Icom's CI-V protocol
-5. For full-duplex satellite operation, the app automatically:
-   - Switches VFO-A to the downlink frequency
-   - Switches VFO-B to the uplink frequency
-   - Enables Split mode
-   - Enables Dual Watch (satellite mode) on the IC-705
-6. Doppler updates are applied to the active VFO only — no unnecessary CI-V traffic during passes
+5. Doppler updates are applied to the active VFO only 
 
 **Connection Status**:
 - Each radio shows independent connection status
