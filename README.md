@@ -5,7 +5,7 @@ A comprehensive satellite tracking application with integrated dual-radio contro
 ## Screenshots
 ![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio.gif)
 
-![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/Xplot.jpg)
+![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/elev_time.jpg)
 
 ![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio7.jpg)
 
@@ -171,6 +171,7 @@ Quick access to your favorite frequency pairs for instant recall during operatio
 - **15 Memory Slots** per satellite/transponder combination
 - **Store Current Frequencies**: Save uplink/downlink pairs with one click
 - **Load Saved Frequencies**: Recall stored frequencies instantly
+- **Gen Button**: Automatically generate 15 frequency pairs from a single seed
 - **Persistent Storage**: Frequencies saved across app sessions
 - **Auto-Advance**: Automatically moves to next available slot
 - **Per-Transponder Memory**: Separate memory banks for each satellite mode
@@ -180,26 +181,50 @@ Quick access to your favorite frequency pairs for instant recall during operatio
 
 **Storing Frequencies**:
 1. Set your desired uplink and downlink frequencies
-2. Select a memory slot (0-14) using the Store selector
-3. Click "Store" button
-4. Frequencies are saved to that slot
-5. Slot counter automatically advances to next available position
+2. Click "Store [#]" button
+3. Frequencies are saved to that slot
+4. Slot counter automatically advances to next available position
 
 **Loading Frequencies**:
-1. Select a memory slot (0-14) using the Load selector
-2. Click "Load" button
-3. Frequencies are loaded into uplink/downlink fields
-4. Doppler correction applies if enabled
-5. Slot counter advances to next occupied slot for quick scanning
+1. Click "Load [#]" button
+2. Frequencies are loaded into uplink/downlink fields
+3. Doppler correction applies if enabled
+4. Slot counter advances to next occupied slot for quick scanning
+
+**Generating Frequency Pairs (Gen Button)**:
+1. Store your preferred uplink/downlink pair in slot 1 (the seed)
+2. Click "Gen" button
+3. App automatically generates 14 additional pairs (slots 2-15):
+   - Pairs spaced at 5 kHz intervals
+   - Alternating above/below seed frequency to keep it centered
+   - Computed via transponder's linear relationship
+   - Validated against transponder passband limits
+4. Requires linear transponder mode (not FM/repeater)
+5. All 15 slots instantly populated for quick scanning during pass
+
+**Gen Button Example**:
+- Slot 1 seed: ↑145.950 MHz / ↓435.800 MHz
+- Gen creates: 145.940/435.785, 145.960/435.815, 145.945/435.792, etc.
+- Maintains correct uplink-to-downlink ratio for the transponder
+
 
 **Memory Management**:
 - Each satellite/transponder has its own 15-slot memory bank
 - Switch satellites to access different memory banks
 - Overwrite slots by storing to occupied positions
+- Use Gen to quickly populate all 15 slots from a seed
 - Memory persists when app is closed
 - Data is device-specific, not synced to cloud
 
 ### 🗺️ Advanced Map & Visualization Features
+
+#### Real-Time Elevation Timeline Graph
+- **Scrolling Graph**: Satellite passes scroll right-to-left toward the NOW line in real-time
+- **Live Updates**: Graph refreshes every second, continuously showing upcoming passes
+- **Multi-Satellite Display**: All upcoming passes shown simultaneously with color-coded labels
+- **Interactive Controls**:
+  - **Pan**: Drag to view past or future time periods
+
 
 #### Interactive OpenStreetMap Display
 - **Real-time satellite tracking** on world map
@@ -795,6 +820,8 @@ Includes sample pre-configured TLEs and transponders for:
 - **Can't overwrite slot**: Simply store to same slot number
 - **Memory cleared**: Each satellite/transponder has separate bank
 - **Load not working**: Ensure slot is occupied (check slot counter)
+- **Gen button disabled**: Requires linear transponder and slot 1 stored first
+- **Gen creates invalid pairs**: Check transponder passband limits - some combinations may be invalid
 - **Lost memory**: Uninstalling app clears memory, export calibrations includes memory
 
 ## Tips for Best Results
@@ -862,6 +889,7 @@ Includes sample pre-configured TLEs and transponders for:
 3. **Post-Pass**
    - Sync frequencies after successful contacts
    - Store working frequencies to memory slots
+   - Use Gen button to create full memory bank from best frequency
    - Check prediction confidence levels
    - Monitor calibration quality rating
    - Export calibrations if many updates made
