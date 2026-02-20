@@ -328,7 +328,7 @@ Quick access to your favorite frequency pairs for instant recall during operatio
   - **Tracking** - Real-time satellite position and velocity
   - **Visualizations** - Map, footprint, ground track, and sky view
   - **Radio Control** - Dual radio management with calibration status
-  - **Passes** - Upcoming pass predictions table
+  - **Passes** - Upcoming pass prediction cards.
   - **Satellites** - Satellite list with TLE management
   - **Location** - GPS and manual position entry
   - **Settings** - Calibration management and app configuration
@@ -454,12 +454,12 @@ For FM satellites (e.g., ISS, SO-50):
 6. Polar plot shows satellite in sky
 
 #### Predicting Future Passes
-1. In Visualizations tab, use date/time picker
-2. Select target date and time
-3. Click "Show at Selected Time"
+1. In Map tab, click "RealTime".
+2. Click Custom(UTC).
+3. Click "Apply"
 4. Map displays satellite position at that moment
 5. See footprint coverage for planning
-6. Click "Clear Viz" to return to real-time
+6. Click "Custom" to return to real-time
 
 #### Multi-Satellite Display
 1. Track multiple satellites simultaneously
@@ -564,13 +564,10 @@ For FM satellites (e.g., ISS, SO-50):
 ### Predicting Passes
 
 1. Go to Passes tab
-2. Set minimum elevation (default 5°)
-3. Set prediction period using lookahead dial (1-30 days)
-4. Click "Predict Passes"
-5. View upcoming passes sorted by AOS time
-6. Passes with high elevation are highlighted
-7. **Calibration status shown for each satellite**
-8. Click on a pass to see detailed information
+2. Minimum elevation (check settings tab)
+3. Upcoming passes are sorted by AOS time
+4. Pass cards are color coded by elevation.
+
 
 ### GPS Time Synchronization
 
