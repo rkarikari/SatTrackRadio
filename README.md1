@@ -293,54 +293,6 @@ Quick access to your favorite frequency pairs for instant recall during operatio
 4. Each satellite has distinct marker and footprint
 5. Track up to 10 satellites simultaneously
 
-### 🌐 Satellite Grid Map
-
-A live world map overlaid with the Maidenhead grid square system, letting you see exactly which grids you've worked via satellite, which are confirmed on LoTW, and which are reachable right now during the current satellite pass.
-
-#### Map Color Legend
-- **🟢 Green** — Grid confirmed two-way on LoTW
-- **🟡 Yellow** — QSO uploaded to LoTW, awaiting remote station's confirmation
-- **🟠 Orange** — Contact logged locally, not yet uploaded to LoTW
-- **🔵 Blue outline** — Grid is inside the current satellite's footprint but not yet worked — a new grid opportunity!
-- **No fill** — Grid square is outside the footprint and has no logged contact
-
-#### What You Can Do on the Map
-- **Tap any grid square** to see its status, the callsigns you've worked there, and whether it's currently reachable via satellite — the same info panel that appears when hovering with a mouse
-- **Long-press an unworked grid inside the footprint** to open the QSO log dialog pre-filled with that grid
-- **Zoom and pan** to explore your contact coverage anywhere in the world
-- **Stats bar** at the top of the tab shows your total grids worked, LoTW confirmed, and pending at a glance
-
-#### Quick QSO Log
-Log your satellite contacts directly from this tab without leaving the screen:
-- **My Call / My Grid** — Set your station details once; they are pre-filled on every subsequent log entry
-- **Satellite filter** — Show only QSOs for a specific satellite, or view all
-- **➕ Log QSO button** — Opens the log dialog pre-filled with the currently tracked satellite and active downlink frequency
-- **QSO table** — Shows all logged contacts with date/time, callsign, grid, satellite, mode, and LoTW status at a glance
-- **Long-press a QSO row** to edit or delete that record
-
-#### Logging a QSO
-1. Tap **➕ Log QSO**, or long-press any grid square on the map to open the dialog pre-filled with that grid
-2. Fill in the contact details — most fields pre-fill from your current tracking session:
-   - Their callsign and Maidenhead grid (4 or 6 characters)
-   - Satellite, band, and mode
-   - Frequency (MHz) — pre-filled from the current downlink
-   - Date and time in UTC
-   - Your callsign, grid, and TX power
-   - Optional notes
-3. Tick **Mark as uploaded to LoTW** if you have already sent the QSO via TQSL
-4. Tap **OK** — the contact appears in the table and the map updates immediately
-
-#### LoTW Integration
-The app syncs your QSO log with the Logbook of the World (LoTW) to track confirmed contacts:
-- **Sync LoTW** — Downloads new confirmations and any newly uploaded QSOs from LoTW using an incremental watermark system (only new records are transferred each time)
-- **Auto-sync on Log QSO** — Enable in Settings to sync with LoTW automatically every time you log a contact
-- **Reset & Full Re-sync** — Clears stored sync watermarks and re-downloads your complete LoTW history; locally logged QSOs are always preserved
-- **LoTW credentials** — Enter your LoTW callsign and password once in Settings; they are stored securely on-device
-
-#### ADIF Export & Import
-- **💾 Export ADIF** — Save your entire QSO log to a standard `.adif` file for use in other logging software
-- **📂 Import ADIF** — Load an existing `.adif` file from another logger or a previous export; duplicate contacts are detected and skipped automatically
-
 ### 🗄️ Data Management
 - **TLE (Two-Line Element) management**
   - Automatic updates from Celestrak
@@ -379,7 +331,6 @@ The app syncs your QSO log with the Logbook of the World (LoTW) to track confirm
   - **Passes** - Upcoming pass prediction cards.
   - **Satellites** - Satellite list with TLE management
   - **Location** - GPS and manual position entry
-  - **LoTW Grid** - Satellite Grid Map, QSO logging, and LoTW sync
   - **Settings** - Calibration management and app configuration
 - **Visual Lookahead Dial** - Scrollable circular dial to set prediction period (1-30 days)
 - **Calibration Status Indicators** - See sync count and quality on Radio and Satellites tabs
@@ -517,35 +468,6 @@ For FM satellites (e.g., ISS, SO-50):
 4. View overlapping coverage areas
 5. Compare pass geometries
 6. Plan coordination windows
-
-### Using the Satellite Grid Map
-
-#### Setting Up
-
-1. Go to the **LoTW Grid** tab
-2. Enter your callsign in the **My Call** field and your Maidenhead grid in **My Grid** — these pre-fill every new log entry
-3. If you use LoTW, go to **Settings → LoTW Sync** and enter your LoTW callsign and password
-
-#### Logging Your First Contact
-
-1. Make a satellite contact as normal
-2. Tap **➕ Log QSO** — the tracked satellite and downlink frequency are pre-filled
-3. Enter the other station's callsign and their Maidenhead grid square (at least 4 characters)
-4. Confirm the date/time UTC is correct, then tap **OK**
-5. The grid square lights up on the map in orange (worked, not yet on LoTW)
-
-#### Syncing with LoTW
-
-1. Go to **Settings → LoTW Sync** and make sure your credentials are entered
-2. Tap **Sync LoTW** — the app downloads new confirmations and uploads
-3. Grid squares turn yellow when your upload is received by LoTW, and green when the remote station's LoTW entry matches yours
-4. Enable **Auto-sync QSO** if you want the app to sync every time you log a contact
-
-#### Spotting New Grid Opportunities During a Pass
-
-1. Track a satellite as normal — its footprint appears on the Grid Map in real-time
-2. Blue-outlined grid squares inside the footprint are reachable stations you haven't worked yet
-3. **Long-press** any blue-outlined square to pre-fill that grid in the log dialog and start a new contact
 
 ### Using Smart Frequency Calibration
 
@@ -851,16 +773,7 @@ Includes sample pre-configured TLEs and transponders for:
 - **Visualization stuck**: Click "Clear" to reset to real-time
 
 
-### Satellite Grid Map Issues
-- **Map not showing grid squares**: Tap any worked square in the QSO table to confirm the grid data loaded
-- **Footprint not highlighting grids**: Ensure a satellite is selected and tracking is active
-- **LoTW sync fails**: Double-check your callsign and password in Settings → LoTW Sync; verify internet connection
-- **QSO not appearing on map**: Check that a valid 4-character Maidenhead grid was entered for the contact
-- **Grid still orange after sync**: The remote station has not yet uploaded their LoTW record; the square turns green once both sides confirm
-- **Duplicate QSO warning**: The same callsign and satellite within 2 minutes was already logged; long-press the existing entry in the table to edit it if needed
-- **QSO log lost after reinstall**: Export to ADIF regularly — uninstalling the app removes all local data
-
-
+### Frequency Calibration Issues
 
 #### "Sync Radio" Button Doesn't Work
 - Ensure a satellite is selected
@@ -1014,16 +927,6 @@ Includes sample pre-configured TLEs and transponders for:
    - Compare footprints for overlap
    - Plan relay operations
    - Identify mutual visibility windows
-
-### Satellite Grid Map Tips
-
-1. **Log during the pass**: The LoTW Grid tab stays fully usable while a satellite is being tracked, so you can log contacts without leaving the screen
-2. **Use 6-character grids**: Entering a full 6-character Maidenhead locator (e.g. FN31pr) gives more precise placement on the map
-3. **Watch the footprint**: Blue-outlined squares during a live pass are grids you can reach right now — great for chasing new ones
-4. **Export after every session**: Tap 💾 Export ADIF after each operating session so you always have an up-to-date backup
-5. **Sync LoTW frequently**: Regular syncs keep your confirmed/pending status accurate and the map colors up to date
-6. **Filter by satellite**: Use the satellite dropdown in the QSO table to review contacts on a specific bird
-7. **Reset sync only when needed**: Use Reset & Full Re-sync only if your LoTW history looks wrong — it re-downloads your complete LoTW history and may take a moment
 
 ## Contributing
 
