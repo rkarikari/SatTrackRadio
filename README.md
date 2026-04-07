@@ -5,7 +5,7 @@ A comprehensive satellite tracking application with integrated dual-radio contro
 ## Screenshots
 ![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio.gif)
 
-![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/elev_time.jpg)
+![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/lotw-grid.jpg)
 
 ![Alt text](https://raw.githubusercontent.com/rkarikari/SatTrackRadio/main/images/SatTrackRadio7.jpg)
 
