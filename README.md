@@ -329,6 +329,8 @@ Log your satellite contacts directly from this tab without leaving the screen:
    - Optional notes
 3. Tick **Mark as uploaded to LoTW** if you have already sent the QSO via TQSL
 4. Tap **OK** — the contact appears in the table and the map updates immediately
+5. Remember to click "Export ADIF" to export your adif file. ( Signing it with TQSL ) 
+6. - **Sign with TQSL** — To upload to LOTW, you must use TQSL to sign the exported `.adif` file.
 
 #### LoTW Integration
 The app syncs your QSO log with the Logbook of the World (LoTW) to track confirmed contacts:
@@ -336,10 +338,14 @@ The app syncs your QSO log with the Logbook of the World (LoTW) to track confirm
 - **Auto-sync on Log QSO** — Enable in Settings to sync with LoTW automatically every time you log a contact
 - **Reset & Full Re-sync** — Clears stored sync watermarks and re-downloads your complete LoTW history; locally logged QSOs are always preserved
 - **LoTW credentials** — Enter your LoTW callsign and password once in Settings; they are stored securely on-device
+- **Upload to LOTW**  -- ***Sign with TQSL*** — Use TQSL to sign the exported `.adif` file for upload to LOTW.
 
 #### ADIF Export & Import
 - **💾 Export ADIF** — Save your entire QSO log to a standard `.adif` file for use in other logging software
+    - ***Sign with TQSL*** — To upload to LOTW, you must use TQSL to sign the exported `.adif` file.
+
 - **📂 Import ADIF** — Load an existing `.adif` file from another logger or a previous export; duplicate contacts are detected and skipped automatically
+
 
 ### 🗄️ Data Management
 - **TLE (Two-Line Element) management**
